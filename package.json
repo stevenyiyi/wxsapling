@@ -17,7 +17,8 @@
     "react-router-dom": "latest",
     "react-scripts": "latest",
     "react-scroll-to-bottom": "latest",
-    "react-simple-snackbar": "latest"
+    "react-simple-snackbar": "latest",
+    "sass": "latest"
   },
   "devDependencies": {
     "@babel/runtime": "latest",

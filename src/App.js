@@ -1,4 +1,3 @@
-import "./styles.css";
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./components/home_page";
