@@ -5,19 +5,19 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
-    "@babel/runtime-corejs3": "^7.16.0",
-    "axios": "^0.24.0",
-    "crypto-js": "^4.1.1",
-    "js-cookie": "^3.0.1",
-    "prop-types": "^15.7.2",
-    "query-string": "^7.0.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-emoji": "^0.5.0",
-    "react-icons": "^4.3.1",
-    "react-router-dom": "^6.0.1",
-    "react-scroll-to-bottom": "^4.2.0",
-    "react-simple-snackbar": "^1.1.11"
+    "@babel/runtime-corejs3": "latest",
+    "axios": "latest",
+    "crypto-js": "latest",
+    "js-cookie": "latest",
+    "prop-types": "latest",
+    "query-string": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-emoji": "latest",
+    "react-icons": "latest",
+    "react-router-dom": "latest",
+    "react-scroll-to-bottom": "latest",
+    "react-simple-snackbar": "latest"
   },
   "devDependencies": {
     "@babel/runtime": "latest",
@@ -29,10 +29,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"]
 }
