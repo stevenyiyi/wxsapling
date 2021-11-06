@@ -5,7 +5,6 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
-    "@babel/runtime-corejs3": "latest",
     "axios": "latest",
     "crypto-js": "latest",
     "js-cookie": "latest",
@@ -16,6 +15,7 @@
     "react-emoji": "latest",
     "react-icons": "latest",
     "react-router-dom": "latest",
+    "react-scripts": "latest",
     "react-scroll-to-bottom": "latest",
     "react-simple-snackbar": "latest"
   },
