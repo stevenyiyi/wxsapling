@@ -30,7 +30,7 @@ export default function App(props) {
                 userContext.user.username ? (
                   <HomePage />
                 ) : (
-                  <Navigate to={{ pathname: "/login", state: { from: "/" } }} />
+                  <Navigate to="/login" state={{ from: "/" }} />
                 )
               }
             />
@@ -43,9 +43,7 @@ export default function App(props) {
                 userContext.user.username ? (
                   <Chat />
                 ) : (
-                  <Navigate
-                    to={{ pathname: "/login", state: { from: "/chat" } }}
-                  />
+                  <Navigate to="/login" state={{ from: "/chat" }} />
                 )
               }
             />
