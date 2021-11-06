@@ -1,0 +1,65 @@
+.messageContainer {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+.darker {
+  border-color: #ccc;
+  background-color: #ddd;
+}
+.messageContainer::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.messageContainer--image {
+  height: auto;
+  max-height: 300px;
+  max-width: 100%;
+  border-radius: 0;
+}
+.messageContainer--image:hover {
+  background: transparent;
+}
+.messageContainer--image img {
+  display: block;
+  height: inherit;
+  width: auto;
+  max-height: inherit;
+  max-width: 100%;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.messageContainer--image img:hover {
+  background: transparent;
+}
+
+.messageContainer--video {
+  display: flex;
+  position: relative;
+  padding-top: 56.25%; /* Player ratio: 100 / (1280 / 720) */
+}
+
+.messageContainer--video video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  z-index: auto;
+}
+
+.time-right {
+  float: right;
+  color: #aaa;
+}
+
+.time-left {
+  float: left;
+  color: #999;
+}

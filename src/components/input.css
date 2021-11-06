@@ -1,0 +1,57 @@
+.form {
+  display: flex;
+  height: 40px;
+  border-top: 2px solid #d3d3d3;
+}
+
+.input {
+  border: none;
+  border-radius: 0;
+  padding: 2px;
+  flex-grow: 1;
+  font-size: 1.2em;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+.image-button {
+  cursor: pointer;
+  color: #fff !important;
+  background: DodgerBlue;
+  position: relative;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 5px;
+  display: inline-block;
+  border: none;
+  font-size: 1.2em;
+}
+
+/* Darker background on mouse-over */
+.image-button:hover {
+  background-color: RoyalBlue;
+}
+
+.image-button:disabled {
+  background-color: #cccccc;
+}
+
+.spinner {
+  animation: spin infinite 5s linear;
+
+  /*You can increase or decrease the timer (5s) to 
+   increase or decrease the speed of the spinner*/
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

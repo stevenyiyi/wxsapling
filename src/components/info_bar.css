@@ -1,0 +1,79 @@
+.infoBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2979ff;
+  border-radius: 4px 4px 0 0;
+  height: 48px;
+  width: 100%;
+}
+
+.leftInnerContainer {
+  flex: 0.5;
+  display: flex;
+  align-items: center;
+  margin-left: 5%;
+  color: white;
+}
+
+.leftInnerContainer p {
+  padding: 10px;
+  color: #00fe00;
+  font-size: 0.8em;
+}
+
+.rightInnerContainer {
+  display: flex;
+  flex: 0.5;
+  justify-content: flex-end;
+  margin-right: 5%;
+  cursor: pointer;
+}
+
+.room__state {
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 1px solid #2979ff;
+}
+
+.room__state.online {
+  background: #00fe01;
+}
+
+.room__state.offline {
+  background: #fe0101;
+}
+
+h3 {
+  margin-left: 5px;
+}
+
+.chat__notification {
+  position: relative;
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 24px;
+  transition: 0.3s;
+  cursor: pointer;
+  padding: 5px 7px;
+  border-radius: 50%;
+}
+
+.chat__notification:hover {
+  background-color: #555;
+}
+
+.chat__notification .badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  padding: 1px 4px;
+  border-radius: 50%;
+  background-color: red;
+  font-size: 12px;
+  line-height: 15px;
+  color: white;
+}

@@ -1,0 +1,208 @@
+/** sidebar */
+.sidenav {
+  display: none;
+  height: 100%;
+  /* Add a top margin to avoid content overlay */
+  margin-top: 36px;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: grey;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .navbar {
+  display: flex;
+  position: fixed; /* Set the navbar to fixed position */
+  justify-content: space-between;
+  align-items: center;
+  top: 0;
+  width: 250px;
+  height: 36px;
+  overflow: hidden;
+  background: gray;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.sidenav .navbar p {
+  padding: 20px;
+  color: whitesmoke;
+}
+
+/** user list style */
+.user-list__container {
+  display: flex;
+  overflow-y: scroll;
+  flex-direction: column;
+  height: 100%;
+}
+
+.user-item__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.user-item__selected,
+.user-item__wrapper:hover {
+  background: #f7f6f8;
+  cursor: pointer;
+}
+
+.user-item__name-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 2;
+  text-align: left;
+  margin: 0px 20px;
+}
+
+.user-item__wrapper p {
+  font-family: Helvetica Neue, sans-serif;
+  font-size: 14px;
+  line-height: 17px;
+  color: #2c2c30;
+  word-break: break-all;
+  margin: 10px 20px;
+}
+
+.user-item__name {
+  font-weight: 500;
+}
+
+.user-item__last-active {
+  font-weight: 400;
+  width: 30%;
+  flex: 0.5;
+  text-align: right;
+  margin: 0px 20px;
+}
+
+/** Circle button */
+.circle_btn {
+  background-color: #04aa6d;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  padding: 10px;
+  margin: 10px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+/* Darker background on mouse-over */
+.circle_btn:enabled:hover {
+  background-color: RoyalBlue;
+}
+
+button:disabled,
+button[disabled] {
+  background-color: #cccccc;
+  color: #666666;
+}
+
+/** flex container */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #ffffff;
+  height: 100%;
+  width: 100%;
+}
+
+/** top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e9e9e9;
+  border-radius: 4px 4px 0 0;
+  height: 48px;
+  width: 100%;
+}
+
+/** card */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  margin: auto;
+  text-align: center;
+  font-family: arial;
+}
+
+.title {
+  color: grey;
+  font-size: 18px;
+}
+
+.text_content {
+  width: 100%;
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/** table */
+.tableContainer {
+  padding: 12x, 16px;
+  margin: 0 auto;
+  background-color: white;
+  /** overflow: auto; */
+}
+
+.tableHeader {
+  display: flex;
+  margin: 0 50px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #04aa6d;
+  color: white;
+}
+
+th,
+td {
+  text-align: left;
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+/** general css element */
+.full_width {
+  width: 100%;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
+}
