@@ -1,11 +1,11 @@
-import React from "react";
-import http from "../http_common";
-import sha1 from "crypto-js/sha1";
-import Cookies from "js-cookie";
-import { UserContext } from "../user_context";
-import { useSnackbar } from "react-simple-snackbar";
-import { useLocation, useNavigate } from "react-router-dom";
-import "./login.css";
+import React from 'react';
+import http from '../http_common';
+import sha1 from 'crypto-js/sha1';
+import Cookies from 'js-cookie';
+import { UserContext } from '../user_context';
+import { useSnackbar } from 'react-simple-snackbar';
+import { useLocation, useNavigate } from 'react-router-dom';
+import './login.css';
 const Login = (props) => {
   const ERR_NO_ACCOUNT = 0x800000f;
   const ERR_INVALID_PWD = ERR_NO_ACCOUNT + 1;
@@ -13,8 +13,8 @@ const Login = (props) => {
   const navigate = useNavigate();
   const [openSnackbar, closeSnackbar] = useSnackbar();
   const [state, setState] = React.useState({
-    username: "",
-    password: ""
+    username: '',
+    password: '',
   });
 
   const userCtx = React.useContext(UserContext);
@@ -23,7 +23,7 @@ const Login = (props) => {
     const { id, value } = e.target;
     setState((prevState) => ({
       ...prevState,
-      [id]: value
+      [id]: value,
     }));
   };
 
@@ -35,7 +35,7 @@ const Login = (props) => {
       )
     ) {
       formIsValid = false;
-      openSnackbar("非法的用户名，请输入手机号！");
+      openSnackbar('非法的用户名，请输入手机号！');
       return formIsValid;
     } else {
       closeSnackbar();
@@ -44,7 +44,7 @@ const Login = (props) => {
 
     if (!state.password.match(/^[0-9a-zA-Z]{6,22}$/)) {
       formIsValid = false;
-      openSnackbar("口令限制仅英文字母或数字组成，长度范围(6-22)个字符");
+      openSnackbar('口令限制仅英文字母或数字组成，长度范围(6-22)个字符');
       return formIsValid;
     } else {
       closeSnackbar();
@@ -62,15 +62,15 @@ const Login = (props) => {
   const handleSubmitClick = (e) => {
     e.preventDefault();
     if (handleFormInvalid()) {
-      let path = "/sapling/login";
-      let h1 = sha1(state.username + ":" + state.password).toString();
-      let h2 = sha1(state.password + ":" + path).toString();
+      let path = '/sapling/login';
+      let h1 = sha1(state.username + ':' + state.password).toString();
+      let h2 = sha1(state.password + ':' + path).toString();
       let h3 = sha1(
-        state.username + ":" + state.password + ":" + path
+        state.username + ':' + state.password + ':' + path
       ).toString();
       let qparams = { ts: Date.now() };
       qparams.username = state.username;
-      qparams.token = sha1(h1 + ":" + h2 + ":" + h3).toString();
+      qparams.token = sha1(h1 + ':' + h2 + ':' + h3).toString();
       http
         .get(path, { params: qparams })
         .then((response) => {
@@ -78,28 +78,26 @@ const Login = (props) => {
           if (result === 0) {
             userCtx.updateUser({
               username: state.username,
-              role: Cookies.get("role"),
-              token: Cookies.get("token")
+              role: Cookies.get('role'),
+              token: Cookies.get('token'),
             });
             /// Login Success
-            openSnackbar("登录成功，将转向主页！");
+            openSnackbar('登录成功，将转向主页！');
             redirectToCurrent();
           } else if (result === ERR_NO_ACCOUNT) {
             /// 帐户不存在
-            openSnackbar("帐户不存在，请先注册后再登录！");
+            openSnackbar('帐户不存在，请先注册后再登录！');
           } else if (result === ERR_OVERDUE) {
             /// 帐户过期
-            openSnackbar("帐户已过期！");
+            openSnackbar('帐户已过期！');
           } else if (result === ERR_INVALID_PWD) {
             /// 口令错误
-            openSnackbar("口令错误！");
+            openSnackbar('口令错误！');
           }
         })
         .catch((e) => {
           /// 错误
-          console.log(props.history);
           openSnackbar(e.toJSON().message);
-          props.history.goForward();
         });
     }
   };
@@ -126,7 +124,7 @@ const Login = (props) => {
           />
         </div>
         <button
-          className={"button mt-20"}
+          className={'button mt-20'}
           type="submit"
           onClick={handleSubmitClick}
         >
