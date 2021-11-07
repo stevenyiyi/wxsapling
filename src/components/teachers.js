@@ -1,12 +1,11 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { FaList, FaAngleLeft, FaAngleRight, FaTimes } from "react-icons/fa";
-import queryString from "query-string";
 import http from "../http_common";
 import "./common.css";
 export default function Teachers(props) {
-  const { search } = useLocation();
-  const { schoolid } = queryString.parse(search);
+  const [searchParams] = useSearchParams();
+  const schoolid = searchParams.get("schoolid");
   const [teachers, setTeachers] = React.useState(null);
   const [activeIdx, setActiveIdx] = React.useState(0);
   const refList = React.useRef();
@@ -110,7 +109,7 @@ export default function Teachers(props) {
           <button
             ref={refPrev}
             className="circle_btn"
-            disabled="true"
+            disabled={true}
             onClick={handlePrevClick}
           >
             <FaAngleLeft />
@@ -118,7 +117,7 @@ export default function Teachers(props) {
           <button
             ref={refNext}
             className="circle_btn"
-            disabled="true"
+            disabled={true}
             onClick={handleNextClick}
           >
             <FaAngleRight />

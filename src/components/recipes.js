@@ -1,12 +1,11 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
-import queryString from "query-string";
+import { useSearchParams } from "react-router-dom";
 import http from "../http_common";
 import "./common.css";
 
 export default function Recipes(props) {
-  const { search } = useLocation();
-  const { schoolid } = queryString.parse(search);
+  const [searchParams] = useSearchParams();
+  const schoolid = searchParams.get("schoolid");
   const [recipes, setRecipes] = React.useState(null);
 
   React.useEffect(() => {
