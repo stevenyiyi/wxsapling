@@ -39,10 +39,7 @@ export default function Carousel(props) {
         .fill()
         .map((_, i) => React.createRef())
     );
-    if(pics.length > 0){
-      showSlides();
-    }
-  }, [pics, showSlides]);
+  }, [pics]);
 
   React.useEffect(() => {
     const timerid = setTimeout(showSlides, 3000); // Change image every 3 seconds
