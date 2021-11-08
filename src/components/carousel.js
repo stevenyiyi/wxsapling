@@ -3,20 +3,10 @@ import "./carousel.css";
 
 export default function Carousel(props) {
   const { pics } = props;
-  const refSlides = [
-    React.useRef(),
-    React.useRef(),
-    React.useRef(),
-    React.useRef()
-  ];
-  const refDots = [
-    React.useRef(),
-    React.useRef(),
-    React.useRef(),
-    React.useRef()
-  ];
+  const [refSlides, setRefSlides] = React.useState([]);
+  const [refDots, setRefDots] = React.useState([]);
   const [slideIndex, setSlideIndex] = React.useState(0);
-  const showSlides = () => {
+  const showSlides = React.useCallback(() => {
     for (let i = 0; i < refSlides.length; i++) {
       refSlides[i].current.style.display = "none";
     }
@@ -35,12 +25,24 @@ export default function Carousel(props) {
     if (cidx >= refSlides.length) {
       setSlideIndex(0);
     }
-  };
+  }, [refSlides, refDots, slideIndex]);
 
   React.useEffect(() => {
-    refSlides.splice(pics.length);
-    refDots.splice(pics.length);
-  }, [refSlides, refDots, pics]);
+    // add refs
+    setRefSlides((elRefs) =>
+      Array(pics.length)
+        .fill()
+        .map((_, i) => React.createRef())
+    );
+    setRefDots((elRefs) =>
+      Array(pics.length)
+        .fill()
+        .map((_, i) => React.createRef())
+    );
+    if(pics.length > 0){
+      showSlides();
+    }
+  }, [pics, showSlides]);
 
   React.useEffect(() => {
     const timerid = setTimeout(showSlides, 3000); // Change image every 3 seconds

@@ -6,35 +6,54 @@ import "./common.css";
 export default function Teachers(props) {
   const [searchParams] = useSearchParams();
   const schoolid = searchParams.get("schoolid");
-  const [teachers, setTeachers] = React.useState(null);
+  const [teachers, setTeachers] = React.useState([]);
+  const [classes, setClasses] = React.useState([]);
   const [activeIdx, setActiveIdx] = React.useState(0);
   const refList = React.useRef();
-  const refPrev = React.useRef();
-  const refNext = React.useRef();
-
   React.useEffect(() => {
     if (schoolid) {
+      /// Get teachers for schoolid
       http
         .get(`/sapling/get_teachers?schoolid=${schoolid}`)
         .then((response) => {
           if (response.data.result === 0) {
+            console.log(response.data.teachers);
             setTeachers(response.data.teachers);
-            if (response.data.teachers.length > 0) {
-              setActiveIdx(0);
-              if (response.data.teacher.length > 1) {
-                refNext.current.disabled = false;
-              }
-            }
           } else {
             console.log(`Server response error:${response.data.result}`);
           }
         })
-        .catch((e) => console.log(e.toJSON().message));
+        .catch((e) => console.log(e));
+      /// Get classes from schoolid
+      http
+        .get(`/sapling/get_classes?schoolid=${schoolid}&simple=true`)
+        .then((response) => {
+          if (response.data.result === 0) {
+            console.log(response.data.classes);
+            setClasses(response.data.classes);
+          } else {
+            console.log(`Server response error:${response.data.result}`);
+          }
+        })
+        .catch((e) => console.log(e));
     }
   }, [schoolid]);
-  console.log(`schoolid:${schoolid}`);
-  const handleClickTeacher = (event) => {
-    setActiveIdx(event.target.id);
+
+  const getClassNames = (classids) => {
+    let names = [];
+    for (const clsid of classids) {
+      for (const cls of classes) {
+        if (cls.classid === clsid) {
+          names.push(cls.name);
+          break;
+        }
+      }
+    }
+    return names.join();
+  };
+
+  const handleClickTeacher = (idx) => {
+    setActiveIdx(idx);
   };
 
   const handleClose = (event) => {
@@ -46,53 +65,59 @@ export default function Teachers(props) {
   };
 
   const handlePrevClick = (event) => {
-    let curidx = activeIdx - 1;
-    if (curidx === 0) {
-      refPrev.current.disabled = true;
+    setActiveIdx((idx) => idx - 1);
+  };
+
+  const toggleNextDisabled = () => {
+    let f = true;
+    if (teachers.length > 0) {
+      if (activeIdx < teachers.length - 1) {
+        f = false;
+      } else {
+        f = true;
+      }
     }
-    if (refNext.current.disabled) {
-      refNext.current.disabled = false;
-    }
-    setActiveIdx(curidx);
+    return f;
+  };
+
+  const togglePrevDisabled = () => {
+    return activeIdx === 0;
   };
 
   const handleNextClick = (event) => {
-    let curidx = activeIdx + 1;
-    if (curidx === teachers.length) {
-      refNext.current.disabled = true;
-    }
-    if (refPrev.current.disabled) {
-      refPrev.current.disabled = false;
-    }
-    setActiveIdx(curidx);
+    setActiveIdx((idx) => idx + 1);
   };
 
   const genTeachersList = () => {
     return (
       <div className="user-list__container">
-        {teachers &&
-          teachers.map((teacher, index) => (
-            <div
-              className={
-                index === 0 ? "user-item__selected" : "user-item__wrapper"
-              }
-              key={teacher.username}
-              id={index}
-              onClick={handleClickTeacher}
-            >
-              <div className="user-item__name-wrapper">
-                <div className="user-item__name">{teacher.nick_name}</div>
-              </div>
-              <p>{teacher.classes.join()}</p>
+        {teachers.map((teacher, index) => (
+          <div
+            className={
+              index === activeIdx
+                ? "user-item__wrapper user-item__selected"
+                : "user-item__wrapper"
+            }
+            key={teacher.username}
+            id={index}
+            onClick={() => {
+              handleClickTeacher(index);
+              handleClose();
+            }}
+          >
+            <div className="user-item__name-wrapper">
+              <div className="user-item__name">{teacher.nick_name}</div>
             </div>
-          ))}
+            <p>{getClassNames(teacher.classes)}</p>
+          </div>
+        ))}
       </div>
     );
   };
 
   const genTeacherPhoto = () => {
     let uri = "http://localhost/imgs/img_avatar_unknow.png";
-    if (teachers && teachers[activeIdx].photo) {
+    if (teachers.length > 0 && teachers[activeIdx].photo) {
       uri = `imgs/${teachers[activeIdx].photo}`;
     }
     return uri;
@@ -107,17 +132,15 @@ export default function Teachers(props) {
         <h3>教师介绍</h3>
         <div>
           <button
-            ref={refPrev}
             className="circle_btn"
-            disabled={true}
+            disabled={togglePrevDisabled()}
             onClick={handlePrevClick}
           >
             <FaAngleLeft />
           </button>
           <button
-            ref={refNext}
             className="circle_btn"
-            disabled={true}
+            disabled={toggleNextDisabled()}
             onClick={handleNextClick}
           >
             <FaAngleRight />
@@ -126,9 +149,11 @@ export default function Teachers(props) {
       </div>
       <div className="card">
         <img src={genTeacherPhoto()} alt="teacher" style={{ width: "100%" }} />
-        <p className="title">{teachers ? teachers[activeIdx].name : "测试"}</p>
+        <p className="title">
+          {teachers.length > 0 ? teachers[activeIdx].nick_name : "测试"}
+        </p>
         <div className="text_content">
-          {teachers ? teachers[activeIdx].note : ""}
+          {teachers.length > 0 ? teachers[activeIdx].note : ""}
         </div>
       </div>
       <div ref={refList} className="sidenav">
@@ -138,7 +163,7 @@ export default function Teachers(props) {
             <FaTimes />
           </button>
         </div>
-        {genTeachersList}
+        {genTeachersList()}
       </div>
     </div>
   );
