@@ -46,7 +46,7 @@ export default function Carousel(props) {
     return () => clearTimeout(timerid);
   });
   return (
-    <>
+    <div>
       <div className="slideshow-container">
         {pics &&
           pics.map((pic, i) => (
@@ -63,6 +63,6 @@ export default function Carousel(props) {
             <span ref={refDots[i]} key={i} className="dot"></span>
           ))}
       </div>
-    </>
+    </div>
   );
 }
