@@ -1,0 +1,66 @@
+.container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 50px;
+}
+.player {
+  display: flex;
+  flex: 3 1 75%;
+  padding-top: 42.1875%;
+  background-color: black;
+  position: relative;
+  overflow: hidden;
+}
+.aspect_ratio_43 {
+  padding-top: 75%; /* 4:3 Aspect Ratio (divide 3 by 4 = 0.75) */
+}
+.aspect_ratio_169 {
+  padding-top: 56.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
+}
+.aspect_ratio_d1 {
+  padding-top: 81.82%; /* D1(704 * 576) */
+}
+
+.camera-list__container {
+  display: flex;
+  flex: 1 3 25%;
+  min-width: 200px;
+  overflow-y: scroll;
+  flex-direction: column;
+}
+
+.player video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  z-index: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    padding-bottom: 50px;
+  }
+  .player {
+    display: flex;
+    padding-top: 56.25%;
+    background-color: black;
+    position: relative;
+    overflow: hidden;
+  }
+  .camera-list__container {
+    display: flex;
+    align-self: stretch;
+    flex-grow: 1;
+    overflow-y: scroll;
+    flex-direction: column;
+  }
+}
