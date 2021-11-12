@@ -416,6 +416,7 @@ export default function LivePlayer(props) {
         />
       </div>
       <div className="user-list__container"></div>
+      <div className="navbar"></div>
     </div>
   );
 }
