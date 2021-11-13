@@ -33,8 +33,7 @@ export default function LivePlayer(props) {
   const [streamUri, setStreamUri] = React.useState("");
   const [checkMpd, setCheckMpd] = React.useState("");
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
-  const [groups, setGroups] = React.useState(null);
-  const [cameras, setCameras] = React.useState(null);
+  const [camlist, setCamlist] = React.useState(null);
   const [isMainStream, setIsMainStream] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [playerRefreshId, setPlayerRefreshId] = React.useState(0);
@@ -166,74 +165,6 @@ export default function LivePlayer(props) {
     const ERR_NO_ACCOUNT = 0x800000f;
     const ERR_INVALID_PWD = ERR_NO_ACCOUNT + 1;
     const ERR_OVERDUE = ERR_INVALID_PWD + 1;
-    /** 根据oid产生播放地址 */
-    const genPlayUri = (oid) => {
-      let uri = "/live/" + oid + "_master.m3u8";
-      return uri;
-    };
-    /** 给每一个camera 增加属性 'selected' 并返回默认选择播放的url及是否用主码流*/
-    const fixCameraList = (camlist) => {
-      // 预处理 camlist
-      let obj = { playuri: "", is_main_stream: true };
-      if (camlist.cameras) {
-        let dcams = camlist.cameras.map((cam) => {
-          if (cam.status === 1 && !obj.playuri) {
-            cam["selected"] = true;
-            obj.playuri = genPlayUri(cam.oid);
-            obj.is_main_stream = cam.is_main_stream;
-          } else {
-            cam["selected"] = false;
-          }
-          return cam;
-        });
-        camlist.cameras = dcams;
-      }
-      if (camlist.groups) {
-        let cgroups = camlist.groups.map((group) => {
-          group.cameras.forEach((cam, index, theArray) => {
-            if (cam.status === 1 && !obj.playuri) {
-              theArray[index].selected = true;
-              obj.playuri = genPlayUri(cam.oid);
-              obj.is_main_stream = cam.is_main_stream;
-            } else {
-              theArray[index].selected = false;
-            }
-          });
-          return { ...group, unfold: true };
-        });
-        camlist.groups = cgroups;
-      }
-      return obj;
-    };
-
-    const processResponse = (response) => {
-      if (response.result === 0) {
-        let clist = response.cameras;
-        let robj = fixCameraList(clist);
-        let puri = robj.playuri;
-        setIsMainStream(robj.is_main_stream);
-        if (clist.groups) setGroups(clist.groups);
-        else setGroups(null);
-        if (clist.cameras) setCameras(clist.cameras);
-        else setCameras(null);
-        if (supportsMediaSource() && puri) {
-          setCheckMpd(puri);
-        } else {
-          setStreamUri(puri);
-        }
-      } else if (response.result === ERR_NO_ACCOUNT) {
-        console.log("帐户不存在!");
-      } else if (response.result === ERR_INVALID_PWD) {
-        console.log("口令错误");
-      } else if (response.result === ERR_OVERDUE) {
-        console.log("帐户已过期!");
-      } else {
-        console.log(
-          `get_camera_list response error code:${response.data.response}`
-        );
-      }
-    };
-
     fetch(`/sapling/get_camera_list?ts=${Date.now()}`, {
       credentials: "include",
       headers: {
@@ -246,7 +177,20 @@ export default function LivePlayer(props) {
     })
       .then((response) => {
         if (response.ok) {
-          processResponse(response.json());
+          const resp = response.json();
+          if (resp.result === 0) {
+            setCamlist(resp.cameras);
+          } else if (resp.result === ERR_NO_ACCOUNT) {
+            console.log("帐户不存在!");
+          } else if (resp.result === ERR_INVALID_PWD) {
+            console.log("口令错误");
+          } else if (resp.result === ERR_OVERDUE) {
+            console.log("帐户已过期!");
+          } else {
+            console.log(
+              `get_camera_list response error code:${response.data.response}`
+            );
+          }
         } else {
           throw new Error(`Server repsone status:${response.status}`);
         }
