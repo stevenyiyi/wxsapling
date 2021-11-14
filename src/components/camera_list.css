@@ -1,7 +1,10 @@
-.container {
+.devlist_container {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.scrollx {
   overflow-x: scroll;
 }
 
@@ -14,10 +17,11 @@
   margin: 10px;
 }
 
-.camera_container .icon {
-  padding: 20px;
-  font-size: 30px;
-  width: 30px;
+.largeicon {
+  display: flex;
+  padding: 10px;
+  font-size: 32px;
+  width: 32px;
   text-align: center;
   text-decoration: none;
   color: white;
@@ -25,12 +29,9 @@
   border-radius: 50%;
 }
 
-.enable {
-  cursor: pointer;
-}
-
+.selected,
 .camera_container .selected,
-.camera_container .enable:hover {
+.enable:hover {
   background: royalblue;
 }
 
@@ -47,13 +48,12 @@
 }
 
 .cameras_sub_container {
-  display: block;
+  display: none;
   position: absolute;
   background-color: #f1f1f1;
-  min-width: 100px;
-  overflow: auto;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  right: 0;
+  right: 15%;
+  top: 50%;
   z-index: 1;
 }
 
@@ -63,22 +63,30 @@
   justify-content: space-between;
 }
 
-.camera_row_container .icon {
+.smallicon {
   padding: 6px;
   font-size: 14px;
   width: 14px;
   text-align: center;
   text-decoration: none;
-  color: #55acee;
-}
-
-.camera_row_container .selected,
-.enable:hover {
-  background: royalblue;
+  color: white;
 }
 
 .camera_row_container p {
-  margin: auto;
+  padding: 6px;
   font-size: 14px;
+
   color: darkgrey;
+}
+
+.enable {
+  cursor: pointer;
+}
+
+.show {
+  display: block;
+}
+
+.hide {
+  display: none;
 }

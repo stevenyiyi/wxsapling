@@ -1,7 +1,9 @@
 import React from "react";
 import Hls from "hls.js";
+import { FaBars, FaUser } from "react-icons/fa";
 import { UserContext } from "../user_context";
 import HLSPlayer from "./hlsplayer";
+import CameraList from "./camera_list";
 import "./live_player.css";
 
 // custom hook for getting previous value
@@ -187,9 +189,24 @@ export default function LivePlayer(props) {
           } else if (resp.result === ERR_OVERDUE) {
             console.log("帐户已过期!");
           } else {
-            console.log(
-              `get_camera_list response error code:${response.data.response}`
-            );
+            console.log(`get_camera_list response error code:${resp.result}`);
+            setCamlist({
+              groups: [
+                {
+                  gid: "3214124121324",
+                  name: "北碚紫荆花幼儿园",
+                  cameras: [
+                    { oid: "142313441234123", name: "中一班", status: 1 },
+                    { oid: "142313441141231", name: "中二班", status: 1 },
+                    { oid: "142313441141232", name: "中二班", status: 1 },
+                    { oid: "142313441141233", name: "中二班", status: 1 },
+                    { oid: "142313441141234", name: "中二班", status: 1 },
+                    { oid: "142313441141235", name: "中二班", status: 1 },
+                    { oid: "142313441141236", name: "中二班", status: 1 }
+                  ]
+                }
+              ]
+            });
           }
         } else {
           throw new Error(`Server repsone status:${response.status}`);
@@ -271,63 +288,9 @@ export default function LivePlayer(props) {
     setCheckMpd("");
   }, []);
 
-  function genCameraList(cameralist, nested) {
-    const clist = cameralist.map((cam, index) => {
-      const scam = JSON.stringify(cam);
-      if (cam.status !== 1) {
-        return (
-          <div
-            className={
-              index === activeIdx
-                ? "user-item__wrapper user-item__selected"
-                : "user-item__wrapper"
-            }
-            key={cam.oid}
-            id={index}
-            onClick={() => {
-              handleClickTeacher(index);
-            }}
-          >
-            <ListItemIcon>
-              <CamcorderOff />
-            </ListItemIcon>
-            <ListItemText primary={cam.name} />
-          </div>
-        );
-      } else {
-        return (
-          <ListItem
-            alignItems="flex-start"
-            className={nested ? classes.nested : classes.normal}
-            selected={cam.selected}
-            button
-            key={cam.oid}
-            itemvalue={scam}
-            onClick={(event) => onCameraClick(cam)}
-          >
-            <ListItemIcon>
-              <Camcorder />
-            </ListItemIcon>
-            <ListItemText primary={cam.name} />
-            {isAliveUser() && (
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={(event) => {
-                    handleQueryRecord(cam);
-                  }}
-                  aria-label="query-channel-record"
-                >
-                  <QueryRelordListIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            )}
-          </ListItem>
-        );
-      }
-    });
-    return clist;
-  }
+  const handlePlayUri = (uri, isMainStream) => {
+    console.log(`Play uri:${uri}, is main stream:${isMainStream}`);
+  };
 
   const hlsconfig = React.useMemo(
     () => ({
@@ -359,8 +322,18 @@ export default function LivePlayer(props) {
           refreshId={playerRefreshId}
         />
       </div>
-      <div className="user-list__container"></div>
-      <div className="navbar"></div>
+
+      {camlist && <CameraList camlist={camlist} onPlayUri={handlePlayUri} />}
+
+      <div className="navbar">
+        <div className="icon">
+          <FaBars />
+        </div>
+        <div className="icon">
+          <FaUser />
+        </div>
+        <input type="text" placeholder="说点什么？" />
+      </div>
     </div>
   );
 }

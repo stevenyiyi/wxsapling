@@ -6,6 +6,7 @@ import School from "./components/school";
 import Teachers from "./components/teachers";
 import Recipes from "./components/recipes";
 import Chat from "./components/chat";
+import LivePlayer from "./components/live_player";
 import { UserContext } from "./user_context";
 import SnackbarProvider from "react-simple-snackbar";
 export default function App(props) {
@@ -43,6 +44,16 @@ export default function App(props) {
                   <Chat />
                 ) : (
                   <Navigate to="/login" state={{ from: "/chat" }} />
+                )
+              }
+            />
+            <Route
+              path="/live"
+              element={
+                userContext.user.username ? (
+                  <LivePlayer />
+                ) : (
+                  <Navigate to="/login" state={{ from: "/live" }} />
                 )
               }
             />
