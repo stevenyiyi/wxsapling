@@ -1,6 +1,6 @@
 import React from "react";
 import Hls from "hls.js";
-import { FaBars, FaUser } from "react-icons/fa";
+import { FaBars, FaUser, FaTelegramPlane } from "react-icons/fa";
 import { UserContext } from "../user_context";
 import HLSPlayer from "./hlsplayer";
 import CameraList from "./camera_list";
@@ -333,6 +333,9 @@ export default function LivePlayer(props) {
           <FaUser />
         </div>
         <input type="text" placeholder="说点什么？" />
+        <div className="icon">
+          <FaTelegramPlane />
+        </div>
       </div>
     </div>
   );
