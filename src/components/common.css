@@ -87,10 +87,28 @@
   height: 32px;
   cursor: pointer;
 }
+/** full button */
+.full_btn {
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px;
+  color: white;
+  background-color: #000;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  font-size: 18px;
+}
 
 /* Darker background on mouse-over */
 .circle_btn:enabled:hover {
   background-color: RoyalBlue;
+}
+
+.full_btn:hover,
+a:hover {
+  opacity: 0.7;
 }
 
 button:disabled,
@@ -118,6 +136,23 @@ button[disabled] {
   border-radius: 4px 4px 0 0;
   height: 48px;
   width: 100%;
+}
+
+.formContainer {
+  padding: 12x, 16px;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: white;
+}
+
+/** Full input */
+.full_input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 /** card */
