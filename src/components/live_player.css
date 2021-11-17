@@ -68,6 +68,11 @@ body {
   cursor: pointer;
 }
 
+.navbar .icon:hover,
+.navbar .icon:focus {
+  opacity: 0.7;
+}
+
 .navbar input {
   border: none;
   border-radius: 0;

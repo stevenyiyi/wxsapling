@@ -25,7 +25,7 @@ export default function Modal(props) {
           <span className="close" onClick={handleCloseClick}>
             <FaTimesCircle />
           </span>
-          <span style={{ fontSize: "20px" }}>{title}</span>
+          <span style={{ fontSize: "18px" }}>{title}</span>
         </div>
         <div className="modal-body">{children}</div>
       </div>

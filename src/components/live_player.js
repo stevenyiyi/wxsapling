@@ -4,6 +4,7 @@ import { FaBars, FaUser, FaTelegramPlane } from "react-icons/fa";
 import { UserContext } from "../user_context";
 import HLSPlayer from "./hlsplayer";
 import CameraList from "./camera_list";
+import Person from "./person";
 import "./live_player.css";
 
 // custom hook for getting previous value
@@ -41,6 +42,7 @@ export default function LivePlayer(props) {
   const [playerRefreshId, setPlayerRefreshId] = React.useState(0);
   const [checkMpdRefreshId, setCheckMpdRefreshId] = React.useState(0);
   const [camsRefreshId, setCamsRefreshId] = React.useState(0);
+  const [showPerson, setShowPerson] = React.useState(false);
   const [message, dispatch] = React.useReducer(reducer, {
     open: false,
     variant: "error",
@@ -292,6 +294,9 @@ export default function LivePlayer(props) {
     console.log(`Play uri:${uri}, is main stream:${isMainStream}`);
   };
 
+  const handlePersonClick = (event) => {
+    setShowPerson(!showPerson);
+  };
   const hlsconfig = React.useMemo(
     () => ({
       liveDurationInfinity: true,
@@ -329,7 +334,7 @@ export default function LivePlayer(props) {
         <div className="icon">
           <FaBars />
         </div>
-        <div className="icon">
+        <div className="icon" onClick={handlePersonClick}>
           <FaUser />
         </div>
         <input type="text" placeholder="说点什么？" />
@@ -337,6 +342,7 @@ export default function LivePlayer(props) {
           <FaTelegramPlane />
         </div>
       </div>
+      <Person show={showPerson} onClose={() => setShowPerson(false)} />
     </div>
   );
 }

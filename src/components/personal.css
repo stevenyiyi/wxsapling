@@ -1,0 +1,78 @@
+/** person card */
+.personal_card {
+  display: none;
+  position: fixed;
+  background: gray;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 250px;
+  bottom: 32px;
+  left: 0px;
+  z-index: 1;
+}
+
+/** avatar */
+.personal-image {
+  text-align: center;
+  margin: auto;
+}
+
+.personal-image input[type="file"] {
+  display: none;
+}
+
+.personal-figure {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+.personal-avatar {
+  cursor: pointer;
+  width: 120px;
+  height: 120px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+  transition: all ease-in-out 0.3s;
+}
+.personal-avatar:hover {
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
+}
+.personal-figcaption {
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0);
+  transition: all ease-in-out 0.3s;
+}
+.personal-figcaption:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.personal-figcaption > img {
+  margin-top: 32.5px;
+  width: 50px;
+  height: 50px;
+}
+
+.personal-content {
+  width: 100%;
+  padding: 0px;
+}
+
+.personal-content h3 {
+  font-size: 18px;
+  padding: 0px 10px;
+  text-align: center;
+}
+
+.personal-content p {
+  font-size: 16px;
+  padding: 0px 10px;
+}

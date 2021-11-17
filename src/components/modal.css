@@ -17,10 +17,10 @@
 }
 /* Modal Content */
 .modal-content {
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 25% auto; /* 25% from the top and centered */
   background-color: #fefefe;
   max-width: 300px;
-  padding: 20px;
+  padding: 10px 0px;
   border: 1px solid #888;
   -webkit-animation-name: slideIn;
   -webkit-animation-duration: 0.4s;
@@ -38,18 +38,18 @@
 
 .close:hover,
 .close:focus {
-  color: #000;
+  opacity: 0.7;
   text-decoration: none;
   cursor: pointer;
 }
 .modal-header {
-  margin: 0px 16px 10px;
+  margin: 0px 10px 10px;
   padding: 6px 16px 6px;
-  background-color: #04aa6d;
+  background-color: black;
   color: white;
 }
 .modal-body {
-  padding: 2px 16px;
+  padding: 2px 10px;
 }
 .modal-body p {
   word-wrap: break-word;
