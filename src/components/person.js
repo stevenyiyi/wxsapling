@@ -14,7 +14,7 @@ function useOutsideClick(ref, onOutsideClick) {
      */
     function handleClickOutside(event) {
       if (ref.current && !ref.current.contains(event.target)) {
-        onOutsideClick();
+        onOutsideClick(event);
       }
     }
     // Bind the event listener

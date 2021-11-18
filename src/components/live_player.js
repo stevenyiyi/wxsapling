@@ -5,6 +5,7 @@ import { UserContext } from "../user_context";
 import HLSPlayer from "./hlsplayer";
 import CameraList from "./camera_list";
 import Person from "./person";
+import Jabber from "./jabber";
 import "./live_player.css";
 
 // custom hook for getting previous value
@@ -48,12 +49,15 @@ export default function LivePlayer(props) {
     variant: "error",
     text: ""
   });
+  const [chatText, setChatText] = React.useState("");
+  const [messages, setMessages] = React.useState([]);
 
   /** Get previous  checkMpd */
   const prevCheckMpd = usePrevious(checkMpd);
 
   const timer = React.useRef();
   const refVideo = React.useRef();
+  const refPerson = React.useRef();
 
   const supportsMediaSource = () => {
     let hasWebKit = "WebKitMediaSource" in window;
@@ -294,9 +298,24 @@ export default function LivePlayer(props) {
     console.log(`Play uri:${uri}, is main stream:${isMainStream}`);
   };
 
+  /** 点击个人信息 */
   const handlePersonClick = (event) => {
     setShowPerson(!showPerson);
   };
+  /** 个人信息关闭事件*/
+  const handlePersonClose = (event) => {
+    if (!refPerson.current.contains(event.target)) {
+      setShowPerson(false);
+    }
+  };
+  /** 点击聊天 */
+  const handleJabber = (event) => {
+    setMessages([
+      ...messages,
+      { from: "chengyi", text: chatText, ts: Date.now() }
+    ]);
+  };
+
   const hlsconfig = React.useMemo(
     () => ({
       liveDurationInfinity: true,
@@ -327,22 +346,29 @@ export default function LivePlayer(props) {
           refreshId={playerRefreshId}
         />
       </div>
-
-      {camlist && <CameraList camlist={camlist} onPlayUri={handlePlayUri} />}
-
+      <div className="content__container">
+        {camlist && <CameraList camlist={camlist} onPlayUri={handlePlayUri} />}
+        <Jabber messages={messages} />
+      </div>
       <div className="navbar">
         <div className="icon">
           <FaBars />
         </div>
-        <div className="icon" onClick={handlePersonClick}>
+        <div ref={refPerson} className="icon" onClick={handlePersonClick}>
           <FaUser />
         </div>
-        <input type="text" placeholder="说点什么？" />
-        <div className="icon">
+        <input
+          id="input-jabber-message"
+          type="text"
+          placeholder="说点什么？"
+          value={chatText}
+          onChange={(e) => setChatText(e.target.value.trim())}
+        />
+        <div className="icon" onClick={handleJabber}>
           <FaTelegramPlane />
         </div>
       </div>
-      <Person show={showPerson} onClose={() => setShowPerson(false)} />
+      <Person show={showPerson} onClose={handlePersonClose} />
     </div>
   );
 }

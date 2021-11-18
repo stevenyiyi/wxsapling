@@ -1,0 +1,15 @@
+.jabberContainer {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 5px;
+}
+.messageContainer::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.jabberContainer span {
+  font-size: 12px;
+  text-align: center;
+}
