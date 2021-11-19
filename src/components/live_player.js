@@ -6,8 +6,12 @@ import HLSPlayer from "./hlsplayer";
 import CameraList from "./camera_list";
 import Person from "./person";
 import Jabber from "./jabber";
+import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
+import Websocket from "./websocket";
+import { useSnackbar } from "./use_snackbar";
 import "./live_player.css";
 
+const ENDPOINT = "ws://localhost/ws_jabber";
 // custom hook for getting previous value
 function usePrevious(value) {
   const ref = React.useRef();
@@ -17,23 +21,11 @@ function usePrevious(value) {
   return ref.current;
 }
 
-function reducer(message, action) {
-  switch (action.type) {
-    case "close":
-      return { ...message, open: false };
-    case "update":
-      return {
-        ...message,
-        open: action.open,
-        variant: action.variant,
-        text: action.text
-      };
-    default:
-      throw new Error("Unexpected action");
-  }
-}
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
+  const username = userCtx.user.username;
+  const ws = React.useRef(null);
+  const [openSnackbar, closeSnackbar] = useSnackbar();
   const [streamUri, setStreamUri] = React.useState("");
   const [checkMpd, setCheckMpd] = React.useState("");
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
@@ -44,11 +36,6 @@ export default function LivePlayer(props) {
   const [checkMpdRefreshId, setCheckMpdRefreshId] = React.useState(0);
   const [camsRefreshId, setCamsRefreshId] = React.useState(0);
   const [showPerson, setShowPerson] = React.useState(false);
-  const [message, dispatch] = React.useReducer(reducer, {
-    open: false,
-    variant: "error",
-    text: ""
-  });
   const [chatText, setChatText] = React.useState("");
   const [messages, setMessages] = React.useState([]);
 
@@ -81,30 +68,24 @@ export default function LivePlayer(props) {
   const handlePlayerError = React.useCallback(
     (error) => {
       let msg = "";
-      let variant = "";
       if (error instanceof MediaError) {
         let ecode = error.code;
         switch (ecode) {
           case MediaError.MEDIA_ERR_NETWORK:
-            variant = "error";
             msg = "播放超时，将重新刷新观看列表...";
             setCamsRefreshId((rid) => rid + 1);
             break;
           case MediaError.MEDIA_ERR_DECODE:
-            variant = "error";
             msg = "浏览器不支持播放该视频格式!";
             break;
           case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-            variant = "error";
             msg = "不支持的播放格式，将重刷新列表...";
             setCamsRefreshId((rid) => rid + 1);
             break;
           case MediaError.MEDIA_ERR_ABORTED:
-            variant = "info";
             msg = "请求播放终止.";
             break;
           default:
-            variant = "error";
             msg = "未知错误!";
             setCamsRefreshId((rid) => rid + 1);
             break;
@@ -121,16 +102,13 @@ export default function LivePlayer(props) {
           ) {
             let rcode = error.response.code;
             if (rcode === 403) {
-              variant = "warning";
               msg = "检测到您的帐户正在观看,请先退出,20秒后将自动重新连接...";
               console.log("url:" + error.url);
               triggerPlayerTimer(error.url);
             } else if (rcode === 404) {
-              variant = "error";
               msg = "观看的流已经下线，将重新刷新观看列表!";
               setCamsRefreshId((rid) => rid + 1);
             } else {
-              variant = "error";
               msg = "服务器出了点问题,请稍候刷新再试!错误代码:" + rcode;
             }
           } else if (
@@ -138,22 +116,18 @@ export default function LivePlayer(props) {
             details === Hls.ErrorDetails.KEY_LOAD_TIMEOUT ||
             details === Hls.ErrorDetails.LEVEL_LOAD_TIMEOUT
           ) {
-            variant = "error";
             msg = "加载文件超时，请检查网络是否正常...";
             setCamsRefreshId((rid) => rid + 1);
           } else if (
             details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR ||
             details === Hls.ErrorDetails.LEVEL_EMPTY_ERROR
           ) {
-            variant = "error";
             msg = "解析mainfest错误:" + error.reason;
           } else {
-            variant = "error";
             msg = "服务器出了点问题，请稍候再试!";
             setCamsRefreshId((rid) => rid + 1);
           }
         } else {
-          variant = "error";
           msg =
             "无法播放此视频,错误类型：" +
             error.type +
@@ -163,9 +137,9 @@ export default function LivePlayer(props) {
             error.reason;
         }
       }
-      dispatch({ type: "update", open: true, variant: variant, text: msg });
+      openSnackbar(msg);
     },
-    [triggerPlayerTimer]
+    [triggerPlayerTimer, openSnackbar]
   );
 
   /** 从服务器获取摄像头列表 */
@@ -294,8 +268,14 @@ export default function LivePlayer(props) {
     setCheckMpd("");
   }, []);
 
-  const handlePlayUri = (uri, isMainStream) => {
+  const handlePlayUri = (uri, is_main_stream) => {
     console.log(`Play uri:${uri}, is main stream:${isMainStream}`);
+    if (supportsMediaSource()) {
+      setStreamUri(uri);
+    } else {
+      setCheckMpd(uri);
+    }
+    setIsMainStream(is_main_stream);
   };
 
   /** 点击个人信息 */
@@ -308,12 +288,36 @@ export default function LivePlayer(props) {
       setShowPerson(false);
     }
   };
+
   /** 点击聊天 */
   const handleJabber = (event) => {
     setMessages([
       ...messages,
       { from: "chengyi", text: chatText, ts: Date.now() }
     ]);
+  };
+
+  /** Websocket callbacks */
+  const ws_onopen = (e) => {
+    console.log(`websocket onopen,event:${e}`);
+  };
+  const ws_onclose = (e) => {
+    console.log(`websocket onclose,code:${e.code}, reason:${e.reason}`);
+  };
+  const ws_onerror = (e) => {
+    console.log(`websocket onclose,code:${e.code}, reason:${e.reason}`);
+  };
+
+  const ws_onmessage = (data) => {
+    const wsmsg = tlv_unserialize_object(data);
+    for (const [key, value] of Object.entries(wsmsg)) {
+      if (key === "on_jabber") {
+        console.log(value);
+        setMessages([...messages, value]);
+      } else {
+        console.log(`Unknown ws onmessage method:${key}`);
+      }
+    }
   };
 
   const hlsconfig = React.useMemo(
@@ -332,6 +336,19 @@ export default function LivePlayer(props) {
   );
   return (
     <div className="container">
+      {username && (
+        <Websocket
+          ref={ws}
+          url={`${ENDPOINT}?username=${username}`}
+          onOpen={ws_onopen}
+          onMessage={ws_onmessage}
+          onClose={ws_onclose}
+          onError={ws_onerror}
+          reconnect={true}
+          debug={true}
+          protocol="chat"
+        />
+      )}
       <div className="player" ref={refVideo}>
         <HLSPlayer
           url={streamUri}

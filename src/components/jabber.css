@@ -1,15 +1,31 @@
+.messagesContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+.messages {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 5% 0;
+  overflow-y: auto;
+}
+
 .jabberContainer {
+  display: flex;
+  align-items: center;
   border: 2px solid #dedede;
   background-color: #f1f1f1;
   border-radius: 5px;
-  padding: 5px;
+  padding: 2px;
 }
-.messageContainer::after {
-  content: "";
-  clear: both;
-  display: table;
-}
+
 .jabberContainer span {
+  margin-right: 5px;
   font-size: 12px;
   text-align: center;
+}
+.jabberContainer .title {
+  color: gray;
 }

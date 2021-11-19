@@ -9,9 +9,4 @@ user.token = Cookies.get("token");
 user.role = Cookies.get("role");
 
 const rootElement = document.getElementById("root");
-ReactDOM.render(
-  <React.StrictMode>
-    <App user={user} />
-  </React.StrictMode>,
-  rootElement
-);
+ReactDOM.render(<App user={user} />, rootElement);

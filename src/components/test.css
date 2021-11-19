@@ -1,0 +1,34 @@
+* {
+  /* So 100% means 100% */
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+.flexbox-parent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.flexbox-item-grow,
+.module {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+
+.scrolling {
+  overflow-y: auto;
+  background: yellow;
+  flex: 1;
+}
+.header,
+.footer {
+  background: cyan;
+  height: 2em;
+}

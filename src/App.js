@@ -6,9 +6,10 @@ import School from "./components/school";
 import Teachers from "./components/teachers";
 import Recipes from "./components/recipes";
 import Chat from "./components/chat";
+import Test from "./components/test";
 import LivePlayer from "./components/live_player";
 import { UserContext } from "./user_context";
-import SnackbarProvider from "react-simple-snackbar";
+import { default as SnackbarProvider } from "./components/snackbar";
 export default function App(props) {
   const updateUser = (user) => {
     setUserContext({ ...userContext, user: user });
@@ -58,6 +59,7 @@ export default function App(props) {
               }
             />
             <Route path="/recipes" element={<Recipes />} />
+            <Route path="/test" element={<Test />} />
           </Routes>
         </BrowserRouter>
       </SnackbarProvider>

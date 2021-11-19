@@ -3,19 +3,22 @@ import PropTypes from "prop-types";
 import ScrollToBottom from "react-scroll-to-bottom";
 import Avatar from "./avatar";
 import ReactEmoji from "react-emoji";
-import "./messages/messages.css";
 import "./jabber.css";
 export default function Jabber(props) {
   const { messages } = props;
   return (
-    <ScrollToBottom>
+    <ScrollToBottom className="messages">
       {messages &&
         messages.map((message, index) => (
-          <div key={index}>
-            <div className="jabberContainer">
-              <Avatar name={message.from} size={24} position="left" />
-              <span>{ReactEmoji.emojify(message.text)}</span>
-            </div>
+          <div key={index} className="jabberContainer">
+            <Avatar name={message.from} size={24} position="left" />
+            <span className="title">
+              {new Date(message.ts).toLocaleTimeString("en-US", {
+                hour12: false
+              })}
+            </span>
+            <span className="title">{message.from}</span>
+            <span>{ReactEmoji.emojify(message.text)}</span>
           </div>
         ))}
     </ScrollToBottom>

@@ -17,7 +17,7 @@
     "react-router-dom": "latest",
     "react-scripts": "latest",
     "react-scroll-to-bottom": "latest",
-    "react-simple-snackbar": "latest",
+    "react-transition-group": "latest",
     "sass": "latest"
   },
   "devDependencies": {
