@@ -11,7 +11,7 @@ import Websocket from "./websocket";
 import { useSnackbar } from "./use_snackbar";
 import "./live_player.css";
 
-const ENDPOINT = "ws://localhost/ws_jabber";
+const ENDPOINT = "ws://localhost/ws_group_chat";
 // custom hook for getting previous value
 function usePrevious(value) {
   const ref = React.useRef();
@@ -44,6 +44,7 @@ export default function LivePlayer(props) {
 
   const timer = React.useRef();
   const refVideo = React.useRef();
+  const refPersonBut = React.useRef();
   const refPerson = React.useRef();
 
   const supportsMediaSource = () => {
@@ -284,17 +285,28 @@ export default function LivePlayer(props) {
   };
   /** 个人信息关闭事件*/
   const handlePersonClose = (event) => {
-    if (!refPerson.current.contains(event.target)) {
+    if (!refPersonBut.current.contains(event.target)) {
       setShowPerson(false);
     }
   };
 
   /** 点击聊天 */
   const handleJabber = (event) => {
-    setMessages([
-      ...messages,
-      { from: "chengyi", text: chatText, ts: Date.now() }
-    ]);
+    if (!chatText) return;
+    let msg = {};
+    msg.from = username;
+    msg.to = "all";
+    msg.type = "jabber";
+    msg.content = chatText;
+    msg.ts = Date.now();
+    let binMsg = tlv_serialize_object(msg);
+    ws.current.sendMessage(binMsg, (result) => {
+      console.log("Send message success!");
+      setChatText("");
+    });
+    msg.from = refPerson.current.getName();
+    msg.to = msg.from;
+    setMessages([...messages, msg]);
   };
 
   /** Websocket callbacks */
@@ -339,7 +351,7 @@ export default function LivePlayer(props) {
       {username && (
         <Websocket
           ref={ws}
-          url={`${ENDPOINT}?username=${username}`}
+          url={`${ENDPOINT}?username=${username}&type=jabber`}
           onOpen={ws_onopen}
           onMessage={ws_onmessage}
           onClose={ws_onclose}
@@ -362,6 +374,7 @@ export default function LivePlayer(props) {
           onSuccess={handlePlayerSuccess}
           refreshId={playerRefreshId}
         />
+        {loading && <div className="loader" />}
       </div>
       <div className="content__container">
         {camlist && <CameraList camlist={camlist} onPlayUri={handlePlayUri} />}
@@ -371,7 +384,7 @@ export default function LivePlayer(props) {
         <div className="icon">
           <FaBars />
         </div>
-        <div ref={refPerson} className="icon" onClick={handlePersonClick}>
+        <div ref={refPersonBut} className="icon" onClick={handlePersonClick}>
           <FaUser />
         </div>
         <input
@@ -385,7 +398,7 @@ export default function LivePlayer(props) {
           <FaTelegramPlane />
         </div>
       </div>
-      <Person show={showPerson} onClose={handlePersonClose} />
+      <Person ref={refPerson} show={showPerson} onClose={handlePersonClose} />
     </div>
   );
 }

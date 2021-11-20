@@ -26,7 +26,7 @@ function useOutsideClick(ref, onOutsideClick) {
   }, [ref, onOutsideClick]);
 }
 
-export default function Person(props) {
+const Person = React.forwardRef((props, ref) => {
   const { show, onClose } = props;
   const [user, setUser] = React.useState({
     username: "2523452345",
@@ -63,6 +63,12 @@ export default function Person(props) {
       refSelf.current.style.display = "none";
     }
   }, [show]);
+
+  /// expose function getDisplayName
+  React.useImperativeHandle(ref, () => ({
+    getName: () => (user ? user.nick_name : ""),
+    getEndts: () => (user ? user.end_ts : Date.now())
+  }));
 
   /// 处理文件上传
   const handleFileUpload = (event) => {
@@ -129,4 +135,5 @@ export default function Person(props) {
       />
     </div>
   );
-}
+});
+export default Person;
