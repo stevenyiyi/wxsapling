@@ -1,6 +1,7 @@
 import React from "react";
 import ChangePassword from "./change_pwd";
 import http from "../http_common";
+import { useSnackbar } from "./use_snackbar";
 import "./common.css";
 import "./personal.css";
 
@@ -27,6 +28,7 @@ function useOutsideClick(ref, onOutsideClick) {
 }
 
 const Person = React.forwardRef((props, ref) => {
+  const [openSnackbar, closeSnackbar] = useSnackbar();
   const { show, onClose } = props;
   const [user, setUser] = React.useState({
     username: "2523452345",
@@ -50,10 +52,10 @@ const Person = React.forwardRef((props, ref) => {
             refAvatar.current.src = "imgs/img_avatar_unknow.png";
           }
         } else {
-          console.log(`Server respone error:${response.data.result}`);
+          openSnackbar(`Server respone error:${response.data.result}`);
         }
       })
-      .catch((e) => console.error("Error:", e));
+      .catch((e) => openSnackbar(e.toJSON().message));
   }, []);
 
   React.useEffect(() => {
@@ -73,8 +75,8 @@ const Person = React.forwardRef((props, ref) => {
   /// 处理文件上传
   const handleFileUpload = (event) => {
     const selectedFile = event.target.files[0];
-    if (selectedFile.size > 200 * 1024) {
-      alert("选择的头像文件不能超过200KB！");
+    if (selectedFile.size > 20 * 1024) {
+      openSnackbar("选择的头像文件不能超过20KB！");
       return;
     }
     refAvatar.current.src = URL.createObjectURL(selectedFile);

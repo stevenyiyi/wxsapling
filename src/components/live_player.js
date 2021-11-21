@@ -30,7 +30,7 @@ export default function LivePlayer(props) {
   const [checkMpd, setCheckMpd] = React.useState("");
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const [camlist, setCamlist] = React.useState(null);
-  const [isMainStream, setIsMainStream] = React.useState(false);
+  const [isMainStream, setIsMainStream] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
   const [playerRefreshId, setPlayerRefreshId] = React.useState(0);
   const [checkMpdRefreshId, setCheckMpdRefreshId] = React.useState(0);
@@ -275,6 +275,11 @@ export default function LivePlayer(props) {
       setStreamUri(uri);
     } else {
       setCheckMpd(uri);
+    }
+    if (!is_main_stream) {
+      if (isMainStream) refVideo.current.classList.add("aspect_ratio_d1");
+    } else {
+      if (!isMainStream) refVideo.current.classList.remove("aspect_ratio_d1");
     }
     setIsMainStream(is_main_stream);
   };
