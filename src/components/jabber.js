@@ -11,7 +11,12 @@ export default function Jabber(props) {
       {messages &&
         messages.map((message, index) => (
           <div key={index} className="jabberContainer">
-            <Avatar name={message.from} size={24} position="left" />
+            <Avatar
+              image={message.photo ? `/imgs/${message.photo}` : ""}
+              name={message.from}
+              size={24}
+              position="left"
+            />
             <span className="title">
               {new Date(message.ts).toLocaleTimeString("en-US", {
                 hour12: false

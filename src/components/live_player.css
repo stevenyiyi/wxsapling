@@ -132,3 +132,7 @@ body {
     flex: 1;
   }
 }
+
+/** Layout fit mobile landscape */
+@media (orientation: landscape) {
+}

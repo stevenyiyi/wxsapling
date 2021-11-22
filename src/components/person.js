@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import ChangePassword from "./change_pwd";
 import http from "../http_common";
 import { useSnackbar } from "./use_snackbar";
@@ -28,6 +29,7 @@ function useOutsideClick(ref, onOutsideClick) {
 }
 
 const Person = React.forwardRef((props, ref) => {
+  const navigate = useNavigate();
   const [openSnackbar, closeSnackbar] = useSnackbar();
   const { show, onClose } = props;
   const [user, setUser] = React.useState({
@@ -56,7 +58,7 @@ const Person = React.forwardRef((props, ref) => {
         }
       })
       .catch((e) => openSnackbar(e.toJSON().message));
-  }, []);
+  }, [openSnackbar]);
 
   React.useEffect(() => {
     if (show) {
@@ -81,6 +83,23 @@ const Person = React.forwardRef((props, ref) => {
     }
     refAvatar.current.src = URL.createObjectURL(selectedFile);
     setPhoto(selectedFile);
+
+    let mfields = new FormData();
+    mfields.append("username", user.username);
+    let ext = photo.name.split(".").pop();
+    let upload_file = `${user.username}_photo.${ext}`;
+    mfields.append("photo", photo, upload_file);
+    user.photo = upload_file;
+
+    http
+      .post("/sapling/modify_subuser", mfields)
+      .then((response) => {
+        if (response.data.result === 0) {
+          /// Modify successed!
+          openSnackbar("修改头像成功!");
+        }
+      })
+      .catch((e) => openSnackbar(`修改头像失败:e.toJSON().message`));
   };
 
   /// 处理修改口令
@@ -92,6 +111,10 @@ const Person = React.forwardRef((props, ref) => {
   /// 切换登录
   const handleSwitchLogin = (event) => {
     event.preventDefault();
+    navigate("/sapling/login", {
+      replace: true,
+      state: { from: "/sapling/live" }
+    });
   };
 
   return (
@@ -127,7 +150,7 @@ const Person = React.forwardRef((props, ref) => {
         <button type="submit" className="full_btn" onClick={handleChangePwd}>
           修改口令
         </button>
-        <button type="submit" className="full_btn">
+        <button type="submit" className="full_btn" onClick={handleSwitchLogin}>
           切换登录
         </button>
       </div>
