@@ -1,6 +1,10 @@
 import React from "react";
 import "./test.css";
 export default function Test(props) {
+  const refToggle = React.useRef();
+  const handleClick = (event) => {
+    refToggle.current.classList.toggle("activeNav");
+  };
   return (
     <div className="flexbox-parent">
       <div>TOP</div>
@@ -26,6 +30,11 @@ export default function Test(props) {
         </div>
       </div>
       <div>BOTTOM</div>
+      <div ref={refToggle} className="nav-toggle" onClick={handleClick}>
+        <span />
+        <span />
+        <span />
+      </div>
     </div>
   );
 }

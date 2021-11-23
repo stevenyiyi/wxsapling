@@ -84,7 +84,51 @@ body {
   flex-grow: 1;
   font-size: 1em;
 }
+/** fullscreen nv menu icon toggle */
+.nav-toggle {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #111;
+  cursor: pointer;
+  z-index: 3;
+}
+.nav-toggle span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 4px;
+  border-radius: 5px;
+  background: #f5f5f5;
+  transition: all 300ms ease-in-out;
+}
+.nav-toggle span:nth-child(1) {
+  top: 30%;
+}
+.nav-toggle span:nth-child(3) {
+  top: 70%;
+}
 
+.nav-toggle:hover {
+  opacity: 0.7;
+}
+
+.activeNav span:nth-child(1) {
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.activeNav span:nth-child(3) {
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+.activeNav span:nth-child(2) {
+  display: none;
+}
 /** circle loader */
 .loader {
   position: absolute;
@@ -133,6 +177,10 @@ body {
   }
 }
 
-/** Layout fit mobile landscape */
-@media (orientation: landscape) {
+/** Layout fit fullscreen */
+@media all and (display-mode: fullscreen) {
+  body {
+    margin: 0;
+    border: 5px solid black;
+  }
 }

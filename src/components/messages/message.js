@@ -4,12 +4,13 @@ import ReactEmoji from "react-emoji";
 import Avatar from "../avatar";
 import { FaDownload } from "react-icons/fa";
 import PropTypes from "prop-types";
+import { parseFrom } from "../utils";
 
 const Message = (props) => {
   const { to, from, type, content, ts, filename } = props;
   let isSentByCurrentUser = false;
-
-  if (from === to) {
+  let ufrom = parseFrom(from);
+  if (ufrom.username === to) {
     isSentByCurrentUser = true;
   }
 
@@ -51,7 +52,12 @@ const Message = (props) => {
 
   return isSentByCurrentUser ? (
     <div className="messageContainer">
-      <Avatar name={from} size={48} position="left" />
+      <Avatar
+        image={ufrom.avatar ? `/imgs/${ufrom.username}.${ufrom.avatar}` : ""}
+        name={ufrom.name}
+        size={48}
+        position="left"
+      />
       {genMessageContent(type, content, filename)}
       <span className="time-right">{`${from}  ${new Date(
         ts
@@ -59,7 +65,12 @@ const Message = (props) => {
     </div>
   ) : (
     <div className="messageContainer darker">
-      <Avatar name={from} size={48} position="right" />
+      <Avatar
+        image={ufrom.avatar ? `/imgs/${ufrom.username}.${ufrom.avatar}` : ""}
+        name={ufrom.name}
+        size={48}
+        position="right"
+      />
       {genMessageContent(type, content, filename)}
       <span className="time-left">{`${from}  ${new Date(
         Number(ts)
