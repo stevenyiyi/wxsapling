@@ -16,7 +16,9 @@ export default function Jabber(props) {
             <div key={index} className="jabberContainer">
               <Avatar
                 image={
-                  ufrom.avatar ? `/imgs/${ufrom.username}.${ufrom.avatar}` : ""
+                  ufrom.avatar
+                    ? `http://localhost/imgs/${ufrom.username}.${ufrom.avatar}`
+                    : ""
                 }
                 name={ufrom.name}
                 size={24}
@@ -42,6 +44,10 @@ Jabber.propTypes = {
 
 Jabber.defaultProps = {
   messages: [
-    { from: "成怡:png@235234525", text: "铴好的中华人民共和国", ts: Date.now() }
+    {
+      from: "系统消息:jpg@admin",
+      text: "铴好的中华人民共和国",
+      ts: Date.now()
+    }
   ]
 };

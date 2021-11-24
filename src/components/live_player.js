@@ -299,7 +299,12 @@ export default function LivePlayer(props) {
   const handleJabber = (event) => {
     if (!chatText) return;
     let msg = {};
-    msg.from = username;
+    msg.from =
+      refPerson.current.getName() +
+      ":" +
+      refPerson.current.getPhoto() +
+      "@" +
+      username;
     msg.to = "all";
     msg.type = "jabber";
     msg.content = chatText;
@@ -309,8 +314,7 @@ export default function LivePlayer(props) {
       console.log("Send message success!");
       setChatText("");
     });
-    msg.from = refPerson.current.getName();
-    msg.to = msg.from;
+    msg.to = username;
     setMessages([...messages, msg]);
   };
 
@@ -328,7 +332,7 @@ export default function LivePlayer(props) {
   const ws_onmessage = (data) => {
     const wsmsg = tlv_unserialize_object(data);
     for (const [key, value] of Object.entries(wsmsg)) {
-      if (key === "on_jabber") {
+      if (key === "on_message") {
         console.log(value);
         setMessages([...messages, value]);
       } else {

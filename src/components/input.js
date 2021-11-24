@@ -53,7 +53,7 @@ const Input = (props) => {
     reader.onload = (e) => {
       let msg = {};
       msg.to = sendUsers;
-      msg.from = my.username;
+      msg.from = my.nick_name + ":" + my.photo + "@" + my.username;
       msg.type = file.type;
       msg.filename = file.name;
       msg.content = e.target.result;
@@ -68,7 +68,7 @@ const Input = (props) => {
       console.log(sendUsers);
       let msg = {};
       msg.to = sendUsers;
-      msg.from = my.username;
+      msg.from = my.nick_name + ":" + my.photo + "@" + my.username;
       msg.type = "text";
       msg.content = message;
       msg.ts = Date.now();

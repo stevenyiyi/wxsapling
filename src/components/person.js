@@ -71,23 +71,30 @@ const Person = React.forwardRef((props, ref) => {
   /// expose function getDisplayName
   React.useImperativeHandle(ref, () => ({
     getName: () => (user ? user.nick_name : ""),
-    getEndts: () => (user ? user.end_ts : Date.now())
+    getEndts: () => (user ? user.end_ts : Date.now()),
+    getPhoto: () => (user ? user.photo : "")
   }));
 
   /// 处理文件上传
   const handleFileUpload = (event) => {
     const selectedFile = event.target.files[0];
-    if (selectedFile.size > 20 * 1024) {
-      openSnackbar("选择的头像文件不能超过20KB！");
+    if (selectedFile.size > 50 * 1024) {
+      openSnackbar("选择的头像文件不能超过50KB！");
       return;
     }
+
+    let ext = selectedFile.name.split(".").pop();
+    if (!ext) {
+      openSnackbar("选择的头像文件扩展名必须为png或jpg！");
+      return;
+    }
+
     refAvatar.current.src = URL.createObjectURL(selectedFile);
     setPhoto(selectedFile);
 
     let mfields = new FormData();
     mfields.append("username", user.username);
-    let ext = photo.name.split(".").pop();
-    let upload_file = `${user.username}_photo.${ext}`;
+    let upload_file = `${user.username}.${ext}`;
     mfields.append("photo", photo, upload_file);
     user.photo = upload_file;
 

@@ -76,8 +76,6 @@ const Chat = (props) => {
     for (const [key, value] of Object.entries(wsmsg)) {
       if (key === "on_message") {
         console.log(value);
-        value.to = my.nick_name;
-        value.from = getUserNickname(value.from);
         setMessages([...messages, value]);
       } else if (key === "online_users") {
         dispatch({ type: "online_users", uids: value });
@@ -151,8 +149,7 @@ const Chat = (props) => {
       let binMsg = tlv_serialize_object(message);
       ws.current.sendMessage(binMsg, callback);
       /// Reset message to display
-      message.from = my.nick_name;
-      message.to = message.from;
+      message.to = my.username;
       setMessages([...messages, message]);
     }
   };

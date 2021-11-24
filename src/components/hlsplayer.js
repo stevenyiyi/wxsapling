@@ -138,7 +138,7 @@ export default function HLSPlayer(props) {
       autoPlay
       webkit-playsinline="true"
       playsInline
-      x5-video-player-type="h5"
+      x5-video-player-type="h5-page"
       x-webkit-airplay="allow"
       {...videoProps}
     />
