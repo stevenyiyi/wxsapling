@@ -4,6 +4,7 @@ import ASTooltip from "./as_tooltip";
 import CryptoJS from "crypto-js";
 import http from "../http_common";
 import "./common.css";
+import "./floating_input.css";
 
 export default function ChangePassword(props) {
   const { username, token, show, onClose } = props;
@@ -116,33 +117,48 @@ export default function ChangePassword(props) {
   return (
     <Modal title="口令修改" show={show} onClose={onClose}>
       <form className="formContainer" onSubmit={handleSubmit}>
-        <input
-          id="oldpwd"
-          type="password"
-          required
-          className="full_input"
-          placeholder="请输入原口令"
-          value={oldPwd}
-          onChange={(e) => setOldPwd(e.target.value.trim())}
-        />
-        <input
-          id="newpwd"
-          required
-          type="password"
-          className="full_input"
-          placeholder="请输入新口令"
-          value={newPwd}
-          onChange={(e) => setNewPwd(e.target.value.trim())}
-        />
-        <input
-          id="repeatpwd"
-          type="password"
-          required
-          className="full_input"
-          placeholder="请再输入一次新口令"
-          value={confirmPwd}
-          onChange={(e) => setConfirmPwd(e.target.value.trim())}
-        />
+        <div className="form__div">
+          <input
+            id="oldpwd"
+            type="password"
+            required
+            className="form__input"
+            placeholder=" "
+            value={oldPwd}
+            onChange={(e) => setOldPwd(e.target.value.trim())}
+          />
+          <label htmlFor="oldpwd" className="form__label">
+            请输入原口令
+          </label>
+        </div>
+        <div className="form__div">
+          <input
+            id="newpwd"
+            required
+            type="password"
+            className="form__input"
+            placeholder=" "
+            value={newPwd}
+            onChange={(e) => setNewPwd(e.target.value.trim())}
+          />
+          <label htmlFor="newpwd" className="form__label">
+            请输入新口令
+          </label>
+        </div>
+        <div className="form__div">
+          <input
+            id="repeatpwd"
+            type="password"
+            required
+            className="form__input"
+            placeholder=" "
+            value={confirmPwd}
+            onChange={(e) => setConfirmPwd(e.target.value.trim())}
+          />
+          <label htmlFor="repeatpwd" className="form__label">
+            请再输入一次新口令
+          </label>
+        </div>
         <button type="submit" className="tooltip full_btn">
           确认
           <ASTooltip
