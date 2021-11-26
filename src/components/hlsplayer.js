@@ -1,6 +1,18 @@
 import Hls from "hls.js";
 import React from "react";
 import PropTypes from "prop-types";
+import {
+  FaPlay,
+  FaPause,
+  FaExpand,
+  FaExpandAlt,
+  FaVolumeUp,
+  FaVolumeMute,
+  FaPhotoVideo,
+  FaBars
+} from "react-icons/fa";
+import "./normalize.css";
+import "./hlsplayer.css";
 
 export default function HLSPlayer(props) {
   const {
@@ -16,7 +28,12 @@ export default function HLSPlayer(props) {
     refreshId,
     videoProps
   } = props;
-
+  const [seekval, setSeekval] = React.useState(0);
+  const [muted, setMuted] = React.useState(false);
+  const [volume, setVolume] = React.useState(1.0);
+  const [playOrPause, setPlayOrPause] = React.useState(false);
+  const [isFullScreen, setIsFullScreen] = React.useState(false);
+  const refVidContainer = React.useRef();
   const refHls = React.useRef();
   const refVideo = React.useRef();
 
@@ -37,6 +54,8 @@ export default function HLSPlayer(props) {
               }
             });
           }
+          setPlayOrPause(true);
+          console.log(`duration:${refVideo.current.duration}`);
           onSuccess && onSuccess(url);
         }
       });
@@ -51,6 +70,7 @@ export default function HLSPlayer(props) {
             refHls.current.detachMedia();
             refHls.current.destroy();
             refHls.current = null;
+            setPlayOrPause(true);
             onError && onError(data);
           }
         }
@@ -72,6 +92,7 @@ export default function HLSPlayer(props) {
       });
       refVideo.current.addEventListener("play", () => {
         onSuccess && onSuccess(url);
+        setPlayOrPause(true);
       });
       refVideo.current.addEventListener(
         "error",
@@ -81,6 +102,7 @@ export default function HLSPlayer(props) {
           refVideo.current.src = "";
           refVideo.current.removeAttribute("src"); // empty source
           refVideo.current.load();
+          setPlayOrPause(false);
           onError && onError(err);
         },
         true
@@ -96,6 +118,7 @@ export default function HLSPlayer(props) {
         refHls.current.detachMedia();
         refHls.current.destroy();
         refHls.current = null;
+        setPlayOrPause(false);
       }
       if (url) {
         createMsePlayer();
@@ -105,6 +128,7 @@ export default function HLSPlayer(props) {
       refVideo.current.src = ""; // empty source
       refVideo.current.removeAttribute("src");
       refVideo.current.load();
+      setPlayOrPause(false);
       if (url) {
         createHlsPlayer();
       }
@@ -115,6 +139,38 @@ export default function HLSPlayer(props) {
         "浏览器太老了,请下载一款支持MediaSourceExtension功能的浏览器!";
       onError && onError(err);
     }
+
+    if (refVideo.current) {
+      setMuted(refVideo.current.muted);
+      setVolume(refVideo.current.volume);
+      /** 订阅文件播放完成事件 */
+      refVideo.current.addEventListener("ended", (event) => {
+        refVideo.current.pause();
+        refVideo.current.currentTime = 0;
+        setPlayOrPause(false);
+      });
+    }
+
+    if (refVidContainer.current) {
+      /** 订阅全屏进入/退出事件 */
+      refVidContainer.current.addEventListener("fullscreenchange", (event) => {
+        // document.fullscreenElement will point to the element that
+        // is in fullscreen mode if there is one. If not, the value
+        // of the property is null.
+        if (
+          document.fullscreenElement ||
+          document.msFullScreenElement ||
+          document.mozFullScreenElement ||
+          document.webkitFullScreenElement
+        ) {
+          console.log("entered fullscreen mode.");
+          setIsFullScreen(true);
+        } else {
+          console.log("Leaving full-screen mode.");
+          setIsFullScreen(false);
+        }
+      });
+    }
     return () => {
       if (refHls.current) {
         console.log("Destory hls!");
@@ -122,26 +178,168 @@ export default function HLSPlayer(props) {
         refHls.current.detachMedia();
         refHls.current.destroy();
         refHls.current = null;
+        setPlayOrPause(false);
       }
     };
   }, [hlsConfig, url, autoplay, refreshId, onError, onSuccess]);
+
+  /** Fullscreen API:
+      https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+  */
+  const enterFullscreen = () => {
+    if (refVideo.current.requestFullscreen) {
+      refVidContainer.current.requestFullscreen().catch((err) => {
+        console.error("Error:", err);
+      });
+    } else if (refVideo.current.msRequestFullscreen) {
+      refVideo.current.msRequestFullscreen();
+    } else if (refVideo.current.mozRequestFullScreen) {
+      refVidContainer.current.mozRequestFullScreen();
+    } else if (refVideo.current.webkitRequestFullscreen) {
+      refVideo.current.webkitRequestFullscreen();
+    } else {
+      console.log("Browser not support fullscreen API!");
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.cancelFullScreen) {
+      document.cancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else {
+      console.log("Browser not support fullscreen API!");
+    }
+  };
+
+  /** Player Controls event handle */
+  /** 全屏处理 */
+  const handleToggleFullscreen = (event) => {
+    if (isFullScreen) {
+      exitFullscreen();
+    } else {
+      enterFullscreen(refVidContainer.current);
+    }
+  };
+
+  /** 画中画处理 */
+  const handleTogglePip = (event) => {
+    if (document.pictureInPictureElement) {
+      document.exitPictureInPicture();
+    } else {
+      if (document.pictureInPictureEnabled) {
+        refVideo.current.requestPictureInPicture();
+      }
+    }
+  };
+
+  /** 音量处理 */
+  const handleVolumeChange = (event) => {
+    console.log(`volume:${event.target.value}`);
+    refVideo.current.volume = event.target.value;
+    setVolume(event.target.value);
+    if (event.target.value === "0") {
+      setMuted(true);
+      refVideo.current.muted = true;
+    } else {
+      if (muted) {
+        setMuted(false);
+        refVideo.current.muted = false;
+      }
+    }
+  };
+
+  /** 静音处理 */
+  const handleMuted = (event) => {
+    refVideo.current.muted = !muted;
+    setMuted((state) => !state);
+    if (refVideo.current.muted) {
+      setVolume(0.0);
+    } else {
+      setVolume(1.0);
+    }
+  };
+
+  /** Play or pause 处理 */
+  const handlePlayOrPause = (event) => {
+    if (refVideo.current.paused) {
+      refVideo.current.play();
+      setPlayOrPause(true);
+    } else {
+      refVideo.current.pause();
+      setPlayOrPause(false);
+    }
+  };
+
   console.log("HLSPlayer render!");
   return (
-    <video
-      ref={refVideo}
-      width={width}
-      hieght={height}
-      controls={controls}
-      crossOrigin="use-credentials"
-      poster={poster}
-      preload="auto"
-      autoPlay
-      webkit-playsinline="true"
-      playsInline
-      x5-video-player-type="h5-page"
-      x-webkit-airplay="allow"
-      {...videoProps}
-    />
+    <div ref={refVidContainer} className="video__container">
+      <video
+        ref={refVideo}
+        width={width}
+        hieght={height}
+        controls={controls}
+        crossOrigin="use-credentials"
+        poster={poster}
+        preload="auto"
+        autoPlay
+        webkit-playsinline="true"
+        playsInline
+        x5-video-player-type="h5-page"
+        x-webkit-airplay="allow"
+        {...videoProps}
+      />
+      <div className="video__controls">
+        <button id="playpause" onClick={handlePlayOrPause}>
+          {playOrPause ? <FaPause /> : <FaPlay />}
+        </button>
+        <div className="seeker">
+          <progress
+            id="progressbar"
+            className="progressbar"
+            max={100}
+            defaultValue={seekval}
+          ></progress>
+          <input
+            type="range"
+            id="seekbar"
+            value={seekval}
+            className="seekbar"
+            onChange={(e) => setSeekval(e.target.value)}
+          />
+        </div>
+        <div className="volume__container">
+          <button id="mute" onClick={handleMuted}>
+            {muted ? <FaVolumeMute /> : <FaVolumeUp />}
+          </button>
+          <input
+            type="range"
+            id="volumebar"
+            className="volumebar"
+            value={volume}
+            min={0}
+            max={1.0}
+            step={0.1}
+            onChange={handleVolumeChange}
+          />
+        </div>
+        <button id="picture-in-picture" onClick={handleTogglePip}>
+          <FaPhotoVideo />
+        </button>
+        <button id="fullscreen" onClick={handleToggleFullscreen}>
+          {isFullScreen ? <FaExpandAlt /> : <FaExpand />}
+        </button>
+        <button id="menu-more">
+          <FaBars />
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -160,9 +358,9 @@ HLSPlayer.propTypes = {
 };
 
 HLSPlayer.defaultProps = {
-  url: "",
-  controls: true,
-  autoplay: false,
+  url: "https://anylooker.com/live/51060300001310000006_master.m3u8",
+  controls: false,
+  autoplay: true,
   hlsConfig: {},
   width: 888,
   height: 500,
