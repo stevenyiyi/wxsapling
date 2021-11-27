@@ -1,6 +1,8 @@
 import Hls from "hls.js";
 import React from "react";
 import PropTypes from "prop-types";
+import browser from "../utils/browser";
+import is from "../utils/is";
 import {
   FaPlay,
   FaPause,
@@ -8,11 +10,116 @@ import {
   FaExpandAlt,
   FaVolumeUp,
   FaVolumeMute,
-  FaPhotoVideo,
+  FaExternalLinkAlt,
   FaBars
 } from "react-icons/fa";
 import "./normalize.css";
 import "./hlsplayer.css";
+
+// Get the prefix for fullscreen api
+function get_fullscreen_prefix() {
+  // No prefix
+  if (is.function(document.exitFullscreen)) {
+    return "";
+  }
+
+  // Check for fullscreen support by vendor prefix
+  let value = "";
+  const prefixes = ["webkit", "moz", "ms"];
+
+  prefixes.some((pre) => {
+    if (
+      is.function(document[`${pre}ExitFullscreen`]) ||
+      is.function(document[`${pre}CancelFullScreen`])
+    ) {
+      value = pre;
+      return true;
+    }
+
+    return false;
+  });
+
+  return value;
+}
+/// Get the name for fullscreen api
+function get_fullscreen_name(prefix) {
+  return prefix === "moz" ? "FullScreen" : "Fullscreen";
+}
+
+// Determine if native supported
+function is_native_fullscreen() {
+  return !!(
+    document.fullscreenEnabled ||
+    document.webkitFullscreenEnabled ||
+    document.mozFullScreenEnabled ||
+    document.msFullscreenEnabled
+  );
+}
+
+/**
+ * [fn.is_fullscreen] 检测是否全屏状态
+ */
+function is_fullscreen() {
+  return !!(
+    document.fullscreenElement ||
+    document.msFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.webkitFullscreenElement
+  );
+}
+
+/** Not fullscreen api supported */
+function toggle_fullscreen_fallback(toggle = false) {
+  // Store or restore scroll position
+  let scrollPosition = { x: 0, y: 0 };
+  if (toggle) {
+    scrollPosition = {
+      x: window.scrollX || 0,
+      y: window.scrollY || 0
+    };
+  } else {
+    window.scrollTo(scrollPosition.x, scrollPosition.y);
+  }
+
+  // Toggle scroll
+  document.body.style.overflow = toggle ? "hidden" : "";
+
+  // Toggle class hook
+  toggleClass(
+    this.target,
+    this.player.config.classNames.fullscreen.fallback,
+    toggle
+  );
+
+  // Force full viewport on iPhone X+
+  if (browser.isIos) {
+    let viewport = document.head.querySelector('meta[name="viewport"]');
+    const property = "viewport-fit=cover";
+
+    // Inject the viewport meta if required
+    if (!viewport) {
+      viewport = document.createElement("meta");
+      viewport.setAttribute("name", "viewport");
+    }
+
+    // Check if the property already exists
+    const hasProperty =
+      is.string(viewport.content) && viewport.content.includes(property);
+
+    if (toggle) {
+      this.cleanupViewport = !hasProperty;
+
+      if (!hasProperty) {
+        viewport.content += `,${property}`;
+      }
+    } else if (this.cleanupViewport) {
+      viewport.content = viewport.content
+        .split(",")
+        .filter((part) => part.trim() !== property)
+        .join(",");
+    }
+  }
+}
 
 export default function HLSPlayer(props) {
   const {
@@ -152,17 +259,16 @@ export default function HLSPlayer(props) {
     }
 
     if (refVidContainer.current) {
+      let prefix = get_fullscreen_prefix();
+      let eventName =
+        prefix === "ms" ? "MSFullscreenChange" : `${prefix}fullscreenchange`;
+
       /** 订阅全屏进入/退出事件 */
-      refVidContainer.current.addEventListener("fullscreenchange", (event) => {
+      document.addEventListener(eventName, (event) => {
         // document.fullscreenElement will point to the element that
         // is in fullscreen mode if there is one. If not, the value
         // of the property is null.
-        if (
-          document.fullscreenElement ||
-          document.msFullScreenElement ||
-          document.mozFullScreenElement ||
-          document.webkitFullScreenElement
-        ) {
+        if (is_fullscreen()) {
           console.log("entered fullscreen mode.");
           setIsFullScreen(true);
         } else {
@@ -196,7 +302,9 @@ export default function HLSPlayer(props) {
     } else if (refVideo.current.mozRequestFullScreen) {
       refVidContainer.current.mozRequestFullScreen();
     } else if (refVideo.current.webkitRequestFullscreen) {
-      refVideo.current.webkitRequestFullscreen();
+      refVidContainer.current.webkitRequestFullscreen(
+        Element.ALLOW_KEYBOARD_INPUT
+      );
     } else {
       console.log("Browser not support fullscreen API!");
     }
@@ -330,7 +438,7 @@ export default function HLSPlayer(props) {
           />
         </div>
         <button id="picture-in-picture" onClick={handleTogglePip}>
-          <FaPhotoVideo />
+          <FaExternalLinkAlt />
         </button>
         <button id="fullscreen" onClick={handleToggleFullscreen}>
           {isFullScreen ? <FaExpandAlt /> : <FaExpand />}
