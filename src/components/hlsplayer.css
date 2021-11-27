@@ -59,25 +59,41 @@ button:hover {
   z-index: 2147483647;
 }
 
+.video__container-fullsreen-fallback {
+  display: block;
+  position: fixed;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  margin: 0;
+  border-radius: 0 !important;
+  z-index: 10000000;
+}
 /* 
 Fullscreen Pseudo-class: 
 https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen 
 */
-.video__controls:-moz-full-screen,
-video:-moz-full-screen {
-  position: fixed;
+.video__container:-moz-full-screen {
+  height: 100%;
+  margin: 0;
+  border-radius: 0 !important;
 }
-.video__controls:-webkit-full-screen,
-video:-webkit-full-screen {
-  position: fixed;
+.video__container:-webkit-full-screen {
+  height: 100%;
+  margin: 0;
+  border-radius: 0 !important;
 }
-.video__controls:-ms-fullscreen,
-video:-ms-fullscreen {
-  position: fixed;
+.video__container:-ms-fullscreen {
+  height: 100%;
+  margin: 0;
+  border-radius: 0 !important;
 }
-.video__controls:fullscreen,
-video:fullscreen {
-  position: fixed;
+.video__container:fullscreen {
+  height: 100%;
+  margin: 0;
+  border-radius: 0 !important;
 }
 
 input[type="range"] {
