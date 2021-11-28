@@ -83,13 +83,13 @@ export default function HLSPlayer(props) {
     width,
     height,
     poster,
-    refreshId,
     videoProps,
     cameras,
     messages
   } = props;
   const [checkMpd, setCheckMpd] = React.useState("");
   const [streamUri, setStreamUri] = React.useState("");
+  const [refreshId, setRefreshId] = React.useState(0);
   const [seekval, setSeekval] = React.useState(0);
   const [duration, setDuration] = React.useState(NaN);
   const [muted, setMuted] = React.useState(false);
@@ -199,7 +199,7 @@ export default function HLSPlayer(props) {
                 let rcode = data.response.code;
                 if (rcode === 403) {
                   msg =
-                    "检测到您的帐户正在观看,请先退出,20秒后将自动重新连接...";
+                    "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!";
                   console.log("url:" + data.url);
                   /// triggerPlayerTimer(error.url);
                 } else if (rcode === 404) {
@@ -317,6 +317,7 @@ export default function HLSPlayer(props) {
       refVideo.current.removeAttribute("src");
       refVideo.current.load();
       setPlayOrPause(false);
+      setCheckMpd(url);
       if (streamUri) {
         createNativePlayer();
       }
@@ -630,8 +631,7 @@ HLSPlayer.propTypes = {
   height: PropTypes.number,
   poster: PropTypes.string,
   videoProps: PropTypes.object,
-  onSuccess: PropTypes.func,
-  refreshId: PropTypes.number
+  onSuccess: PropTypes.func
 };
 
 HLSPlayer.defaultProps = {
@@ -645,6 +645,5 @@ HLSPlayer.defaultProps = {
   videoProps: {},
   onSuccess: (url) => {
     return;
-  },
-  refreshId: 0
+  }
 };
