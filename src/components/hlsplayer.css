@@ -61,7 +61,7 @@ button:hover {
   z-index: 2147483647;
 }
 
-.video__container-fullsreen-fallback {
+.div__fullsreen {
   display: block;
   position: fixed;
   bottom: 0;
@@ -96,6 +96,27 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen
   height: 100%;
   margin: 0;
   border-radius: 0 !important;
+}
+
+.chat__container {
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex: 1;
+  margin: 0 1%;
+  z-index: 0;
+  margin-right: 5px;
+  margin: 0 10px;
+}
+
+input[type="text"] {
+  border: none;
+  border-radius: 0;
+  padding: auto;
+  flex-grow: 1;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 input[type="range"] {
@@ -224,4 +245,81 @@ https://css-tricks.com/custom-controls-in-html5-video-full-screen/
 */
 video::-webkit-media-controls-enclosure {
   display: none !important;
+}
+
+/** sidebar */
+.sidedlg {
+  display: none;
+  height: 100%;
+  /* Add a bottom margin to avoid content overlay */
+  margin-bottom: 40px;
+  width: 300px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  overflow: hidden;
+  transition: 0.5s;
+}
+
+/** loader */
+.loader {
+  display: inline-block;
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+.loader div {
+  display: inline-block;
+  position: absolute;
+  left: 8px;
+  width: 16px;
+  background: #fff;
+  animation: lds-animate 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.loader div:nth-child(1) {
+  left: 8px;
+  animation-delay: -0.24s;
+}
+.loader div:nth-child(2) {
+  left: 32px;
+  animation-delay: -0.12s;
+}
+.loader div:nth-child(3) {
+  left: 56px;
+  animation-delay: 0;
+}
+@keyframes lds-animate {
+  0% {
+    top: 8px;
+    height: 64px;
+  }
+  50%,
+  100% {
+    top: 24px;
+    height: 32px;
+  }
+}
+
+.show {
+  display: block;
+}
+
+/** Force fullscreen to landscape */
+@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
 }
