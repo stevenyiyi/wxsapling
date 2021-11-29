@@ -48,17 +48,6 @@ const Chat = (props) => {
   const [messages, setMessages] = React.useState([]);
   const [unreadMessages, setUnreadMessages] = React.useState(0);
 
-  const getUserNickname = (username) => {
-    let name = "";
-    for (const user of users) {
-      if (user.username === username) {
-        name = user.nick_name;
-        break;
-      }
-    }
-    return name;
-  };
-
   const ws_onopen = (e) => {
     console.log(`websocket onopen,event:${e}`);
   };

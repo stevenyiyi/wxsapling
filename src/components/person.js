@@ -3,34 +3,13 @@ import { useNavigate } from "react-router-dom";
 import ChangePassword from "./change_pwd";
 import http from "../http_common";
 import { useSnackbar } from "./use_snackbar";
+import { useOutsideClick } from "../utils/hook";
 import "./common.css";
 import "./personal.css";
 
-/**
- * Hook that alerts clicks outside of the passed ref
- */
-function useOutsideClick(ref, onOutsideClick) {
-  React.useEffect(() => {
-    /**
-     * Alert if clicked on outside of element
-     */
-    function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) {
-        onOutsideClick(event);
-      }
-    }
-    // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [ref, onOutsideClick]);
-}
-
 const Person = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
-  const [openSnackbar, closeSnackbar] = useSnackbar();
+  const [openSnackbar] = useSnackbar();
   const { show, onClose } = props;
   const [user, setUser] = React.useState({
     username: "2523452345",
@@ -54,11 +33,13 @@ const Person = React.forwardRef((props, ref) => {
             refAvatar.current.src = "imgs/img_avatar_unknow.png";
           }
         } else {
-          openSnackbar(`Server respone error:${response.data.result}`);
+          openSnackbar(
+            `get_user_info,Server respone error:${response.data.result}`
+          );
         }
       })
       .catch((e) => openSnackbar(e.toJSON().message));
-  }, [openSnackbar]);
+  }, []);
 
   React.useEffect(() => {
     if (show) {
