@@ -17,7 +17,7 @@ body {
   flex: 3 1 75%;
   padding-top: 56.25%;
   overflow: hidden;
-  background-color: black;
+  background-color: red;
 }
 .aspect_ratio_43 {
   padding-top: 75%; /* 4:3 Aspect Ratio (divide 3 by 4 = 0.75) */
@@ -126,7 +126,7 @@ body {
     flex-direction: column;
   }
   .player {
-    aspect-ratio: 16 / 9;
+    padding-top: 56.25%;
     flex: none;
   }
   .content__container {

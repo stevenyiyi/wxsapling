@@ -26,7 +26,7 @@ button:hover {
   display: flex;
   position: relative;
   flex: 1;
-  background-color: black;
+  background-color:blue;
 }
 
 /** Hide native controls */
@@ -42,6 +42,7 @@ button:hover {
   height: 100%;
   object-fit: contain;
   object-position: center;
+  background-color:green;
   z-index: auto;
 }
 
