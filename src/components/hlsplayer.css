@@ -29,6 +29,11 @@ button:hover {
   background-color: black;
 }
 
+/** Hide native controls */
+.video__container video ::-webkit-media-controls {
+  display: none;
+}
+
 .video__container video {
   position: absolute;
   top: 0;
@@ -54,7 +59,6 @@ button:hover {
   padding: 10px 5px;
   background-color: black;
   background-color: rgba(0, 0, 0, 0.75);
-  z-index: 2147483647;
 }
 
 .div__fullsreen {
@@ -246,16 +250,17 @@ video::-webkit-media-controls-enclosure {
 /** sidebar */
 .sidedlg {
   display: none;
-  height: 100%;
+  flex-direction: column;
+  height: calc(100% - 40px);
   /* Add a bottom margin to avoid content overlay */
   margin-bottom: 40px;
   width: 300px;
   position: fixed;
-  z-index: 1;
+  z-index: 20;
   top: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.75);
   overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.75);
   transition: 0.5s;
 }
 
@@ -303,5 +308,5 @@ video::-webkit-media-controls-enclosure {
 }
 
 .show {
-  display: block;
+  display: flex;
 }

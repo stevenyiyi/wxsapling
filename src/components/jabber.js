@@ -8,7 +8,7 @@ import "./jabber.css";
 export default function Jabber(props) {
   const { messages } = props;
   return (
-    <ScrollToBottom className="messages">
+    <ScrollToBottom className="messagesContainer">
       {messages &&
         messages.map((message, index) => {
           let ufrom = parseFrom(message.from);
@@ -30,7 +30,7 @@ export default function Jabber(props) {
                 })}
               </span>
               <span className="title">{ufrom.name}</span>
-              <span>{ReactEmoji.emojify(message.text)}</span>
+              <span>{ReactEmoji.emojify(message.content)}</span>
             </div>
           );
         })}

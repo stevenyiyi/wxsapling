@@ -43,7 +43,7 @@ const Person = React.forwardRef((props, ref) => {
 
   React.useEffect(() => {
     if (show) {
-      refSelf.current.style.display = "block";
+      refSelf.current.style.display = "flex";
     } else {
       refSelf.current.style.display = "none";
     }

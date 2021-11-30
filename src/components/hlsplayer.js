@@ -6,6 +6,7 @@ import is from "../utils/is";
 import support from "./support";
 import CameraList from "./camera_list";
 import Jabber from "./jabber";
+import { useOutsideClick } from "../utils/hook";
 
 import {
   FaPlay,
@@ -146,8 +147,13 @@ export default function HLSPlayer(props) {
   const refVidContainer = React.useRef();
   const refHls = React.useRef();
   const refVideo = React.useRef();
+  const refFsMenuBut = React.useRef();
   const refFsMenu = React.useRef();
-
+  useOutsideClick(refFsMenu, (event) => {
+    if (!refFsMenuBut.current.contains(event.target)) {
+      refFsMenu.current.classList.remove("show");
+    }
+  });
   React.useEffect(() => {
     if (checkMpd) {
       console.log(`check stream uri:${checkMpd}`);
@@ -744,7 +750,11 @@ export default function HLSPlayer(props) {
         <button id="fullscreen" onClick={handleToggleFullscreen}>
           {isFullScreen ? <FaExpandAlt /> : <FaExpand />}
         </button>
-        <button id="menu-more" onClick={toggleFullscreenMenu}>
+        <button
+          ref={refFsMenuBut}
+          id="menu-more"
+          onClick={toggleFullscreenMenu}
+        >
           <FaBars />
         </button>
       </div>

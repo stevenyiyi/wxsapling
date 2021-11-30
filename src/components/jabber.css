@@ -2,7 +2,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  overflow-y: hidden;
+  position: relative;
+  overflow: hidden;
 }
 .messages {
   display: flex;
@@ -15,17 +16,22 @@
 .jabberContainer {
   display: flex;
   align-items: center;
-  border: 2px solid #dedede;
+  border: none;
   background-color: #f1f1f1;
-  border-radius: 5px;
+  border-radius: 0px;
   padding: 2px;
 }
 
 .jabberContainer span {
   margin-right: 5px;
   font-size: 12px;
-  text-align: center;
+  word-break: normal;
+  width: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 .jabberContainer .title {
   color: gray;
+  flex: none;
 }
