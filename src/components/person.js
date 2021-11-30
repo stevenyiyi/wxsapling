@@ -101,7 +101,7 @@ const Person = React.forwardRef((props, ref) => {
     event.preventDefault();
     navigate("/sapling/login", {
       replace: true,
-      state: { from: "/sapling/live" }
+      state: { from: "/player" }
     });
   };
 

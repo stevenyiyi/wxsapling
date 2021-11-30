@@ -50,12 +50,12 @@ export default function App(props) {
               }
             />
             <Route
-              path="/live"
+              path="/player"
               element={
                 userContext.user.username ? (
                   <LivePlayer />
                 ) : (
-                  <Navigate to="/login" state={{ from: "/live" }} />
+                  <Navigate to="/login" state={{ from: "/player" }} />
                 )
               }
             />
