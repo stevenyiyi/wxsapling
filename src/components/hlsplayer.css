@@ -61,7 +61,7 @@ button:hover {
   background-color: rgba(0, 0, 0, 0.75);
 }
 
-.div__fullsreen {
+.div__fullscreen {
   display: block;
   position: fixed;
   bottom: 0;
