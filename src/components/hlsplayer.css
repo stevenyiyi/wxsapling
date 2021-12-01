@@ -24,15 +24,16 @@ button:hover {
 
 .video__container {
   display: flex;
-  position: relative;
-  width: 100%;
-  background-color: black;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
 }
 
 /** Hide native controls */
-.video__container video ::-webkit-media-controls {
+/**.video__container video ::-webkit-media-controls {
   display: none;
-}
+} */
 
 .video__container video {
   position: absolute;
@@ -43,6 +44,7 @@ button:hover {
   object-fit: contain;
   object-position: center;
   z-index: auto;
+  background-color: black;
 }
 
 .video__controls {
@@ -305,6 +307,18 @@ video::-webkit-media-controls-enclosure {
   100% {
     top: 24px;
     height: 32px;
+  }
+}
+
+@media screen and (min-width: 767px) {
+  .video__container {
+    padding-top: 42.1875%;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .video__container {
+    padding-top: 56.25%;
   }
 }
 
