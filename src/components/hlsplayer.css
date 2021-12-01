@@ -26,7 +26,7 @@ button:hover {
   display: flex;
   position: relative;
   width: 100%;
-  background-color: blue;
+  background-color: black;
 }
 
 /** Hide native controls */
