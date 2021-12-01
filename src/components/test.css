@@ -1,24 +1,67 @@
-.flexbox-parent {
+html,
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #2979ff;
+}
+.container {
   display: flex;
+  position: relative;
+  flex-direction: row;
+  width: 100%;
+  padding-bottom: 38px;
+}
+.player {
+  display: flex;
+  position: relative;
+  flex: 3 1 75%;
+  padding-top: 42.1875%;
+  max-width: 1280px;
+  background-color: black;
+}
+
+.content__container {
+  display: flex;
+  position: relative;
+  flex: 1 3 25%;
   flex-direction: column;
+  min-width: 200px;
+}
+
+.video__container {
+  display: flex;
+  position: relative;
+  width: 100%;
+  background-color: blue;
+}
+
+/** Hide native controls */
+/**.video__container video ::-webkit-media-controls {
+  display: none;
+} */
+
+.video__container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
+  object-fit: contain;
+  object-position: center;
+  z-index: auto;
 }
 
-.flexbox-item-grow,
-.module {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: hidden;
-}
-
-.scrolling {
-  overflow-y: auto;
-  background: yellow;
-  flex: 1;
-}
-.header,
-.footer {
-  background: cyan;
-  height: 2em;
+/** Layout fit mobile device */
+@media screen and (max-width: 767px) {
+  .container {
+    flex-direction: column;
+  }
+  .player {
+    padding-top: 56.25%;
+    flex: none;
+  }
+  .content__container {
+    flex: 1;
+  }
 }

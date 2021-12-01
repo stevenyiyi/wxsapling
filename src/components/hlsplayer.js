@@ -759,7 +759,7 @@ export default function HLSPlayer(props) {
         </button>
       </div>
       <div ref={refFsMenu} className="sidedlg">
-        <CameraList camlist={cameras} onPlayUri={handlePlayUri} />
+        {cameras && <CameraList camlist={cameras} onPlayUri={handlePlayUri} />}
         <Jabber messages={messages} />
       </div>
     </div>

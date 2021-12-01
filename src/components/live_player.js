@@ -69,7 +69,8 @@ export default function LivePlayer(props) {
                     { oid: "142313441141233", name: "中二班", status: 1 },
                     { oid: "142313441141234", name: "中二班", status: 1 },
                     { oid: "142313441141235", name: "中二班", status: 1 },
-                    { oid: "142313441141236", name: "中二班", status: 1 }
+                    { oid: "142313441141236", name: "中二班", status: 1 },
+                    { oid: "142313441141237", name: "中二班", status: 1 }
                   ]
                 }
               ]
@@ -97,11 +98,12 @@ export default function LivePlayer(props) {
   /** 处理用户点击播放列表 */
   const handlePlayUri = (uri, is_main_stream) => {
     setStreamUri(uri);
+    /**
     if (!is_main_stream) {
       if (isMainStream) refVideo.current.classList.add("aspect_ratio_d1");
     } else {
       if (!isMainStream) refVideo.current.classList.remove("aspect_ratio_d1");
-    }
+    } */
     setIsMainStream(is_main_stream);
   };
 
@@ -229,8 +231,12 @@ export default function LivePlayer(props) {
         />
       </div>
       <div className="content__container">
-        {camlist && <CameraList camlist={camlist} onPlayUri={handlePlayUri} />}
-        <Jabber messages={messages} />
+        <div className="inner__content-container">
+          {camlist && (
+            <CameraList camlist={camlist} onPlayUri={handlePlayUri} />
+          )}
+          <Jabber messages={messages} />
+        </div>
       </div>
       <div className="navbar">
         <div className="icon">

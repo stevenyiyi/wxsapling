@@ -68,7 +68,6 @@ export default function CameraList(props) {
         if (clist.groups) setGroups(clist.groups);
         if (clist.cameras) setCameras(clist.cameras);
       }
-
       if (robj.playuri) {
         onPlayUri(robj.playuri, robj.is_main_stream);
       }
@@ -94,7 +93,6 @@ export default function CameraList(props) {
     /// Update container
     if (cameras) setCameras([...cameras]);
     if (groups) setGroups([...groups]);
-
     onPlayUri(genPlayUri(cam.oid), cam.is_main_stream);
   };
 
