@@ -10,7 +10,7 @@ export default function CameraList(props) {
 
   /** 根据oid产生播放地址 */
   const genPlayUri = (oid) => {
-    let uri = "/live/" + oid + "_master.m3u8";
+    let uri = "https://anylooker.com/live/" + oid + "_master.m3u8";
     return uri;
   };
 
@@ -58,7 +58,11 @@ export default function CameraList(props) {
 
     if (camlist) {
       let clist = camlist;
-      let robj = fixCameraList(clist);
+      let robj = null;
+      if (!clist.fixed) {
+        robj = fixCameraList(clist);
+        clist.fixed = true;
+      }
       if (clist.groups && clist.groups.length === 1) {
         /// Merge to cameras
         let cams = clist.cameras || [];
@@ -68,7 +72,7 @@ export default function CameraList(props) {
         if (clist.groups) setGroups(clist.groups);
         if (clist.cameras) setCameras(clist.cameras);
       }
-      if (robj.playuri) {
+      if (robj && robj.playuri) {
         onPlayUri(robj.playuri, robj.is_main_stream);
       }
     }
@@ -76,6 +80,7 @@ export default function CameraList(props) {
 
   /** 用户点击摄像头 */
   const onClickCamera = (cam) => {
+    console.log(`Click cam:${cam.oid}`);
     if (currentCamera) {
       currentCamera.selected = false;
       if (currentCamera.group) {

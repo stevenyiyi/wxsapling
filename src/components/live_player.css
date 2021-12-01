@@ -16,11 +16,8 @@ body {
 }
 .player {
   display: flex;
-  position: relative;
   flex: 3 1 75%;
-  padding-top: 42.1875%;
-  max-width: 1280px;
-  overflow: hidden;
+  height: 0;
 }
 .aspect_ratio_43 {
   padding-top: 75%; /* 4:3 Aspect Ratio (divide 3 by 4 = 0.75) */
@@ -137,7 +134,6 @@ body {
     flex-direction: column;
   }
   .player {
-    padding-top: 56.25%;
     flex: none;
   }
   .content__container {

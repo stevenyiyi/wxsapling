@@ -58,21 +58,9 @@ export default function LivePlayer(props) {
           } else {
             console.log(`get_camera_list response error code:${resp.result}`);
             setCamlist({
-              groups: [
-                {
-                  gid: "3214124121324",
-                  name: "北碚紫荆花幼儿园",
-                  cameras: [
-                    { oid: "142313441234123", name: "中一班", status: 1 },
-                    { oid: "142313441141231", name: "中二班", status: 1 },
-                    { oid: "142313441141232", name: "中二班", status: 1 },
-                    { oid: "142313441141233", name: "中二班", status: 1 },
-                    { oid: "142313441141234", name: "中二班", status: 1 },
-                    { oid: "142313441141235", name: "中二班", status: 1 },
-                    { oid: "142313441141236", name: "中二班", status: 1 },
-                    { oid: "142313441141237", name: "中二班", status: 1 }
-                  ]
-                }
+              cameras: [
+                { oid: "51060300001310000006", name: "门卫", status: 1 },
+                { oid: "51060300001310000308", name: "大厅", status: 1 }
               ]
             });
           }
@@ -202,7 +190,7 @@ export default function LivePlayer(props) {
   );
   return (
     <div className="container">
-      {username && (
+      {!username && (
         <Websocket
           ref={ws}
           url={`${ENDPOINT}?username=${username}&type=jabber`}
