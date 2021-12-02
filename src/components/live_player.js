@@ -16,11 +16,10 @@ export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
   const ws = React.useRef(null);
-  const [openSnackbar, closeSnackbar] = useSnackbar();
+  const [openSnackbar] = useSnackbar();
   const [streamUri, setStreamUri] = React.useState("");
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const [camlist, setCamlist] = React.useState(null);
-  const [isMainStream, setIsMainStream] = React.useState(true);
   const [camsRefreshId, setCamsRefreshId] = React.useState(0);
   const [showPerson, setShowPerson] = React.useState(false);
   const [chatText, setChatText] = React.useState("");
@@ -91,8 +90,8 @@ export default function LivePlayer(props) {
       if (isMainStream) refVideo.current.classList.add("aspect_ratio_d1");
     } else {
       if (!isMainStream) refVideo.current.classList.remove("aspect_ratio_d1");
-    } */
-    setIsMainStream(is_main_stream);
+    }
+    setIsMainStream(is_main_stream); */
   };
 
   /** 处理 HLSPlayer 传来的刷新播放列表的消息 */
@@ -190,7 +189,7 @@ export default function LivePlayer(props) {
   );
   return (
     <div className="container">
-      {!username && (
+      {username && (
         <Websocket
           ref={ws}
           url={`${ENDPOINT}?username=${username}&type=jabber`}

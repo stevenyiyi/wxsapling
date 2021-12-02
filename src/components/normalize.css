@@ -386,12 +386,12 @@ table {
   box-sizing: border-box;
 }
 
-html {
-  font-size: 62.5%;
-}
-
+html,
 body {
+  font-size: 100%;
   font: 300 13px/1.6 "Helvetica Neue", Helvetica, Arial;
+  margin: 0;
+  padding: 0;
   background: #fff;
   color: #444;
 }

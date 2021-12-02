@@ -6,6 +6,7 @@ import { UserContext } from "../user_context";
 import { useSnackbar } from "./use_snackbar";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./login.css";
+import "./floating_input.css";
 const Login = (props) => {
   const ERR_NO_ACCOUNT = 0x800000f;
   const ERR_INVALID_PWD = ERR_NO_ACCOUNT + 1;
@@ -105,23 +106,29 @@ const Login = (props) => {
     <div className="loginOuterContainer">
       <div className="loginInnerContainer">
         <h1 className="heading">用户登录</h1>
-        <div>
+        <div className="form__div">
           <input
-            placeholder="用户名"
-            className="loginInput"
+            className="form__input"
             id="username"
             type="text"
+            placeholder=" "
             onChange={handleChange}
           />
+          <label className="form__label" htmlFor="username">
+            用户名
+          </label>
         </div>
-        <div>
+        <div className="form__div">
           <input
-            placeholder="口令"
-            className="loginInput mt-20"
+            className="form__input"
             type="password"
             id="password"
+            placeholder=" "
             onChange={handleChange}
           />
+          <label className="form__label" htmlFor="password">
+            口令
+          </label>
         </div>
         <button
           className={"button mt-20"}

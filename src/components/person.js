@@ -76,7 +76,7 @@ const Person = React.forwardRef((props, ref) => {
     let mfields = new FormData();
     mfields.append("username", user.username);
     let upload_file = `${user.username}.${ext}`;
-    mfields.append("photo", photo, upload_file);
+    mfields.append("photo", selectedFile, upload_file);
     user.photo = upload_file;
 
     http
@@ -99,7 +99,7 @@ const Person = React.forwardRef((props, ref) => {
   /// 切换登录
   const handleSwitchLogin = (event) => {
     event.preventDefault();
-    navigate("/sapling/login", {
+    navigate("/login", {
       replace: true,
       state: { from: "/player" }
     });

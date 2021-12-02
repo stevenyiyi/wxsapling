@@ -7,6 +7,7 @@ import support from "./support";
 import CameraList from "./camera_list";
 import Jabber from "./jabber";
 import { useOutsideClick } from "../utils/hook";
+import { useSnackbar } from "./use_snackbar";
 
 import {
   FaPlay,
@@ -131,6 +132,7 @@ export default function HLSPlayer(props) {
     onRefreshCamlist,
     onSendMessage
   } = props;
+  const [openSnackbar] = useSnackbar();
   const [checkMpd, setCheckMpd] = React.useState("");
   const [streamUri, setStreamUri] = React.useState("");
   const [seekval, setSeekval] = React.useState(0);
@@ -147,6 +149,7 @@ export default function HLSPlayer(props) {
   const refVidContainer = React.useRef();
   const refHls = React.useRef();
   const refVideo = React.useRef();
+  const refControls = React.useRef();
   const refFsMenuBut = React.useRef();
   const refFsMenu = React.useRef();
   useOutsideClick(refFsMenu, (event) => {
@@ -173,11 +176,11 @@ export default function HLSPlayer(props) {
           setLoading(false);
           if (response.status === 404) {
             /// 直播流已经下线
-            console.log("直播流已经下线!");
+            openSnackbar("直播流已经下线!");
             onRefreshCamlist();
           } else if (response.status === 403) {
             /// 多人同时观看
-            console.log(
+            openSnackbar(
               "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!"
             );
           } else if (response.status === 200) {
@@ -185,16 +188,16 @@ export default function HLSPlayer(props) {
             setStreamUri(checkMpd);
           } else {
             /** 其它错误 */
-            console.log(`服务器返回错误代码:${response.status}`);
+            openSnackbar(`服务器返回错误代码:${response.status}`);
           }
           return response.text();
         })
         .then((respText) => {
-          console.log(`fetch mpd:${respText}`);
+          openSnackbar(`fetch mpd:${respText}`);
         })
         .catch((error) => {
           setLoading(false);
-          console.error("fetch play uri error:", error.message);
+          openSnackbar("fetch play uri error:", error.message);
         });
     }
   }, [checkMpd, onRefreshCamlist]);
@@ -213,30 +216,31 @@ export default function HLSPlayer(props) {
   }, [url]);
 
   React.useEffect(() => {
-    const createMsePlayer = () => {
+    const initMsePlayer = () => {
       let ohls = new Hls(hlsConfig);
       setLoading(true);
       refHls.current = ohls;
-      refHls.current.loadSource(streamUri);
       refHls.current.attachMedia(refVideo.current);
-      refHls.current.on(Hls.Events.MANIFEST_PARSED, () => {
-        setDuration(get_duration(refVideo.current));
-        setHasAudio(has_audio(refVideo.current));
+      refHls.current.on(Hls.Events.MEDIA_ATTACHED, () => {
+        console.log("video and hls.js are now bound together !");
+        refHls.current.loadSource(streamUri);
+        refHls.current.on(Hls.Events.MANIFEST_PARSED, () => {
+          setDuration(get_duration(refVideo.current));
+          setHasAudio(has_audio(refVideo.current));
 
-        if (autoplay) {
-          var playPromise = refVideo.current.play();
-          if (playPromise) {
-            playPromise.catch(function (error) {
-              if (error.name === "NotAllowedError") {
-                refVideo.current.muted = true;
-                refVideo.current.play();
-              }
-            });
+          if (autoplay) {
+            var playPromise = refVideo.current.play();
+            if (playPromise) {
+              playPromise.catch(function (error) {
+                if (error.name === "NotAllowedError") {
+                  refVideo.current.muted = true;
+                  refVideo.current.play();
+                }
+              });
+            }
+            console.log(`duration:${refVideo.current.duration}`);
           }
-          setPlayOrPause(true);
-          console.log(`duration:${refVideo.current.duration}`);
-          setLoading(false);
-        }
+        });
       });
       refHls.current.on(Hls.Events.ERROR, function (event, data) {
         setLoading(false);
@@ -245,13 +249,12 @@ export default function HLSPlayer(props) {
             console.log("media error encountered, try to recover");
             refHls.current.recoverMediaError();
           } else {
+            setPlayOrPause(false);
             console.log("Error,type:" + data.type + " details:" + data.details);
             refHls.current.stopLoad();
             refHls.current.detachMedia();
             refHls.current.destroy();
-            setPlayOrPause(false);
             /// Handling hls.js error
-            let msg = "";
             if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
               let details = data.details;
               if (
@@ -262,17 +265,16 @@ export default function HLSPlayer(props) {
                 details === Hls.ErrorDetails.KEY_LOAD_ERROR
               ) {
                 let rcode = data.response.code;
-                console.log(data);
                 if (rcode === 403) {
-                  msg =
-                    "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!";
-                  console.log("url:" + data.url);
+                  openSnackbar(
+                    "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!"
+                  );
                   /// triggerPlayerTimer(error.url);
                 } else if (rcode === 404) {
-                  msg = "观看的流已经下线，将重新刷新观看列表!";
+                  openSnackbar("观看的流已经下线，将重新刷新观看列表!");
                   onRefreshCamlist();
                 } else {
-                  msg = "服务器出了点问题,请稍候刷新再试!错误代码:" + rcode;
+                  openSnackbar(`服务器返回错误代码:${rcode}`);
                   onRefreshCamlist();
                 }
               } else if (
@@ -280,31 +282,31 @@ export default function HLSPlayer(props) {
                 details === Hls.ErrorDetails.KEY_LOAD_TIMEOUT ||
                 details === Hls.ErrorDetails.LEVEL_LOAD_TIMEOUT
               ) {
-                msg = "加载文件超时，请检查网络是否正常...";
+                openSnackbar("加载文件超时，请检查网络是否正常...");
                 onRefreshCamlist();
               } else if (
                 details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR ||
                 details === Hls.ErrorDetails.LEVEL_EMPTY_ERROR
               ) {
-                msg = "解析mainfest错误:" + data.reason;
+                openSnackbar(`解析mainfest错误: ${data.reason}`);
               } else {
-                msg = "服务器出了点问题，请稍候再试!";
+                openSnackbar("服务器出了点问题，请稍候再试!");
               }
             } else {
-              msg =
+              openSnackbar(
                 "无法播放此视频,错误类型：" +
-                data.type +
-                ",错误代码:" +
-                data.details +
-                ",描述:" +
-                data.reason;
+                  data.type +
+                  ",错误代码:" +
+                  data.details +
+                  ",描述:" +
+                  data.reason
+              );
             }
-            console.log(`error:${msg}`);
           }
         }
       });
     };
-    const createNativePlayer = () => {
+    const initNativePlayer = () => {
       // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
       // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
       // This is using the built-in support of the plain video element, without using hls.js.
@@ -318,13 +320,18 @@ export default function HLSPlayer(props) {
         setDuration(get_duration(refVideo.current));
         setHasAudio(has_audio(refVideo.current));
         if (autoplay) {
-          refVideo.current.play();
+          var playPromise = refVideo.current.play();
+          if (playPromise) {
+            playPromise.catch((error) => {
+              if (error.name === "NotAllowedError") {
+                refVideo.current.muted = true;
+                refVideo.current.play();
+              }
+            });
+          }
         }
       });
-      refVideo.current.addEventListener("play", () => {
-        setLoading(false);
-        setPlayOrPause(true);
-      });
+
       refVideo.current.addEventListener(
         "error",
         () => {
@@ -357,10 +364,34 @@ export default function HLSPlayer(props) {
               msg = "未知错误!";
               break;
           }
-          console.log(`error:${msg}`);
+          openSnackbar(`error:${msg}`);
         },
         true
       );
+    };
+
+    const handleVideoEvent = () => {
+      refVideo.current.addEventListener("play", (event) => {
+        setLoading(false);
+        setPlayOrPause(true);
+        /// show controls delay 5 seconds
+        refControls.current.classList.toggle("show");
+        setTimeout(() => {
+          refControls.current.classList.toggle("show");
+        }, 5000);
+      });
+      refVideo.current.addEventListener("pause", (event) => {
+        setPlayOrPause(false);
+      });
+      refVideo.current.addEventListener("abort", (event) => {
+        setLoading(false);
+        setPlayOrPause(false);
+      });
+      refVideo.current.addEventListener("ended", (event) => {
+        refVideo.current.pause();
+        refVideo.current.currentTime = 0;
+        setPlayOrPause(false);
+      });
     };
 
     if (streamUri) {
@@ -374,7 +405,8 @@ export default function HLSPlayer(props) {
           refHls.current.destroy();
           setPlayOrPause(false);
         }
-        createMsePlayer();
+        handleVideoEvent();
+        initMsePlayer();
       } else if (
         refVideo.current.canPlayType("application/vnd.apple.mpegurl")
       ) {
@@ -383,21 +415,22 @@ export default function HLSPlayer(props) {
         refVideo.current.removeAttribute("src");
         refVideo.current.load();
         setPlayOrPause(false);
-        createNativePlayer();
+        handleVideoEvent();
+        initNativePlayer();
       } else {
-        let err = new MediaError();
-        err.code = MediaError.MEDIA_ERR_DECODE;
-        err.message =
-          "浏览器太老了,请下载一款支持MediaSourceExtension功能的浏览器!";
+        openSnackbar(
+          "浏览器太老了,请下载一款支持MediaSourceExtension功能的浏览器!"
+        );
       }
     }
     return () => {
       if (refHls.current) {
         console.log("Destory hls!");
+        /**
         refHls.current.stopLoad();
         refHls.current.detachMedia();
         refHls.current.destroy();
-        setPlayOrPause(false);
+        setPlayOrPause(false); */
       }
     };
   }, [streamUri, autoplay, hlsConfig, onRefreshCamlist]);
@@ -532,12 +565,6 @@ export default function HLSPlayer(props) {
     if (refVideo.current) {
       setMuted(refVideo.current.muted);
       setVolume(refVideo.current.volume);
-      /** 订阅文件播放完成事件 */
-      refVideo.current.addEventListener("ended", (event) => {
-        refVideo.current.pause();
-        refVideo.current.currentTime = 0;
-        setPlayOrPause(false);
-      });
     }
 
     if (refVidContainer.current) {
@@ -703,7 +730,7 @@ export default function HLSPlayer(props) {
           <div />
         </div>
       )}
-      <div className="video__controls">
+      <div ref={refControls} className="video__controls">
         <button id="playpause" onClick={handlePlayOrPause}>
           {playOrPause ? <FaPause /> : <FaPlay />}
         </button>
