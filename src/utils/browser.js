@@ -7,6 +7,16 @@ const isEdge = () => /Edg/i.test(USER_AGENT);
 const isChrome = () =>
   !isEdge() && (/Chrome/i.test(USER_AGENT) || /CriOS/i.test(USER_AGENT));
 const isAndroid = () => /Android/i.test(USER_AGENT);
+const isTbsX5 = () => {
+  const match = USER_AGENT.match(/tbs\/(\d+) /gi);
+  if (!match) return false;
+  return (match[1] || "") > "036849";
+};
+const isQQX5 = () => {
+  const match = USER_AGENT.match(/MQQBrowser\/([\d+.]+) /gi);
+  if (!match) return false;
+  return (match[1] || "") > 7.1;
+};
 const browser = {
   isIE: Boolean(window.document.documentMode),
   ieVersion: (function () {
@@ -73,7 +83,8 @@ const browser = {
   })(),
   isSafari:
     /Safari/i.test(USER_AGENT) && !isChrome() && !isAndroid() && !isEdge(),
-  isWindows: /Windows/i.test(USER_AGENT)
+  isWindows: /Windows/i.test(USER_AGENT),
+  isX5: isTbsX5() || isQQX5()
 };
 
 export default browser;

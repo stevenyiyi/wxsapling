@@ -51,7 +51,7 @@ export default function LivePlayer(props) {
           } else if (resp.result === ERR_NO_ACCOUNT) {
             console.log("帐户不存在!");
           } else if (resp.result === ERR_INVALID_PWD) {
-            console.log("口令错误");
+            console.log("口令错误!");
           } else if (resp.result === ERR_OVERDUE) {
             console.log("帐户已过期!");
           } else {
@@ -98,6 +98,17 @@ export default function LivePlayer(props) {
   const handleRefreshCamList = React.useCallback(() => {
     setCamsRefreshId((rid) => rid + 1);
   }, []);
+
+  /** 处理 HLSPlayer 传来的播放列表变化的消息 */
+  const handlePalyChange = React.useCallback(
+    (uri) => {
+      if (uri !== streamUri) {
+        setStreamUri(uri);
+        setCamlist({ ...camlist });
+      }
+    },
+    [camlist, streamUri]
+  );
 
   /** 点击个人信息 */
   const handlePersonClick = (event) => {
@@ -215,6 +226,7 @@ export default function LivePlayer(props) {
           messages={messages}
           onRefreshCamlist={handleRefreshCamList}
           onSendMessage={handleJabberFromPlayer}
+          onPlayChange={handlePalyChange}
         />
       </div>
       <div className="content__container">

@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FaVideo, FaVideoSlash, FaServer } from "react-icons/fa";
+import { genPlayUri } from "./utils";
 import "./camera_list.css";
 export default function CameraList(props) {
   const { camlist, onPlayUri } = props;
@@ -8,10 +9,20 @@ export default function CameraList(props) {
   const [groups, setGroups] = React.useState(null);
   const [currentCamera, setCurrentCamera] = React.useState(null);
 
-  /** 根据oid产生播放地址 */
-  const genPlayUri = (oid) => {
-    let uri = "https://anylooker.com/live/" + oid + "_master.m3u8";
-    return uri;
+  const getCurrentPlayCam = (clist) => {
+    if (clist.cameras) {
+      for (const cam of clist.cameras) {
+        if (cam.selected) return cam;
+      }
+    }
+    if (clist.groups) {
+      for (const group of clist.groups) {
+        for (const cam of group.cameras) {
+          if (cam.selected) return cam;
+        }
+      }
+    }
+    return null;
   };
 
   React.useEffect(() => {
@@ -62,6 +73,8 @@ export default function CameraList(props) {
       if (!clist.fixed) {
         robj = fixCameraList(clist);
         clist.fixed = true;
+      } else {
+        setCurrentCamera(getCurrentPlayCam(clist));
       }
       if (clist.groups && clist.groups.length === 1) {
         /// Merge to cameras

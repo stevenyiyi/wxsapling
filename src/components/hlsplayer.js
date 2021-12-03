@@ -118,6 +118,16 @@ function get_duration(media) {
 }
 
 export default function HLSPlayer(props) {
+  const PLAYER_STATE_PAUSE = 0;
+  const PLAYER_STATE_PLAY = 1;
+  const PLAYER_STATE_PLAYING = 2;
+  const PLAYER_STATE_ABORT = 3;
+  const PLAYER_STATE_ERROR = 4;
+  const PLAYER_STATE_WAITING = 5;
+  const PLAYER_STATE_ENDED = 6;
+  const PLAYER_STATE_SUSPEND = 7;
+  const PLAYER_STATE_STALLED = 8;
+  const PLAYER_STATE_EMPTIED = 9;
   const {
     url,
     controls,
@@ -130,7 +140,8 @@ export default function HLSPlayer(props) {
     cameras,
     messages,
     onRefreshCamlist,
-    onSendMessage
+    onSendMessage,
+    onPlayChange
   } = props;
   const [openSnackbar] = useSnackbar();
   const [checkMpd, setCheckMpd] = React.useState("");
@@ -140,7 +151,7 @@ export default function HLSPlayer(props) {
   const [hasAudio, setHasAudio] = React.useState(false);
   const [muted, setMuted] = React.useState(false);
   const [volume, setVolume] = React.useState(1.0);
-  const [playOrPause, setPlayOrPause] = React.useState(false);
+  const [state, setState] = React.useState(PLAYER_STATE_PAUSE);
   const [loading, setLoading] = React.useState(false);
   const [isFullScreen, setIsFullScreen] = React.useState(false);
   const [scrollPosition, setScrollPosition] = React.useState({ x: 0, y: 0 });
@@ -157,6 +168,18 @@ export default function HLSPlayer(props) {
       refFsMenu.current.classList.remove("show");
     }
   });
+
+  React.useEffect(() => {
+    if (browser.isIos) {
+      refVideo.current.setAttribute("webkit-playsinline", true);
+      refVideo.current.setAttribute("x-webkit-airplay", "allow");
+    } else if (browser.isX5) {
+      refVideo.current.setAttribute("x5-video-player-type", "h5-page");
+      refVideo.current.setAttribute("x5-video-player-fullscreen", "true");
+      refVideo.current.setAttribute("x5-video-orientation", "landscape");
+    }
+  }, []);
+
   React.useEffect(() => {
     if (checkMpd) {
       console.log(`check stream uri:${checkMpd}`);
@@ -249,7 +272,6 @@ export default function HLSPlayer(props) {
             console.log("media error encountered, try to recover");
             refHls.current.recoverMediaError();
           } else {
-            setPlayOrPause(false);
             console.log("Error,type:" + data.type + " details:" + data.details);
             refHls.current.stopLoad();
             refHls.current.detachMedia();
@@ -341,7 +363,7 @@ export default function HLSPlayer(props) {
           refVideo.current.src = "";
           refVideo.current.removeAttribute("src"); // empty source
           refVideo.current.load();
-          setPlayOrPause(false);
+          setState(PLAYER_STATE_ERROR);
           /** Handle native video error */
           let ecode = error.code;
           let msg = "";
@@ -370,28 +392,70 @@ export default function HLSPlayer(props) {
       );
     };
 
-    const handleVideoEvent = () => {
-      refVideo.current.addEventListener("play", (event) => {
+    const handleVideoEvent = (event) => {
+      if (event.type === "play") {
+        setState(PLAYER_STATE_PLAY);
+        console.log("play event!");
+      } else if (event.type === "pause") {
+        console.log("pause event!");
+        setState(PLAYER_STATE_PAUSE);
+      } else if (event.type === "abort") {
+        console.log("abort event!");
         setLoading(false);
-        setPlayOrPause(true);
+        setState(PLAYER_STATE_ABORT);
+      } else if (event.type === "ended") {
+        console.log("ended event!");
+        refVideo.current.currentTime = 0;
+        setLoading(false);
+        setState(PLAYER_STATE_ENDED);
+      } else if (event.type === "waiting") {
+        console.log("waiting event!");
+        setLoading(true);
+        setState(PLAYER_STATE_WAITING);
+      } else if (event.type === "playing") {
+        console.log("playing event!");
+        setState(PLAYER_STATE_PLAYING);
+        setLoading(false);
         /// show controls delay 5 seconds
         refControls.current.classList.toggle("show");
         setTimeout(() => {
           refControls.current.classList.toggle("show");
         }, 5000);
-      });
-      refVideo.current.addEventListener("pause", (event) => {
-        setPlayOrPause(false);
-      });
-      refVideo.current.addEventListener("abort", (event) => {
+      } else if (event.type === "suspend") {
+        console.log("suspend event!");
+        setState(PLAYER_STATE_SUSPEND);
         setLoading(false);
-        setPlayOrPause(false);
-      });
-      refVideo.current.addEventListener("ended", (event) => {
-        refVideo.current.pause();
-        refVideo.current.currentTime = 0;
-        setPlayOrPause(false);
-      });
+      } else if (event.type === "stalled") {
+        console.log("stalled event!");
+        setState(PLAYER_STATE_STALLED);
+        setLoading(false);
+      } else if (event.type === "empied") {
+        console.log("emptied event!");
+        setState(PLAYER_STATE_EMPTIED);
+        setLoading(false);
+      }
+    };
+
+    const registerVideoEvents = () => {
+      refVideo.current.addEventListener("play", handleVideoEvent);
+      refVideo.current.addEventListener("pause", handleVideoEvent);
+      refVideo.current.addEventListener("abort", handleVideoEvent);
+      refVideo.current.addEventListener("playing", handleVideoEvent);
+      refVideo.current.addEventListener("emptied", handleVideoEvent);
+      refVideo.current.addEventListener("ended", handleVideoEvent);
+      refVideo.current.addEventListener("stalled", handleVideoEvent);
+      refVideo.current.addEventListener("suppend", handleVideoEvent);
+    };
+
+    const unregisterVideoEvents = () => {
+      refVideo.current.removeEventListener("play", handleVideoEvent);
+      refVideo.current.removeEventListener("pause", handleVideoEvent);
+      refVideo.current.removeEventListener("abort", handleVideoEvent);
+      refVideo.current.removeEventListener("playing", handleVideoEvent);
+      refVideo.current.removeEventListener("emptied", handleVideoEvent);
+      refVideo.current.removeEventListener("ended", handleVideoEvent);
+      refVideo.current.removeEventListener("stalled", handleVideoEvent);
+      refVideo.current.removeEventListener("suppend", handleVideoEvent);
     };
 
     if (streamUri) {
@@ -403,9 +467,8 @@ export default function HLSPlayer(props) {
           refHls.current.stopLoad();
           refHls.current.detachMedia();
           refHls.current.destroy();
-          setPlayOrPause(false);
         }
-        handleVideoEvent();
+        registerVideoEvents();
         initMsePlayer();
       } else if (
         refVideo.current.canPlayType("application/vnd.apple.mpegurl")
@@ -414,8 +477,7 @@ export default function HLSPlayer(props) {
         refVideo.current.src = ""; // empty source
         refVideo.current.removeAttribute("src");
         refVideo.current.load();
-        setPlayOrPause(false);
-        handleVideoEvent();
+        registerVideoEvents();
         initNativePlayer();
       } else {
         openSnackbar(
@@ -426,11 +488,15 @@ export default function HLSPlayer(props) {
     return () => {
       if (refHls.current) {
         console.log("Destory hls!");
-        /**
         refHls.current.stopLoad();
         refHls.current.detachMedia();
         refHls.current.destroy();
-        setPlayOrPause(false); */
+      }
+      if (
+        Hls.isSupported() ||
+        refVideo.current.canPlayType("application/vnd.apple.mpegurl")
+      ) {
+        unregisterVideoEvents();
       }
     };
   }, [streamUri, autoplay, hlsConfig, onRefreshCamlist]);
@@ -489,6 +555,7 @@ export default function HLSPlayer(props) {
       } else {
         fse = new CustomEvent("fullscreen", { detail: { state: "exit" } });
       }
+      console.log(`div entered fullscreen mode:${toggle}`);
       refVidContainer.current.dispatchEvent(fse);
     },
     [cleanupViewport, scrollPosition]
@@ -533,76 +600,88 @@ export default function HLSPlayer(props) {
     }
   };
 
-  React.useEffect(() => {
-    if (!refVidContainer.current || !refVideo.current) {
-      return;
-    }
-    console.log("useEffect other events!");
-    /** 移动设备屏幕切换处理 */
-    const rotationHandler = () => {
-      const currentAngle = angle();
+  /** 移动设备屏幕切换处理 */
+  const rotationHandler = React.useCallback(() => {
+    const currentAngle = angle();
 
-      if (currentAngle === 90 || currentAngle === 270 || currentAngle === -90) {
-        if (refVideo.current.paused() === false) {
-          if (is_native_fullscreen()) {
-            toggleNativeFullscreen(true);
-          } else {
-            toggleDivFullscreen(true);
-          }
+    if (currentAngle === 90 || currentAngle === 270 || currentAngle === -90) {
+      if (refVideo.current.paused() === false) {
+        if (is_native_fullscreen()) {
+          toggleNativeFullscreen(true);
+        } else {
+          toggleDivFullscreen(true);
+        }
+        screen.lockOrientationUniversal("landscape");
+      }
+    }
+    if (currentAngle === 0 || currentAngle === 180) {
+      if (isFullScreen) {
+        if (is_native_fullscreen()) {
+          toggleNativeFullscreen(false);
+        } else {
+          toggleDivFullscreen(false);
+        }
+      }
+    }
+  }, [isFullScreen, toggleDivFullscreen]);
+
+  /** 全屏事件订阅 */
+  React.useEffect(() => {
+    setMuted(refVideo.current.muted);
+    setVolume(refVideo.current.volume);
+
+    let prefix = get_fullscreen_prefix();
+    let eventName =
+      prefix === "ms" ? "MSFullscreenChange" : `${prefix}fullscreenchange`;
+
+    /** 订阅document全屏进入/退出事件 */
+    document.addEventListener(eventName, (event) => {
+      // document.fullscreenElement will point to the element that
+      // is in fullscreen mode if there is one. If not, the value
+      // of the property is null.
+      let isfs = is_state_fullscreen();
+      let fse = null;
+      if (isfs) {
+        fse = new CustomEvent("fullscreen", { detail: { state: "enter" } });
+      } else {
+        fse = new CustomEvent("fullscreen", { detail: { state: "exit" } });
+      }
+      if (browser.isAndroid || browser.isIos) {
+        if (!angle() && isfs) {
           screen.lockOrientationUniversal("landscape");
         }
       }
-      if (currentAngle === 0 || currentAngle === 180) {
-        if (isFullScreen) {
-          if (is_native_fullscreen()) {
-            toggleNativeFullscreen(false);
-          } else {
-            toggleDivFullscreen(false);
-          }
-        }
+      console.log(`document entered fullscreen mode:${isfs}`);
+      /// Notify video container fullscreen event
+      refVidContainer.current.dispatchEvent(fse);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    const handleFullscreenChange = (e) => {
+      if (e.detail.state === "enter") {
+        console.log("entered fullscreen mode.");
+        setIsFullScreen(true);
+      } else {
+        console.log("Leaving full-screen mode.");
+        setIsFullScreen(false);
+        onPlayChange(streamUri);
       }
     };
-    if (refVideo.current) {
-      setMuted(refVideo.current.muted);
-      setVolume(refVideo.current.volume);
-    }
+    refVidContainer.current.addEventListener(
+      "fullscreen",
+      handleFullscreenChange
+    );
+    return () => {
+      if (refVidContainer.current)
+        refVidContainer.current.removeEventListener(
+          "fullscreen",
+          handleFullscreenChange
+        );
+    };
+  }, [onPlayChange, streamUri]);
 
-    if (refVidContainer.current) {
-      let prefix = get_fullscreen_prefix();
-      let eventName =
-        prefix === "ms" ? "MSFullscreenChange" : `${prefix}fullscreenchange`;
-
-      /** 订阅全屏进入/退出事件 */
-      document.addEventListener(eventName, (event) => {
-        // document.fullscreenElement will point to the element that
-        // is in fullscreen mode if there is one. If not, the value
-        // of the property is null.
-        let isfs = is_state_fullscreen();
-        let fse = null;
-        if (isfs) {
-          fse = new CustomEvent("fullscreen", { detail: { state: "enter" } });
-        } else {
-          fse = new CustomEvent("fullscreen", { detail: { state: "exit" } });
-        }
-        if (browser.isAndroid || browser.isIos) {
-          if (!angle() && isfs) {
-            screen.lockOrientationUniversal("landscape");
-          }
-        }
-        /// Notify video container fullscreen event
-        refVidContainer.current.dispatchEvent(fse);
-      });
-
-      refVidContainer.current.addEventListener("fullscreen", (e) => {
-        if (e.detail.state === "enter") {
-          console.log("entered fullscreen mode.");
-          setIsFullScreen(true);
-        } else {
-          console.log("Leaving full-screen mode.");
-          setIsFullScreen(false);
-        }
-      });
-    }
+  React.useEffect(() => {
     /** 订阅移动设备屏幕转换事件 */
     if (browser.isIos) {
       window.addEventListener("orientationchange", rotationHandler);
@@ -610,8 +689,7 @@ export default function HLSPlayer(props) {
       // addEventListener('orientationchange') is not a user interaction on Android
       screen.orientation.onchange = rotationHandler;
     }
-  }, [isFullScreen, toggleDivFullscreen]);
-
+  }, [rotationHandler]);
   /** Player Controls event handle */
   /** 全屏处理 */
   const handleToggleFullscreen = (event) => {
@@ -673,12 +751,16 @@ export default function HLSPlayer(props) {
 
   /** Play or pause 处理 */
   const handlePlayOrPause = (event) => {
-    if (refVideo.current.paused) {
+    if (state === PLAYER_STATE_PAUSE) {
       refVideo.current.play();
-      setPlayOrPause(true);
-    } else {
+    } else if (state === PLAYER_STATE_PLAYING) {
       refVideo.current.pause();
-      setPlayOrPause(false);
+    } else {
+      if (Hls.isSupported()) {
+        refHls.current.startLoad();
+      } else {
+        refVideo.current.load();
+      }
     }
   };
 
@@ -717,10 +799,7 @@ export default function HLSPlayer(props) {
         poster={poster}
         preload="auto"
         autoPlay
-        webkit-playsinline="true"
         playsInline
-        x5-video-player-type="h5-page"
-        x-webkit-airplay="allow"
         {...videoProps}
       />
       {loading && (
@@ -732,7 +811,7 @@ export default function HLSPlayer(props) {
       )}
       <div ref={refControls} className="video__controls">
         <button id="playpause" onClick={handlePlayOrPause}>
-          {playOrPause ? <FaPause /> : <FaPlay />}
+          {state === PLAYER_STATE_PLAYING ? <FaPause /> : <FaPlay />}
         </button>
         {duration > 0 && (
           <div className="seeker">
@@ -824,7 +903,8 @@ HLSPlayer.propTypes = {
   cameras: PropTypes.object,
   messages: PropTypes.array,
   onRefreshCamlist: PropTypes.func,
-  onSendMessage: PropTypes.func
+  onSendMessage: PropTypes.func,
+  onPlayChange: PropTypes.func
 };
 
 HLSPlayer.defaultProps = {
@@ -850,5 +930,6 @@ HLSPlayer.defaultProps = {
   cameras: {},
   messages: [],
   onRefreshCamlist: () => {},
-  onSendMessage: () => {}
+  onSendMessage: () => {},
+  onPlayChange: () => {}
 };
