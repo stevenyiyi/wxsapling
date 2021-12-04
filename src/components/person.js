@@ -4,23 +4,23 @@ import ChangePassword from "./change_pwd";
 import http from "../http_common";
 import { useSnackbar } from "./use_snackbar";
 import { useOutsideClick } from "../utils/hook";
+import PropTypes from "prop-types";
 import "./common.css";
 import "./personal.css";
 
 const Person = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
   const [openSnackbar] = useSnackbar();
-  const { show, onClose } = props;
+  const { open, onOutsideClick } = props;
   const [user, setUser] = React.useState({
     username: "2523452345",
     nick_name: "成怡",
     end_ts: "2022-09-01"
   });
   const [showChangePwd, setShowChangePwd] = React.useState(false);
-  const [photo, setPhoto] = React.useState(null);
   const refAvatar = React.useRef();
   const refSelf = React.useRef();
-  useOutsideClick(refSelf, onClose);
+  useOutsideClick(refSelf, onOutsideClick);
   React.useEffect(() => {
     http
       .get("/sapling/get_user_info")
@@ -28,7 +28,7 @@ const Person = React.forwardRef((props, ref) => {
         if (response.data.result === 0) {
           setUser(response.data.info);
           if (response.data.info.photo) {
-            refAvatar.current.src = `imgs/${response.data.info.photo}`;
+            refAvatar.current.src = `imgs/${response.data.info.username}.${response.data.info.photo}`;
           } else {
             refAvatar.current.src = "imgs/img_avatar_unknow.png";
           }
@@ -42,12 +42,12 @@ const Person = React.forwardRef((props, ref) => {
   }, []);
 
   React.useEffect(() => {
-    if (show) {
+    if (open) {
       refSelf.current.style.display = "flex";
     } else {
       refSelf.current.style.display = "none";
     }
-  }, [show]);
+  }, [open]);
 
   /// expose function getDisplayName
   React.useImperativeHandle(ref, () => ({
@@ -71,13 +71,12 @@ const Person = React.forwardRef((props, ref) => {
     }
 
     refAvatar.current.src = URL.createObjectURL(selectedFile);
-    setPhoto(selectedFile);
 
     let mfields = new FormData();
     mfields.append("username", user.username);
     let upload_file = `${user.username}.${ext}`;
     mfields.append("photo", selectedFile, upload_file);
-    user.photo = upload_file;
+    user.photo = ext;
 
     http
       .post("/sapling/modify_subuser", mfields)
@@ -149,4 +148,12 @@ const Person = React.forwardRef((props, ref) => {
     </div>
   );
 });
+Person.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onOutsideClick: PropTypes.func.isRequired
+};
+Person.defaultProps = {
+  open: true,
+  onOutsideClick: () => {}
+};
 export default Person;

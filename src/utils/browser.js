@@ -84,7 +84,38 @@ const browser = {
   isSafari:
     /Safari/i.test(USER_AGENT) && !isChrome() && !isAndroid() && !isEdge(),
   isWindows: /Windows/i.test(USER_AGENT),
-  isX5: isTbsX5() || isQQX5()
+  isX5: isTbsX5() || isQQX5(),
+  /** Judge supported media source extensions */
+  supportsMediaSource: (function () {
+    let hasWebKit = "WebKitMediaSource" in window;
+    let hasMediaSource = "MediaSource" in window;
+
+    return hasWebKit || hasMediaSource;
+  })(),
+  supportsNativeFullscreen: !!(
+    document.fullscreenEnabled ||
+    document.webkitFullscreenEnabled ||
+    document.mozFullScreenEnabled ||
+    document.msFullscreenEnabled
+  ),
+  supportsShadowDOM: !!HTMLElement.prototype.attachShadow,
+  supportsWASM: (function () {
+    try {
+      if (
+        typeof WebAssembly === "object" &&
+        typeof WebAssembly.instantiate === "function"
+      ) {
+        const module = new WebAssembly.Module(
+          Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00)
+        );
+        if (module instanceof WebAssembly.Module)
+          return (
+            new WebAssembly.Instance(module) instanceof WebAssembly.Instance
+          );
+      }
+    } catch (e) {}
+    return false;
+  })()
 };
 
 export default browser;

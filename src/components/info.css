@@ -1,0 +1,21 @@
+/** sidebar information */
+.sideinfo {
+  display: none;
+  flex-direction: column;
+  height: calc(100% - 38px);
+  /* Add a bottom margin to avoid content overlay */
+  margin-bottom: 38px;
+  width: 300px;
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  background-color: lightgray;
+  transition: 0.5s;
+}
+
+.sideinfo p {
+  line-height: 100%;
+  margin: 6px 10px;
+}

@@ -1,9 +1,10 @@
 import React from "react";
-import { FaBars, FaUser, FaTelegramPlane } from "react-icons/fa";
+import { FaInfo, FaUser, FaTelegramPlane } from "react-icons/fa";
 import { UserContext } from "../user_context";
 import HLSPlayer from "./hlsplayer";
 import CameraList from "./camera_list";
 import Person from "./person";
+import Info from "./info";
 import Jabber from "./jabber";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
@@ -22,10 +23,12 @@ export default function LivePlayer(props) {
   const [camlist, setCamlist] = React.useState(null);
   const [camsRefreshId, setCamsRefreshId] = React.useState(0);
   const [showPerson, setShowPerson] = React.useState(false);
+  const [showInfo, setShowInfo] = React.useState(false);
   const [chatText, setChatText] = React.useState("");
   const [messages, setMessages] = React.useState([]);
   const refVideo = React.useRef();
   const refPersonBut = React.useRef();
+  const refInfoBut = React.useRef();
   const refPerson = React.useRef();
 
   /** 从服务器获取摄像头列表 */
@@ -119,6 +122,18 @@ export default function LivePlayer(props) {
   const handlePersonClose = React.useCallback((event) => {
     if (!refPersonBut.current.contains(event.target)) {
       setShowPerson(false);
+    }
+  }, []);
+
+  /** 点击信息显示 */
+  const handleInfoClick = (event) => {
+    setShowInfo(!showInfo);
+  };
+
+  /** 信息关闭 */
+  const handleInfoClose = React.useCallback((event) => {
+    if (!refInfoBut.current.contains(event.target)) {
+      setShowInfo(false);
     }
   }, []);
 
@@ -238,11 +253,11 @@ export default function LivePlayer(props) {
         </div>
       </div>
       <div className="navbar">
-        <div className="icon">
-          <FaBars />
-        </div>
         <div ref={refPersonBut} className="icon" onClick={handlePersonClick}>
           <FaUser />
+        </div>
+        <div ref={refInfoBut} className="icon" onClick={handleInfoClick}>
+          <FaInfo />
         </div>
         <input
           id="input-jabber-message"
@@ -255,7 +270,12 @@ export default function LivePlayer(props) {
           <FaTelegramPlane />
         </div>
       </div>
-      <Person ref={refPerson} show={showPerson} onClose={handlePersonClose} />
+      <Person
+        ref={refPerson}
+        open={showPerson}
+        onOutsideClick={handlePersonClose}
+      />
+      <Info open={showInfo} onOutsideClick={handleInfoClose} />
     </div>
   );
 }

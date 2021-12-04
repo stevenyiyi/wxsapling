@@ -76,16 +76,6 @@ function get_fullscreen_name(prefix) {
   return prefix === "moz" ? "FullScreen" : "Fullscreen";
 }
 
-// Determine if native supported
-function is_native_fullscreen() {
-  return !!(
-    document.fullscreenEnabled ||
-    document.webkitFullscreenEnabled ||
-    document.mozFullScreenEnabled ||
-    document.msFullscreenEnabled
-  );
-}
-
 /**
  * [fn.is_fullscreen] 检测是否全屏状态
  */
@@ -606,7 +596,7 @@ export default function HLSPlayer(props) {
 
     if (currentAngle === 90 || currentAngle === 270 || currentAngle === -90) {
       if (refVideo.current.paused() === false) {
-        if (is_native_fullscreen()) {
+        if (browser.supportsNativeFullscreen) {
           toggleNativeFullscreen(true);
         } else {
           toggleDivFullscreen(true);
@@ -616,7 +606,7 @@ export default function HLSPlayer(props) {
     }
     if (currentAngle === 0 || currentAngle === 180) {
       if (isFullScreen) {
-        if (is_native_fullscreen()) {
+        if (browser.supportsNativeFullscreen) {
           toggleNativeFullscreen(false);
         } else {
           toggleDivFullscreen(false);
@@ -646,11 +636,6 @@ export default function HLSPlayer(props) {
       } else {
         fse = new CustomEvent("fullscreen", { detail: { state: "exit" } });
       }
-      if (browser.isAndroid || browser.isIos) {
-        if (!angle() && isfs) {
-          screen.lockOrientationUniversal("landscape");
-        }
-      }
       console.log(`document entered fullscreen mode:${isfs}`);
       /// Notify video container fullscreen event
       refVidContainer.current.dispatchEvent(fse);
@@ -662,6 +647,12 @@ export default function HLSPlayer(props) {
       if (e.detail.state === "enter") {
         console.log("entered fullscreen mode.");
         setIsFullScreen(true);
+        if (browser.isAndroid || browser.isIos) {
+          /** 全屏模式下强制切换到横屏 */
+          if (!angle()) {
+            screen.lockOrientationUniversal("landscape");
+          }
+        }
       } else {
         console.log("Leaving full-screen mode.");
         setIsFullScreen(false);
@@ -682,18 +673,20 @@ export default function HLSPlayer(props) {
   }, [onPlayChange, streamUri]);
 
   React.useEffect(() => {
-    /** 订阅移动设备屏幕转换事件 */
-    if (browser.isIos) {
-      window.addEventListener("orientationchange", rotationHandler);
-    } else if (screen && screen.orientation) {
-      // addEventListener('orientationchange') is not a user interaction on Android
-      screen.orientation.onchange = rotationHandler;
+    if (browser.isAndroid || browser.isIos) {
+      /** 订阅移动设备屏幕转换事件 */
+      if (browser.isIos) {
+        window.addEventListener("orientationchange", rotationHandler);
+      } else if (screen && screen.orientation) {
+        // addEventListener('orientationchange') is not a user interaction on Android
+        screen.orientation.onchange = rotationHandler;
+      }
     }
   }, [rotationHandler]);
   /** Player Controls event handle */
   /** 全屏处理 */
   const handleToggleFullscreen = (event) => {
-    if (is_native_fullscreen()) {
+    if (browser.supportsNativeFullscreen) {
       toggleNativeFullscreen(!isFullScreen);
     } else {
       console.log("Explorer not support fullscreen!");
