@@ -7,8 +7,14 @@ const ASTooltip = React.forwardRef((props, refAnchor) => {
 
   React.useEffect(() => {
     console.log("add tooltip element to refAnchor!");
-    refAnchor.current.classList.add("tooltip");
-    refAnchor.current.appendChild(refThis.current);
+    const parentElement = refAnchor.current;
+    const childElement = refThis.current;
+    parentElement.classList.add("tooltip");
+    parentElement.appendChild(childElement);
+    return () => {
+      parentElement.classList.remove("tooltip");
+      parentElement.removeChild(childElement);
+    };
   }, [refAnchor]);
 
   React.useEffect(() => {
