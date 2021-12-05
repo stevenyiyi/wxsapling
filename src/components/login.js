@@ -3,7 +3,7 @@ import http from "../http_common";
 import sha1 from "crypto-js/sha1";
 import Cookies from "js-cookie";
 import { UserContext } from "../user_context";
-import { useSnackbar } from "./use_snackbar";
+import ASTooltip from "./as_tooltip";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./login.css";
 import "./floating_input.css";
@@ -12,7 +12,6 @@ const Login = (props) => {
   const ERR_INVALID_PWD = ERR_NO_ACCOUNT + 1;
   const ERR_OVERDUE = ERR_INVALID_PWD + 1;
   const navigate = useNavigate();
-  const [openSnackbar, closeSnackbar] = useSnackbar();
   const [state, setState] = React.useState({
     username: "",
     password: ""
@@ -20,6 +19,12 @@ const Login = (props) => {
 
   const userCtx = React.useContext(UserContext);
   const location = useLocation();
+  const refBut = React.useRef();
+  const [message, setMessage] = React.useState({
+    show: false,
+    text: ""
+  });
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setState((prevState) => ({
@@ -36,19 +41,25 @@ const Login = (props) => {
       )
     ) {
       formIsValid = false;
-      openSnackbar("非法的用户名，请输入手机号！");
+      setMessage({
+        ...message,
+        show: true,
+        text: "非法的用户名，请输入手机号！"
+      });
       return formIsValid;
     } else {
-      closeSnackbar();
       formIsValid = true;
     }
 
     if (!state.password.match(/^[0-9a-zA-Z]{6,22}$/)) {
       formIsValid = false;
-      openSnackbar("口令限制仅英文字母或数字组成，长度范围(6-22)个字符");
+      setMessage({
+        ...message,
+        show: true,
+        text: "口令限制仅英文字母或数字组成，长度范围(6-22)个字符"
+      });
       return formIsValid;
     } else {
-      closeSnackbar();
       formIsValid = true;
     }
     return formIsValid;
@@ -83,22 +94,42 @@ const Login = (props) => {
               token: Cookies.get("token")
             });
             /// Login Success
-            openSnackbar("登录成功，将转向主页！");
+            setMessage({
+              ...message,
+              show: true,
+              text: "登录成功，将转向主页！"
+            });
             redirectToCurrent();
           } else if (result === ERR_NO_ACCOUNT) {
             /// 帐户不存在
-            openSnackbar("帐户不存在，请先注册后再登录！");
+            setMessage({
+              ...message,
+              show: true,
+              text: "帐户不存在，请先注册后再登录！"
+            });
           } else if (result === ERR_OVERDUE) {
             /// 帐户过期
-            openSnackbar("帐户已过期！");
+            setMessage({
+              ...message,
+              show: true,
+              text: "帐户已过期!"
+            });
           } else if (result === ERR_INVALID_PWD) {
             /// 口令错误
-            openSnackbar("口令错误！");
+            setMessage({
+              ...message,
+              show: true,
+              text: "口令错误！"
+            });
           }
         })
         .catch((e) => {
           /// 错误
-          openSnackbar(e.toJSON().message);
+          setMessage({
+            ...message,
+            show: true,
+            text: e.toJSON().message
+          });
         });
     }
   };
@@ -131,6 +162,7 @@ const Login = (props) => {
           </label>
         </div>
         <button
+          ref={refBut}
           className={"button mt-20"}
           type="submit"
           onClick={handleSubmitClick}
@@ -138,6 +170,14 @@ const Login = (props) => {
           登 录
         </button>
       </div>
+      <ASTooltip
+        ref={refBut}
+        delay={5000}
+        show={message.show}
+        onClose={() => setMessage({ ...message, show: false })}
+      >
+        <p>{message.text}</p>
+      </ASTooltip>
     </div>
   );
 };
