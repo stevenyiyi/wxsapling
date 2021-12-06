@@ -12,7 +12,6 @@ export const useSnackbar = ({
   style = {},
   closeStyle = {}
 } = {}) => {
-  console.log(`position:${position}`);
   const { openSnackbar, closeSnackbar } = useContext(SnackbarContext);
 
   // If no correct position is passed, 'bottom-center' is set

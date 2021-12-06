@@ -1,9 +1,10 @@
 import React from "react";
-import { FaBars, FaUser, FaTelegramPlane } from "react-icons/fa";
+import { FaInfo, FaUser, FaTelegramPlane } from "react-icons/fa";
 import { UserContext } from "../user_context";
 import HLSPlayer from "./hlsplayer";
 import CameraList from "./camera_list";
 import Person from "./person";
+import Info from "./info";
 import Jabber from "./jabber";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
@@ -16,17 +17,18 @@ export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
   const ws = React.useRef(null);
-  const [openSnackbar, closeSnackbar] = useSnackbar();
+  const [openSnackbar] = useSnackbar();
   const [streamUri, setStreamUri] = React.useState("");
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const [camlist, setCamlist] = React.useState(null);
-  const [isMainStream, setIsMainStream] = React.useState(true);
   const [camsRefreshId, setCamsRefreshId] = React.useState(0);
   const [showPerson, setShowPerson] = React.useState(false);
+  const [showInfo, setShowInfo] = React.useState(false);
   const [chatText, setChatText] = React.useState("");
   const [messages, setMessages] = React.useState([]);
   const refVideo = React.useRef();
   const refPersonBut = React.useRef();
+  const refInfoBut = React.useRef();
   const refPerson = React.useRef();
 
   /** 从服务器获取摄像头列表 */
@@ -52,7 +54,7 @@ export default function LivePlayer(props) {
           } else if (resp.result === ERR_NO_ACCOUNT) {
             console.log("帐户不存在!");
           } else if (resp.result === ERR_INVALID_PWD) {
-            console.log("口令错误");
+            console.log("口令错误!");
           } else if (resp.result === ERR_OVERDUE) {
             console.log("帐户已过期!");
           } else {
@@ -91,14 +93,25 @@ export default function LivePlayer(props) {
       if (isMainStream) refVideo.current.classList.add("aspect_ratio_d1");
     } else {
       if (!isMainStream) refVideo.current.classList.remove("aspect_ratio_d1");
-    } */
-    setIsMainStream(is_main_stream);
+    }
+    setIsMainStream(is_main_stream); */
   };
 
   /** 处理 HLSPlayer 传来的刷新播放列表的消息 */
   const handleRefreshCamList = React.useCallback(() => {
     setCamsRefreshId((rid) => rid + 1);
   }, []);
+
+  /** 处理 HLSPlayer 传来的播放列表变化的消息 */
+  const handlePalyChange = React.useCallback(
+    (uri) => {
+      if (uri !== streamUri) {
+        setStreamUri(uri);
+        setCamlist({ ...camlist });
+      }
+    },
+    [camlist, streamUri]
+  );
 
   /** 点击个人信息 */
   const handlePersonClick = (event) => {
@@ -109,6 +122,18 @@ export default function LivePlayer(props) {
   const handlePersonClose = React.useCallback((event) => {
     if (!refPersonBut.current.contains(event.target)) {
       setShowPerson(false);
+    }
+  }, []);
+
+  /** 点击信息显示 */
+  const handleInfoClick = (event) => {
+    setShowInfo(!showInfo);
+  };
+
+  /** 信息关闭 */
+  const handleInfoClose = React.useCallback((event) => {
+    if (!refInfoBut.current.contains(event.target)) {
+      setShowInfo(false);
     }
   }, []);
 
@@ -190,7 +215,7 @@ export default function LivePlayer(props) {
   );
   return (
     <div className="container">
-      {!username && (
+      {username && (
         <Websocket
           ref={ws}
           url={`${ENDPOINT}?username=${username}&type=jabber`}
@@ -216,6 +241,7 @@ export default function LivePlayer(props) {
           messages={messages}
           onRefreshCamlist={handleRefreshCamList}
           onSendMessage={handleJabberFromPlayer}
+          onPlayChange={handlePalyChange}
         />
       </div>
       <div className="content__container">
@@ -227,11 +253,11 @@ export default function LivePlayer(props) {
         </div>
       </div>
       <div className="navbar">
-        <div className="icon">
-          <FaBars />
-        </div>
         <div ref={refPersonBut} className="icon" onClick={handlePersonClick}>
           <FaUser />
+        </div>
+        <div ref={refInfoBut} className="icon" onClick={handleInfoClick}>
+          <FaInfo />
         </div>
         <input
           id="input-jabber-message"
@@ -244,7 +270,12 @@ export default function LivePlayer(props) {
           <FaTelegramPlane />
         </div>
       </div>
-      <Person ref={refPerson} show={showPerson} onClose={handlePersonClose} />
+      <Person
+        ref={refPerson}
+        open={showPerson}
+        onOutsideClick={handlePersonClose}
+      />
+      <Info open={showInfo} onOutsideClick={handleInfoClose} />
     </div>
   );
 }

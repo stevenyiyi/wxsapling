@@ -11,41 +11,47 @@
 /* The actual tooltip, default placement top */
 .tooltip .tooltiptext {
   visibility: hidden;
-  font-size: 12px;
-  width: 160px;
-  background-color: #555;
+  font-size: 1rem;
+  max-width: 150px;
+  background-color: #777777;
   color: #fff;
-  text-align: center;
+  text-align: left;
   border-radius: 6px;
-  padding: 5px 0;
+  padding: 5px 5px;
   position: absolute;
-  z-index: 1;
+  z-index: 100;
+}
+
+.tooltip .tooltiptext p,
+.tooltip .tooltiptext span {
+  line-height: 110%;
+  margin: 4px 6px;
 }
 
 /** left */
 .tooltip .left {
   top: -5px;
-  right: 105%;
+  right: 110%;
 }
 
 /** right */
 .tooltip .right {
   top: -5px;
-  left: 105%;
+  left: 110%;
 }
 
 /** top */
 .tooltip .top {
-  bottom: 105%;
+  bottom: 110%;
   left: 50%;
-  margin-left: -80px;
+  transform: translateX(-50%);
 }
 
 /** bottom */
 .tooltip .bottom {
-  top: 105%;
+  top: 110%;
   left: 50%;
-  margin-left: -80px;
+  transform: translateX(-50%);
 }
 
 /* Tooltip bottom arrow */
@@ -97,7 +103,7 @@
 }
 
 /* Toggle this class - hide and show the popup */
-.tooltip .show {
+.tooltip .visible {
   visibility: visible;
   -webkit-animation: fadeIn 1s;
   animation: fadeIn 1s;

@@ -15,7 +15,7 @@ export default function ChangePassword(props) {
     show: false,
     text: ""
   });
-
+  const refBut = React.useRef();
   function calcToken(username, password, path) {
     let h1 = CryptoJS.SHA1(username + ":" + password).toString();
     let h2 = CryptoJS.SHA1(password + ":" + path).toString();
@@ -159,17 +159,18 @@ export default function ChangePassword(props) {
             请再输入一次新口令
           </label>
         </div>
-        <button type="submit" className="tooltip full_btn">
+        <button ref={refBut} type="submit" className="full_btn">
           确认
-          <ASTooltip
-            delay={3000}
-            show={message.show}
-            onClose={() => setMessage({ ...message, show: false })}
-          >
-            {message.text}
-          </ASTooltip>
         </button>
       </form>
+      <ASTooltip
+        ref={refBut}
+        delay={5000}
+        show={message.show}
+        onClose={() => setMessage({ ...message, show: false })}
+      >
+        <p>{message.text}</p>
+      </ASTooltip>
     </Modal>
   );
 }

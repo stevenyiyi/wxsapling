@@ -7,6 +7,16 @@ const isEdge = () => /Edg/i.test(USER_AGENT);
 const isChrome = () =>
   !isEdge() && (/Chrome/i.test(USER_AGENT) || /CriOS/i.test(USER_AGENT));
 const isAndroid = () => /Android/i.test(USER_AGENT);
+const isTbsX5 = () => {
+  const match = USER_AGENT.match(/tbs\/(\d+) /gi);
+  if (!match) return false;
+  return (match[1] || "") > "036849";
+};
+const isQQX5 = () => {
+  const match = USER_AGENT.match(/MQQBrowser\/([\d+.]+) /gi);
+  if (!match) return false;
+  return (match[1] || "") > 7.1;
+};
 const browser = {
   isIE: Boolean(window.document.documentMode),
   ieVersion: (function () {
@@ -73,7 +83,39 @@ const browser = {
   })(),
   isSafari:
     /Safari/i.test(USER_AGENT) && !isChrome() && !isAndroid() && !isEdge(),
-  isWindows: /Windows/i.test(USER_AGENT)
+  isWindows: /Windows/i.test(USER_AGENT),
+  isX5: isTbsX5() || isQQX5(),
+  /** Judge supported media source extensions */
+  supportsMediaSource: (function () {
+    let hasWebKit = "WebKitMediaSource" in window;
+    let hasMediaSource = "MediaSource" in window;
+
+    return hasWebKit || hasMediaSource;
+  })(),
+  supportsNativeFullscreen: !!(
+    document.fullscreenEnabled ||
+    document.webkitFullscreenEnabled ||
+    document.mozFullScreenEnabled ||
+    document.msFullscreenEnabled
+  ),
+  supportsShadowDOM: !!HTMLElement.prototype.attachShadow,
+  supportsWASM: (function () {
+    try {
+      if (
+        typeof WebAssembly === "object" &&
+        typeof WebAssembly.instantiate === "function"
+      ) {
+        const module = new WebAssembly.Module(
+          Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00)
+        );
+        if (module instanceof WebAssembly.Module)
+          return (
+            new WebAssembly.Instance(module) instanceof WebAssembly.Instance
+          );
+      }
+    } catch (e) {}
+    return false;
+  })()
 };
 
 export default browser;

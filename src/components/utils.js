@@ -16,4 +16,10 @@ const parseFrom = (from) => {
     avatar: spair[1]
   };
 };
-export { parseFrom };
+
+/** 根据oid产生播放地址 */
+const genPlayUri = (oid) => {
+  let uri = "https://anylooker.com/live/" + oid + "_master.m3u8";
+  return uri;
+};
+export { parseFrom, genPlayUri };
