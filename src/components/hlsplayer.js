@@ -256,7 +256,8 @@ export default function HLSPlayer(props) {
       if (Hls.isSupported()) {
         setStreamUri(url);
       } else {
-        setCheckMpd(url);
+        /// Should setCheckMpd(url);but test
+        setStreamUri(url);
       }
     }
   }, [url]);
