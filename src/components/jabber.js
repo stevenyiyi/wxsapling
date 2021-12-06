@@ -17,7 +17,7 @@ export default function Jabber(props) {
               <Avatar
                 image={
                   ufrom.avatar
-                    ? `http://localhost/imgs/${ufrom.username}.${ufrom.avatar}`
+                    ? `http://192.168.3.200/imgs/${ufrom.username}.${ufrom.avatar}`
                     : ""
                 }
                 name={ufrom.name}

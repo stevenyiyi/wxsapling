@@ -159,6 +159,28 @@ export default function HLSPlayer(props) {
     }
   });
 
+  /** 尝试播放媒体 */
+  const tryPlaying = React.useCallback((hasaudio) => {
+    var playPromise = refVideo.current.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function (error) {
+        if (error.name === "NotAllowedError") {
+          if (hasaudio) {
+            refVideo.current.muted = true;
+            tryPlaying();
+          } else {
+            /** 需要用户交互式播放 */
+            setLoading(false);
+            refControls.current.classList.toggle("show");
+          }
+        } else {
+          setLoading(false);
+          refControls.current.classList.toggle("show");
+        }
+      });
+    }
+  }, []);
+
   React.useEffect(() => {
     if (browser.isIos) {
       refVideo.current.setAttribute("webkit-playsinline", true);
@@ -239,18 +261,11 @@ export default function HLSPlayer(props) {
         refHls.current.loadSource(streamUri);
         refHls.current.on(Hls.Events.MANIFEST_PARSED, () => {
           setDuration(get_duration(refVideo.current));
-          setHasAudio(has_audio(refVideo.current));
+          let hasaudio = has_audio(refVideo.current);
+          setHasAudio(hasaudio);
 
           if (autoplay) {
-            var playPromise = refVideo.current.play();
-            if (playPromise) {
-              playPromise.catch(function (error) {
-                if (error.name === "NotAllowedError") {
-                  refVideo.current.muted = true;
-                  refVideo.current.play();
-                }
-              });
-            }
+            tryPlaying(hasaudio);
             console.log(`duration:${refVideo.current.duration}`);
           }
         });
@@ -330,17 +345,10 @@ export default function HLSPlayer(props) {
       refVideo.current.load();
       refVideo.current.addEventListener("canplaythrough", () => {
         setDuration(get_duration(refVideo.current));
-        setHasAudio(has_audio(refVideo.current));
+        let hasaudio = has_audio(refVideo.current);
+        setHasAudio(hasaudio);
         if (autoplay) {
-          var playPromise = refVideo.current.play();
-          if (playPromise) {
-            playPromise.catch((error) => {
-              if (error.name === "NotAllowedError") {
-                refVideo.current.muted = true;
-                refVideo.current.play();
-              }
-            });
-          }
+          tryPlaying(hasaudio);
         }
       });
 
@@ -489,7 +497,7 @@ export default function HLSPlayer(props) {
         unregisterVideoEvents();
       }
     };
-  }, [streamUri, autoplay, hlsConfig, onRefreshCamlist]);
+  }, [streamUri, autoplay, hlsConfig, onRefreshCamlist, tryPlaying]);
 
   /** Not fullscreen api supported */
   const toggleDivFullscreen = React.useCallback(
@@ -745,7 +753,7 @@ export default function HLSPlayer(props) {
   /** Play or pause 处理 */
   const handlePlayOrPause = (event) => {
     if (state === PLAYER_STATE_PAUSE) {
-      refVideo.current.play();
+      tryPlaying(hasAudio);
     } else if (state === PLAYER_STATE_PLAYING) {
       refVideo.current.pause();
     } else {
