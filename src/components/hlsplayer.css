@@ -47,9 +47,9 @@ body {
 }
 
 /** Hide native controls */
-/**.video__container video ::-webkit-media-controls {
+.video__container video ::-webkit-media-controls {
   display: none;
-} */
+}
 
 .video__container video {
   position: absolute;
@@ -62,11 +62,6 @@ body {
   z-index: auto;
   background-color: black;
 }
-
-/**
-.video__container video:hover + .video__controls {
-  opacity: 1;
-} */
 
 .video__controls {
   display: none;
