@@ -10,14 +10,14 @@ const isChrome = () =>
   !isEdge() && (/Chrome/i.test(USER_AGENT) || /CriOS/i.test(USER_AGENT));
 const isAndroid = () => /Android/i.test(USER_AGENT);
 const isTbsX5 = () => {
-  const match = USER_AGENT.match(/tbs\/(\d+) /gi);
-  if (!match) return false;
-  return (match[1] || "") > "036849";
+  const matches = USER_AGENT.match(/tbs\/(\d+) /i);
+  if (!matches) return false;
+  return (matches[1] || "") > "036849";
 };
 const isQQX5 = () => {
-  const match = USER_AGENT.match(/MQQBrowser\/([\d+.]+) /gi);
-  if (!match) return false;
-  return (match[1] || "") > 7.1;
+  const matches = USER_AGENT.match(/MQQBrowser\/([\d+.]+) /i);
+  if (!matches) return false;
+  return (matches[1] || "") > 7.1;
 };
 const isIPHONE = () => /(iPhone|iPod)/gi.test(navigator.platform);
 const browser = {
