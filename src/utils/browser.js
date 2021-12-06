@@ -90,10 +90,24 @@ const browser = {
   isX5: isTbsX5() || isQQX5(),
   /** Judge supported media source extensions */
   supportsMediaSource: (function () {
-    let hasWebKit = "WebKitMediaSource" in window;
-    let hasMediaSource = "MediaSource" in window;
-
-    return hasWebKit || hasMediaSource;
+    let mediaSource = window.self.MediaSource || window.self.WebKitMediaSource;
+    if (!mediaSource) {
+      return false;
+    }
+    let sourceBuffer =
+      window.self.SourceBuffer || window.self.WebKitSourceBuffer;
+    const isTypeSupported =
+      mediaSource &&
+      typeof mediaSource.isTypeSupported === "function" &&
+      mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
+    // if SourceBuffer is exposed ensure its API is valid
+    // safari and old version of Chrome doe not expose SourceBuffer globally so checking SourceBuffer.prototype is impossible
+    const sourceBufferValidAPI =
+      !sourceBuffer ||
+      (sourceBuffer.prototype &&
+        typeof sourceBuffer.prototype.appendBuffer === "function" &&
+        typeof sourceBuffer.prototype.remove === "function");
+    return !!isTypeSupported && !!sourceBufferValidAPI;
   })(),
   supportsNativeFullscreen: !!(
     document.fullscreenEnabled ||
