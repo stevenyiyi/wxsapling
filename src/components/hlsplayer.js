@@ -3,7 +3,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import browser from "../utils/browser";
 import is from "../utils/is";
-import support from "./support";
 import CameraList from "./camera_list";
 import Jabber from "./jabber";
 import { useOutsideClick } from "../utils/hook";
@@ -18,7 +17,8 @@ import {
   FaVolumeMute,
   FaExternalLinkAlt,
   FaBars,
-  FaTelegramPlane
+  FaTelegramPlane,
+  FaOsi
 } from "react-icons/fa";
 import "./normalize.css";
 import "./hlsplayer.css";
@@ -575,35 +575,43 @@ export default function HLSPlayer(props) {
   const toggleNativeFullscreen = (toggle) => {
     if (toggle) {
       /// Enter fullscreen
-      if (refVideo.current.requestFullscreen) {
-        refVidContainer.current.requestFullscreen().catch((err) => {
-          console.error("Error:", err);
-        });
-      } else if (refVideo.current.msRequestFullscreen) {
-        refVideo.current.msRequestFullscreen();
-      } else if (refVideo.current.mozRequestFullScreen) {
-        refVidContainer.current.mozRequestFullScreen();
-      } else if (refVideo.current.webkitRequestFullscreen) {
-        refVidContainer.current.webkitRequestFullscreen(
-          Element.ALLOW_KEYBOARD_INPUT
-        );
+      if (browser.isX5) {
+        refVideo.current.x5RequestFullScreen();
       } else {
-        console.log("Browser not support fullscreen API!");
+        if (refVideo.current.requestFullscreen) {
+          refVidContainer.current.requestFullscreen().catch((err) => {
+            console.error("Error:", err);
+          });
+        } else if (refVideo.current.msRequestFullscreen) {
+          refVideo.current.msRequestFullscreen();
+        } else if (refVideo.current.mozRequestFullScreen) {
+          refVidContainer.current.mozRequestFullScreen();
+        } else if (refVideo.current.webkitRequestFullscreen) {
+          refVidContainer.current.webkitRequestFullscreen(
+            Element.ALLOW_KEYBOARD_INPUT
+          );
+        } else {
+          console.log("Browser not support fullscreen API!");
+        }
       }
     } else {
       /// Exit fullscreen
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.cancelFullScreen) {
-        document.cancelFullScreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
+      if (browser.isX5) {
+        refVideo.current.x5CancelFullScreen();
       } else {
-        console.log("Browser not support fullscreen API!");
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.cancelFullScreen) {
+          document.cancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else {
+          console.log("Browser not support fullscreen API!");
+        }
       }
     }
   };
@@ -730,6 +738,14 @@ export default function HLSPlayer(props) {
       if (document.pictureInPictureEnabled) {
         refVideo.current.requestPictureInPicture();
       }
+    }
+  };
+
+  /** AirPlay 处理 */
+  const handleAirplay = (event) => {
+    // Show dialog if supported
+    if (browser.airplay) {
+      refVideo.current.webkitShowPlaybackTargetPicker();
     }
   };
 
@@ -878,9 +894,14 @@ export default function HLSPlayer(props) {
             />
           </div>
         )}
-        {support.pip && (
+        {browser.pip && (
           <button id="picture-in-picture" onClick={handleTogglePip}>
             <FaExternalLinkAlt />
+          </button>
+        )}
+        {browser.airplay && (
+          <button id="airplay" onClick={handleAirplay}>
+            <FaOsi />
           </button>
         )}
         <button id="fullscreen" onClick={handleToggleFullscreen}>

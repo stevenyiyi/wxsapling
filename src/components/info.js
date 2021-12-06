@@ -18,6 +18,9 @@ export default function Info(props) {
         <p>{`原生全屏API支持：${browser.supportsNativeFullscreen}`}</p>
         <p>{`ShadowDOM支持：${browser.supportsShadowDOM}`}</p>
         <p>{`WebAssembly支持：${browser.supportsWASM}`}</p>
+        <p>{`画中画播放支持：${browser.pip}`}</p>
+        <p>{`AirPlay播放支持：${browser.airplay}`}</p>
+        <p>{`X5内核：${browser.isX5}`}</p>
       </div>
     </div>
   );
