@@ -13,10 +13,10 @@ body {
 .video__container {
   display: flex;
   position: absolute;
-  padding-top: 56.25%; /** 16: 9 aspect ratio */
   top: 0;
   left: 0;
-  overflow: hidden;
+  padding-top: 56.25%; /** 16: 9 aspect ratio */
+  height: 0;
 }
 
 .video__container button {
@@ -103,6 +103,10 @@ body {
   border-radius: 0 !important;
   z-index: 10000000;
 }
+
+.div__fullscreen + .video__controls {
+  position: fixed;
+}
 /* 
 Fullscreen Pseudo-class: 
 https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen 
@@ -113,10 +117,18 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen
   border-radius: 0 !important;
 }
 
+.video__container:-moz-full-screen + .video__controls {
+  position: fixed;
+}
+
 ::-moz-full-screen .video__container {
   height: 100%;
   margin: 0;
   border-radius: 0 !important;
+}
+
+::-moz-full-screen .video__container + .video__controls {
+  position: fixed;
 }
 
 .video__container:-webkit-full-screen {
@@ -124,15 +136,28 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen
   margin: 0;
   border-radius: 0 !important;
 }
+
+.video__container:-webkit-full-screen + .video__controls {
+  position: fixed;
+}
 .video__container:-ms-fullscreen {
   height: 100%;
   margin: 0;
   border-radius: 0 !important;
 }
+
+.video__container:-ms-fullscreen + .video__controls {
+  position: fixed;
+}
+
 .video__container:fullscreen {
   height: 100%;
   margin: 0;
   border-radius: 0 !important;
+}
+
+.video__container:fullscreen + .video__controls {
+  position: fixed;
 }
 
 .chat__container {

@@ -10,7 +10,8 @@
 .player {
   display: flex;
   flex: 3 1 75%;
-  height: 0;
+  overflow: auto;
+  height: 100%;
 }
 .aspect_ratio_43 {
   padding-top: 75%; /* 4:3 Aspect Ratio (divide 3 by 4 = 0.75) */
