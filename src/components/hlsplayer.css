@@ -73,14 +73,12 @@ body {
   left: 0;
   right: 0;
   color: white;
-  font-size: 0.8em;
   width: 100%;
   transition: 0.3s;
-  min-height: 40px;
+  height: 40px;
   padding: 10px 5px;
   background-color: black;
   background-color: rgba(0, 0, 0, 0.75);
-  z-index: 2147483647;
 }
 
 .video__container video:hover + .video__controls {

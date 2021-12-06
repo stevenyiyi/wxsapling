@@ -426,7 +426,6 @@ export default function HLSPlayer(props) {
       } else if (event.type === "stalled") {
         console.log("stalled event!");
         setState(PLAYER_STATE_STALLED);
-        setLoading(false);
       } else if (event.type === "empied") {
         console.log("emptied event!");
         setState(PLAYER_STATE_EMPTIED);
