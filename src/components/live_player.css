@@ -3,23 +3,9 @@
   position: relative;
   flex-direction: row;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 38px);
   padding: 0;
   margin: 0;
-}
-.player {
-  display: flex;
-  flex: 3 1 75%;
-  overflow: auto;
-}
-.aspect_ratio_43 {
-  padding-top: 75%; /* 4:3 Aspect Ratio (divide 3 by 4 = 0.75) */
-}
-.aspect_ratio_169 {
-  padding-top: 56.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
-}
-.aspect_ratio_d1 {
-  padding-top: 81.82%; /* D1(704 * 576) */
 }
 
 .content__container {
@@ -123,12 +109,9 @@
 }
 
 /** Layout fit mobile device */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 768px) {
   .container {
     flex-direction: column;
-  }
-  .player {
-    flex: none;
   }
   .content__container {
     flex: 1;

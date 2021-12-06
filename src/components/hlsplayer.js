@@ -123,8 +123,6 @@ export default function HLSPlayer(props) {
     controls,
     autoplay,
     hlsConfig,
-    width,
-    height,
     poster,
     videoProps,
     cameras,
@@ -134,6 +132,7 @@ export default function HLSPlayer(props) {
     onPlayChange
   } = props;
   const [openSnackbar] = useSnackbar();
+  const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const [checkMpd, setCheckMpd] = React.useState("");
   const [streamUri, setStreamUri] = React.useState("");
   const [seekval, setSeekval] = React.useState(0);
@@ -178,6 +177,18 @@ export default function HLSPlayer(props) {
           refControls.current.classList.toggle("show");
         }
       });
+    }
+  }, []);
+
+  React.useLayoutEffect(() => {
+    if (refVidContainer.current) {
+      setDimensions({
+        width: refVidContainer.current.offsetWidth,
+        height: refVidContainer.current.offsetHeight
+      });
+      console.log(
+        `useLayoutEffect, width:${refVidContainer.current.offsetWidth}, height:${refVidContainer.current.offsetHeight}`
+      );
     }
   }, []);
 
@@ -792,8 +803,8 @@ export default function HLSPlayer(props) {
     <div ref={refVidContainer} className="video__container">
       <video
         ref={refVideo}
-        width={width}
-        hieght={height}
+        width={dimensions.width}
+        hieght={dimensions.height}
         controls={controls}
         crossOrigin="use-credentials"
         poster={poster}
@@ -896,8 +907,6 @@ HLSPlayer.propTypes = {
   controls: PropTypes.bool,
   autoplay: PropTypes.bool,
   hlsConfig: PropTypes.object, //https://github.com/dailymotion/hls.js/blob/master/API.md#fine-tuning
-  width: PropTypes.number,
-  height: PropTypes.number,
   poster: PropTypes.string,
   videoProps: PropTypes.object,
   cameras: PropTypes.object,
@@ -923,8 +932,6 @@ HLSPlayer.defaultProps = {
       return new Request(context.url, initParams);
     }
   },
-  width: 888,
-  height: 500,
   poster: "",
   videoProps: {},
   cameras: {},

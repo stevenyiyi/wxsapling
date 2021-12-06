@@ -19,7 +19,6 @@ export default function LivePlayer(props) {
   const ws = React.useRef(null);
   const [openSnackbar] = useSnackbar();
   const [streamUri, setStreamUri] = React.useState("");
-  const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const [camlist, setCamlist] = React.useState(null);
   const [camsRefreshId, setCamsRefreshId] = React.useState(0);
   const [showPerson, setShowPerson] = React.useState(false);
@@ -72,18 +71,6 @@ export default function LivePlayer(props) {
       })
       .catch((e) => console.error("Error:", e));
   }, [camsRefreshId]);
-
-  React.useLayoutEffect(() => {
-    if (refVideo.current) {
-      setDimensions({
-        width: refVideo.current.offsetWidth,
-        height: refVideo.current.offsetHeight
-      });
-      console.log(
-        `useLayoutEffect, width:${refVideo.current.offsetWidth}, height:${refVideo.current.offsetHeight}`
-      );
-    }
-  }, []);
 
   /** 处理用户点击播放列表 */
   const handlePlayUri = (uri, is_main_stream) => {
@@ -228,22 +215,18 @@ export default function LivePlayer(props) {
           protocol="chat"
         />
       )}
-      <div className="player" ref={refVideo}>
-        <HLSPlayer
-          url={streamUri}
-          width={dimensions.width}
-          height={dimensions.height}
-          autoplay={true}
-          hlsConfig={hlsconfig}
-          poster=""
-          videoProps={{}}
-          cameras={camlist}
-          messages={messages}
-          onRefreshCamlist={handleRefreshCamList}
-          onSendMessage={handleJabberFromPlayer}
-          onPlayChange={handlePalyChange}
-        />
-      </div>
+      <HLSPlayer
+        url={streamUri}
+        autoplay={true}
+        hlsConfig={hlsconfig}
+        poster=""
+        videoProps={{}}
+        cameras={camlist}
+        messages={messages}
+        onRefreshCamlist={handleRefreshCamList}
+        onSendMessage={handleJabberFromPlayer}
+        onPlayChange={handlePalyChange}
+      />
       <div className="content__container">
         <div className="inner__content-container">
           {camlist && (
