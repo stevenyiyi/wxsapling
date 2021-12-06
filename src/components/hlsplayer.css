@@ -276,13 +276,12 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen
   margin: 0 1%;
 }
 
-/* 
-Special Shadow DOM Settings to Override Default Controls: 
-https://css-tricks.com/custom-controls-in-html5-video-full-screen/ 
-*/
-video::-webkit-media-controls-enclosure {
+/*hide controls from shadow DOM in webkit browsers*/
+/* hides controls only in fullscreen, but shows them in normal screen even if controls is set to false*/
+/*the most specific pseudo-element to target video controls on full screen*/
+/** video::-webkit-media-controls-enclosure {
   display: none !important;
-}
+} */
 
 /** sidebar */
 .sidedlg {
