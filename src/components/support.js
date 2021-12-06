@@ -1,6 +1,5 @@
 import { transitionEndEvent } from "../utils/animation";
 import browser from "../utils/browser";
-import { createElement } from "../utils/elements";
 import is from "../utils/is";
 
 // Default codecs for checking mimetype support
@@ -35,35 +34,6 @@ const support = {
     };
   },
 
-  // Picture-in-picture support
-  // Safari & Chrome only currently
-  pip: (() => {
-    if (browser.isIPhone) {
-      return false;
-    }
-
-    // Safari
-    // https://developer.apple.com/documentation/webkitjs/adding_picture_in_picture_to_your_safari_media_controls
-    if (is.function(createElement("video").webkitSetPresentationMode)) {
-      return true;
-    }
-
-    // Chrome
-    // https://developers.google.com/web/updates/2018/10/watch-video-using-picture-in-picture
-    if (
-      document.pictureInPictureEnabled &&
-      !createElement("video").disablePictureInPicture
-    ) {
-      return true;
-    }
-
-    return false;
-  })(),
-
-  // Airplay support
-  // Safari only currently
-  airplay: is.function(window.WebKitPlaybackTargetAvailabilityEvent),
-
   // Inline playback support
   // https://webkit.org/blog/6784/new-video-policies-for-ios/
   playsinline: "playsInline" in document.createElement("video"),
@@ -80,7 +50,7 @@ const support = {
     let type = input;
 
     // Verify we're using HTML5 and there's no media type mismatch
-    if (!this.isHTML5 || mediaType !== this.type) {
+    if (mediaType !== this.type) {
       return false;
     }
 

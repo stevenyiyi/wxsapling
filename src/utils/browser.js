@@ -2,6 +2,8 @@
 // Browser sniffing
 // Unfortunately, due to mixed support, UA sniffing is required
 // ==========================================================================
+import { createElement } from "./elements";
+import is from "./is";
 const USER_AGENT = window.navigator.userAgent || "";
 const isEdge = () => /Edg/i.test(USER_AGENT);
 const isChrome = () =>
@@ -17,6 +19,7 @@ const isQQX5 = () => {
   if (!match) return false;
   return (match[1] || "") > 7.1;
 };
+const isIPHONE = () => /(iPhone|iPod)/gi.test(navigator.platform);
 const browser = {
   isIE: Boolean(window.document.documentMode),
   ieVersion: (function () {
@@ -34,7 +37,7 @@ const browser = {
     return version;
   })(),
   isEdge: isEdge(),
-  isFirefox: /Firefox/i.test(window.navigator.userAgent),
+  isFirefox: /Firefox/i.test(USER_AGENT),
   isChrome: isChrome(),
   chromeVersion: (function () {
     const match = USER_AGENT.match(/(Chrome|CriOS)\/(\d+)/);
@@ -47,7 +50,7 @@ const browser = {
   isWebkit:
     "WebkitAppearance" in document.documentElement.style &&
     !/Edge/.test(navigator.userAgent),
-  isIPhone: /(iPhone|iPod)/gi.test(navigator.platform),
+  isIPhone: isIPHONE(),
   isIos:
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
     /(iPad|iPhone|iPod)/gi.test(navigator.platform),
@@ -115,7 +118,34 @@ const browser = {
       }
     } catch (e) {}
     return false;
-  })()
+  })(),
+  // Picture-in-picture support
+  // Safari & Chrome only currently
+  pip: (() => {
+    if (isIPHONE()) {
+      return false;
+    }
+
+    // Safari
+    // https://developer.apple.com/documentation/webkitjs/adding_picture_in_picture_to_your_safari_media_controls
+    if (is.function(createElement("video").webkitSetPresentationMode)) {
+      return true;
+    }
+
+    // Chrome
+    // https://developers.google.com/web/updates/2018/10/watch-video-using-picture-in-picture
+    if (
+      document.pictureInPictureEnabled &&
+      !createElement("video").disablePictureInPicture
+    ) {
+      return true;
+    }
+
+    return false;
+  })(),
+  // Airplay support
+  // Safari only currently
+  airplay: is.function(window.WebKitPlaybackTargetAvailabilityEvent)
 };
 
 export default browser;
