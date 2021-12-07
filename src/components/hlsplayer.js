@@ -180,6 +180,152 @@ export default function HLSPlayer(props) {
     }
   }, []);
 
+  /** MSE load and playing */
+  const msePlay = React.useCallback(
+    (mutual) => {
+      setLoading(true);
+      if (refHls.current === null) {
+        refHls.current = new Hls(hlsConfig);
+        refHls.current.attachMedia(refVideo.current);
+      }
+      refHls.current.on(Hls.Events.MEDIA_ATTACHED, () => {
+        console.log("video and hls.js are now bound together !");
+        refHls.current.loadSource(streamUri);
+        refHls.current.on(Hls.Events.MANIFEST_PARSED, () => {
+          setDuration(get_duration(refVideo.current));
+          let hasaudio = has_audio(refVideo.current);
+          setHasAudio(hasaudio);
+
+          if (autoplay || mutual) {
+            tryPlaying(hasaudio);
+            console.log(`duration:${refVideo.current.duration}`);
+          }
+        });
+      });
+      refHls.current.on(Hls.Events.ERROR, function (event, data) {
+        setLoading(false);
+        if (data.fatal) {
+          if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            console.log("media error encountered, try to recover");
+            refHls.current.recoverMediaError();
+          } else {
+            console.log("Error,type:" + data.type + " details:" + data.details);
+            refHls.current.stopLoad();
+            ///refHls.current.detachMedia();
+            ///refHls.current.destroy();
+            /// Handling hls.js error
+            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+              let details = data.details;
+              if (
+                details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR ||
+                details === Hls.ErrorDetails.LEVEL_LOAD_ERROR ||
+                details === Hls.ErrorDetails.AUDIO_TRACK_LOAD_ERROR ||
+                details === Hls.ErrorDetails.FRAG_LOAD_ERROR ||
+                details === Hls.ErrorDetails.KEY_LOAD_ERROR
+              ) {
+                let rcode = data.response.code;
+                if (rcode === 403) {
+                  openSnackbar(
+                    "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!"
+                  );
+                  /// triggerPlayerTimer(error.url);
+                } else if (rcode === 404) {
+                  openSnackbar("观看的流已经下线，将重新刷新观看列表!");
+                  onRefreshCamlist();
+                } else {
+                  openSnackbar(`服务器返回错误代码:${rcode}`);
+                  onRefreshCamlist();
+                }
+              } else if (
+                details === Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT ||
+                details === Hls.ErrorDetails.KEY_LOAD_TIMEOUT ||
+                details === Hls.ErrorDetails.LEVEL_LOAD_TIMEOUT
+              ) {
+                openSnackbar("加载文件超时，请检查网络是否正常...");
+                onRefreshCamlist();
+              } else if (
+                details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR ||
+                details === Hls.ErrorDetails.LEVEL_EMPTY_ERROR
+              ) {
+                openSnackbar(`解析mainfest错误: ${data.reason}`);
+              } else {
+                openSnackbar("服务器出了点问题，请稍候再试!");
+              }
+            } else {
+              openSnackbar(
+                "无法播放此视频,错误类型：" +
+                  data.type +
+                  ",错误代码:" +
+                  data.details +
+                  ",描述:" +
+                  data.reason
+              );
+            }
+          }
+        }
+      });
+    },
+    [autoplay, hlsConfig, onRefreshCamlist, streamUri, tryPlaying]
+  );
+
+  /** Native load and play */
+  const nativePlay = React.useCallback(
+    (mutual) => {
+      // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+      // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
+      // This is using the built-in support of the plain video element, without using hls.js.
+      // Note: it would be more normal to wait on the 'canplay' event below however on Safari (where you are most likely to find built-in HLS support) the video.src URL must be on the user-driven
+      // white-list before a 'canplay' event will be emitted; the last video event that can be reliably listened-for when the URL is not on the white-list is 'loadedmetadata'.
+      console.log("Browser not support mse, but can play m3u8!");
+      setLoading(true);
+      refVideo.current.src = streamUri;
+      refVideo.current.load();
+      refVideo.current.oncanplaythrough = (event) => {
+        setDuration(get_duration(refVideo.current));
+        let hasaudio = has_audio(refVideo.current);
+        setHasAudio(hasaudio);
+        if (autoplay || mutual) {
+          tryPlaying(hasaudio);
+        }
+      };
+
+      refVideo.current.onerror = (error) => {
+        setLoading(false);
+        refVideo.current.pause();
+        refVideo.current.src = "";
+        refVideo.current.removeAttribute("src"); // empty source
+        refVideo.current.load();
+        setState(PLAYER_STATE_ERROR);
+        console.log(error);
+        console.log(`Network status:${refVideo.networkState}`);
+        /** Handle native video error */
+        let ecode = error.code;
+        let msg = "";
+        switch (ecode) {
+          case MediaError.MEDIA_ERR_NETWORK:
+            msg = "播放超时，将重新刷新观看列表...";
+            onRefreshCamlist();
+            break;
+          case MediaError.MEDIA_ERR_DECODE:
+            msg = "浏览器不支持播放该视频格式!";
+            break;
+          case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+            msg = "不支持的播放格式，将重刷新列表...";
+            onRefreshCamlist();
+            break;
+          case MediaError.MEDIA_ERR_ABORTED:
+            msg = "请求播放终止.";
+            break;
+          default:
+            msg = "未知错误!";
+            break;
+        }
+        openSnackbar(`error:${msg}`);
+      };
+    },
+    [autoplay, onRefreshCamlist, streamUri, tryPlaying]
+  );
+
   React.useLayoutEffect(() => {
     if (refVidContainer.current) {
       setDimensions({
@@ -263,147 +409,6 @@ export default function HLSPlayer(props) {
   }, [url]);
 
   React.useEffect(() => {
-    const initMsePlayer = () => {
-      let ohls = new Hls(hlsConfig);
-      setLoading(true);
-      refHls.current = ohls;
-      refHls.current.attachMedia(refVideo.current);
-      refHls.current.on(Hls.Events.MEDIA_ATTACHED, () => {
-        console.log("video and hls.js are now bound together !");
-        refHls.current.loadSource(streamUri);
-        refHls.current.on(Hls.Events.MANIFEST_PARSED, () => {
-          setDuration(get_duration(refVideo.current));
-          let hasaudio = has_audio(refVideo.current);
-          setHasAudio(hasaudio);
-
-          if (autoplay) {
-            tryPlaying(hasaudio);
-            console.log(`duration:${refVideo.current.duration}`);
-          }
-        });
-      });
-      refHls.current.on(Hls.Events.ERROR, function (event, data) {
-        setLoading(false);
-        if (data.fatal) {
-          if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-            console.log("media error encountered, try to recover");
-            refHls.current.recoverMediaError();
-          } else {
-            console.log("Error,type:" + data.type + " details:" + data.details);
-            refHls.current.stopLoad();
-            refHls.current.detachMedia();
-            refHls.current.destroy();
-            /// Handling hls.js error
-            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-              let details = data.details;
-              if (
-                details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR ||
-                details === Hls.ErrorDetails.LEVEL_LOAD_ERROR ||
-                details === Hls.ErrorDetails.AUDIO_TRACK_LOAD_ERROR ||
-                details === Hls.ErrorDetails.FRAG_LOAD_ERROR ||
-                details === Hls.ErrorDetails.KEY_LOAD_ERROR
-              ) {
-                let rcode = data.response.code;
-                if (rcode === 403) {
-                  openSnackbar(
-                    "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!"
-                  );
-                  /// triggerPlayerTimer(error.url);
-                } else if (rcode === 404) {
-                  openSnackbar("观看的流已经下线，将重新刷新观看列表!");
-                  onRefreshCamlist();
-                } else {
-                  openSnackbar(`服务器返回错误代码:${rcode}`);
-                  onRefreshCamlist();
-                }
-              } else if (
-                details === Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT ||
-                details === Hls.ErrorDetails.KEY_LOAD_TIMEOUT ||
-                details === Hls.ErrorDetails.LEVEL_LOAD_TIMEOUT
-              ) {
-                openSnackbar("加载文件超时，请检查网络是否正常...");
-                onRefreshCamlist();
-              } else if (
-                details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR ||
-                details === Hls.ErrorDetails.LEVEL_EMPTY_ERROR
-              ) {
-                openSnackbar(`解析mainfest错误: ${data.reason}`);
-              } else {
-                openSnackbar("服务器出了点问题，请稍候再试!");
-              }
-            } else {
-              openSnackbar(
-                "无法播放此视频,错误类型：" +
-                  data.type +
-                  ",错误代码:" +
-                  data.details +
-                  ",描述:" +
-                  data.reason
-              );
-            }
-          }
-        }
-      });
-    };
-    const initNativePlayer = () => {
-      // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
-      // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
-      // This is using the built-in support of the plain video element, without using hls.js.
-      // Note: it would be more normal to wait on the 'canplay' event below however on Safari (where you are most likely to find built-in HLS support) the video.src URL must be on the user-driven
-      // white-list before a 'canplay' event will be emitted; the last video event that can be reliably listened-for when the URL is not on the white-list is 'loadedmetadata'.
-      console.log("Browser not support mse, but can play m3u8!");
-      setLoading(true);
-      refVideo.current.src = streamUri;
-      refVideo.current.load();
-      refVideo.current.addEventListener("canplaythrough", () => {
-        setDuration(get_duration(refVideo.current));
-        let hasaudio = has_audio(refVideo.current);
-        setHasAudio(hasaudio);
-        if (autoplay) {
-          tryPlaying(hasaudio);
-        }
-      });
-
-      refVideo.current.addEventListener(
-        "error",
-        () => {
-          setLoading(false);
-          let error = refVideo.current.error;
-          refVideo.current.pause();
-          refVideo.current.src = "";
-          refVideo.current.removeAttribute("src"); // empty source
-          refVideo.current.load();
-          setState(PLAYER_STATE_ERROR);
-          console.log(error);
-          console.log(`Network status:${refVideo.networkStatus}`);
-          /** Handle native video error */
-          let ecode = error.code;
-          let msg = "";
-          switch (ecode) {
-            case MediaError.MEDIA_ERR_NETWORK:
-              msg = "播放超时，将重新刷新观看列表...";
-              onRefreshCamlist();
-              break;
-            case MediaError.MEDIA_ERR_DECODE:
-              msg = "浏览器不支持播放该视频格式!";
-              break;
-            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-              msg = "不支持的播放格式，将重刷新列表...";
-              onRefreshCamlist();
-              break;
-            case MediaError.MEDIA_ERR_ABORTED:
-              msg = "请求播放终止.";
-              break;
-            default:
-              msg = "未知错误!";
-              break;
-          }
-          openSnackbar(`error:${msg}`);
-        },
-        true
-      );
-    };
-
     const handleVideoEvent = (event) => {
       if (event.type === "play") {
         setState(PLAYER_STATE_PLAY);
@@ -469,7 +474,7 @@ export default function HLSPlayer(props) {
       refVideo.current.removeEventListener("stalled", handleVideoEvent);
       refVideo.current.removeEventListener("suppend", handleVideoEvent);
     };
-
+    const videoElement = refVideo.current;
     if (streamUri) {
       console.log(`play stream uri:${streamUri}`);
       setLoading(false);
@@ -481,16 +486,14 @@ export default function HLSPlayer(props) {
           refHls.current.destroy();
         }
         registerVideoEvents();
-        initMsePlayer();
-      } else if (
-        refVideo.current.canPlayType("application/vnd.apple.mpegurl")
-      ) {
-        refVideo.current.pause();
-        refVideo.current.src = ""; // empty source
-        refVideo.current.removeAttribute("src");
-        refVideo.current.load();
+        msePlay(false);
+      } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+        videoElement.pause();
+        videoElement.src = ""; // empty source
+        videoElement.removeAttribute("src");
+        videoElement.load();
         registerVideoEvents();
-        initNativePlayer();
+        nativePlay(false);
       } else {
         openSnackbar(
           "浏览器太老了,请下载一款支持MediaSourceExtension功能的浏览器!"
@@ -506,12 +509,12 @@ export default function HLSPlayer(props) {
       }
       if (
         Hls.isSupported() ||
-        refVideo.current.canPlayType("application/vnd.apple.mpegurl")
+        videoElement.canPlayType("application/vnd.apple.mpegurl")
       ) {
         unregisterVideoEvents();
       }
     };
-  }, [streamUri, autoplay, hlsConfig, onRefreshCamlist, tryPlaying]);
+  }, [streamUri, msePlay, nativePlay, openSnackbar]);
 
   /** Not fullscreen api supported */
   const toggleDivFullscreen = React.useCallback(
@@ -790,7 +793,7 @@ export default function HLSPlayer(props) {
       if (Hls.isSupported()) {
         refHls.current.startLoad();
       } else {
-        refVideo.current.load();
+        nativePlay(true);
       }
     }
   };
