@@ -18,6 +18,13 @@ body {
   height: 0;
 }
 
+/** All elements inherit border-box sizing */
+.video__container *,
+.video__container *:before,
+.video__container *:after {
+  box-sizing: inherit;
+}
+
 .video__container button {
   vertical-align: middle;
   background-color: transparent;
