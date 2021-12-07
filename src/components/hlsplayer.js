@@ -438,6 +438,7 @@ export default function HLSPlayer(props) {
       } else if (event.type === "stalled") {
         console.log("stalled event!");
         setState(PLAYER_STATE_STALLED);
+        setLoading(true);
       } else if (event.type === "empied") {
         console.log("emptied event!");
         setState(PLAYER_STATE_EMPTIED);
@@ -622,7 +623,7 @@ export default function HLSPlayer(props) {
     const currentAngle = angle();
 
     if (currentAngle === 90 || currentAngle === 270 || currentAngle === -90) {
-      if (refVideo.current.paused() === false) {
+      if (refVideo.current.paused === false) {
         if (browser.supportsNativeFullscreen) {
           toggleNativeFullscreen(true);
         } else {
