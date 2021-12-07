@@ -147,11 +147,11 @@ export default function HLSPlayer(props) {
   const [cleanupViewport, setCleanupViewport] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const refVidContainer = React.useRef();
-  const refHls = React.useRef();
-  const refVideo = React.useRef();
-  const refControls = React.useRef();
-  const refFsMenuBut = React.useRef();
-  const refFsMenu = React.useRef();
+  const refHls = React.useRef(null);
+  const refVideo = React.useRef(null);
+  const refControls = React.useRef(null);
+  const refFsMenuBut = React.useRef(null);
+  const refFsMenu = React.useRef(null);
   useOutsideClick(refFsMenu, (event) => {
     if (!refFsMenuBut.current.contains(event.target)) {
       refFsMenu.current.classList.remove("show");
