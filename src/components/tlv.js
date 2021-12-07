@@ -197,7 +197,7 @@ function tlv_parse_int(dv, cursor) {
   } else if (len === 4) {
     val = dv.getUint32(cursor.offset);
   } else if (len === 8) {
-    val = dv.getBigUint64(cursor.offset);
+    val = dv.getFloat64(cursor.offset);
   } else {
     throw new Error(`Read tlv int, but size is:${len}`);
   }
@@ -412,7 +412,7 @@ function tlv_encode_int(dv, cursor, val) {
     cursor.offset += 4;
     lsize = 4;
   } else {
-    dv.setBigInt64(cursor.offset, BigInt(val));
+    dv.setFloat64(cursor.offset, val);
     cursor.offset += 8;
     lsize = 8;
   }
