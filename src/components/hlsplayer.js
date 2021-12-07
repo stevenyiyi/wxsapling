@@ -619,7 +619,7 @@ export default function HLSPlayer(props) {
     const currentAngle = angle();
     if (currentAngle === 90 || currentAngle === 270 || currentAngle === -90) {
       if (refVideo.current.paused === false) {
-        if (browser.supportsNativeFullscreen && !isFullScreen) {
+        if (browser.supportsNativeFullscreen) {
           toggleNativeFullscreen(true);
         } else {
           toggleDivFullscreen(true);
