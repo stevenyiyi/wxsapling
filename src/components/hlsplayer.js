@@ -147,11 +147,11 @@ export default function HLSPlayer(props) {
   const [cleanupViewport, setCleanupViewport] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const refVidContainer = React.useRef();
-  const refHls = React.useRef();
-  const refVideo = React.useRef();
-  const refControls = React.useRef();
-  const refFsMenuBut = React.useRef();
-  const refFsMenu = React.useRef();
+  const refHls = React.useRef(null);
+  const refVideo = React.useRef(null);
+  const refControls = React.useRef(null);
+  const refFsMenuBut = React.useRef(null);
+  const refFsMenu = React.useRef(null);
   useOutsideClick(refFsMenu, (event) => {
     if (!refFsMenuBut.current.contains(event.target)) {
       refFsMenu.current.classList.remove("show");
@@ -184,10 +184,8 @@ export default function HLSPlayer(props) {
   const msePlay = React.useCallback(
     (mutual) => {
       setLoading(true);
-      if (refHls.current === null) {
-        refHls.current = new Hls(hlsConfig);
-        refHls.current.attachMedia(refVideo.current);
-      }
+      refHls.current = new Hls(hlsConfig);
+      refHls.current.attachMedia(refVideo.current);
       refHls.current.on(Hls.Events.MEDIA_ATTACHED, () => {
         console.log("video and hls.js are now bound together !");
         refHls.current.loadSource(streamUri);
@@ -211,6 +209,9 @@ export default function HLSPlayer(props) {
           } else {
             console.log("Error,type:" + data.type + " details:" + data.details);
             refHls.current.stopLoad();
+            refHls.current.detachMedia();
+            refHls.destory();
+            setState(PLAYER_STATE_ERROR);
             ///refHls.current.detachMedia();
             ///refHls.current.destroy();
             /// Handling hls.js error
@@ -482,7 +483,6 @@ export default function HLSPlayer(props) {
           console.log("Destory hls!");
           refHls.current.stopLoad();
           refHls.current.detachMedia();
-          refHls.current.destroy();
         }
         registerVideoEvents();
         msePlay(false);
@@ -581,43 +581,35 @@ export default function HLSPlayer(props) {
   const toggleNativeFullscreen = (toggle) => {
     if (toggle) {
       /// Enter fullscreen
-      if (browser.isX5) {
-        refVideo.current.x5RequestFullScreen();
+      if (refVideo.current.requestFullscreen) {
+        refVidContainer.current.requestFullscreen().catch((err) => {
+          console.error("Error:", err);
+        });
+      } else if (refVideo.current.msRequestFullscreen) {
+        refVideo.current.msRequestFullscreen();
+      } else if (refVideo.current.mozRequestFullScreen) {
+        refVidContainer.current.mozRequestFullScreen();
+      } else if (refVideo.current.webkitRequestFullscreen) {
+        refVidContainer.current.webkitRequestFullscreen(
+          Element.ALLOW_KEYBOARD_INPUT
+        );
       } else {
-        if (refVideo.current.requestFullscreen) {
-          refVidContainer.current.requestFullscreen().catch((err) => {
-            console.error("Error:", err);
-          });
-        } else if (refVideo.current.msRequestFullscreen) {
-          refVideo.current.msRequestFullscreen();
-        } else if (refVideo.current.mozRequestFullScreen) {
-          refVidContainer.current.mozRequestFullScreen();
-        } else if (refVideo.current.webkitRequestFullscreen) {
-          refVidContainer.current.webkitRequestFullscreen(
-            Element.ALLOW_KEYBOARD_INPUT
-          );
-        } else {
-          console.log("Browser not support fullscreen API!");
-        }
+        console.log("Browser not support fullscreen API!");
       }
     } else {
       /// Exit fullscreen
-      if (browser.isX5) {
-        refVideo.current.x5CancelFullScreen();
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.cancelFullScreen) {
+        document.cancelFullScreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.cancelFullScreen) {
-          document.cancelFullScreen();
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        } else {
-          console.log("Browser not support fullscreen API!");
-        }
+        console.log("Browser not support fullscreen API!");
       }
     }
   };
@@ -625,7 +617,6 @@ export default function HLSPlayer(props) {
   /** 移动设备屏幕切换处理 */
   const rotationHandler = React.useCallback(() => {
     const currentAngle = angle();
-
     if (currentAngle === 90 || currentAngle === 270 || currentAngle === -90) {
       if (refVideo.current.paused === false) {
         if (browser.supportsNativeFullscreen) {
@@ -790,7 +781,7 @@ export default function HLSPlayer(props) {
       refVideo.current.pause();
     } else {
       if (Hls.isSupported()) {
-        refHls.current.startLoad();
+        msePlay(true);
       } else {
         nativePlay(true);
       }
