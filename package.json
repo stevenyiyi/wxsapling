@@ -11,6 +11,7 @@
     "js-cookie": "latest",
     "prop-types": "latest",
     "react": "latest",
+    "react-app-polyfill": "latest",
     "react-dom": "latest",
     "react-emoji": "latest",
     "react-icons": "latest",
