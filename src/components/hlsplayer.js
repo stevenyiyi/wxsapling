@@ -514,7 +514,7 @@ export default function HLSPlayer(props) {
         unregisterVideoEvents();
       }
     };
-  }, [streamUri, msePlay, nativePlay, openSnackbar]);
+  }, [streamUri, msePlay, nativePlay]);
 
   /** Not fullscreen api supported */
   const toggleDivFullscreen = React.useCallback(
