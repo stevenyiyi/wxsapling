@@ -374,6 +374,8 @@ export default function HLSPlayer(props) {
           refVideo.current.removeAttribute("src"); // empty source
           refVideo.current.load();
           setState(PLAYER_STATE_ERROR);
+          console.log(error);
+          console.log(`Network status:${refVideo.networkStatus}`);
           /** Handle native video error */
           let ecode = error.code;
           let msg = "";
