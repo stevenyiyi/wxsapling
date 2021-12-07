@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "dependencies": {
     "axios": "latest",
+    "babel-plugin-transform-jsbi-to-bigint": "latest",
     "crypto-js": "latest",
     "hls.js": "latest",
     "js-cookie": "latest",
