@@ -25,7 +25,6 @@ export default function LivePlayer(props) {
   const [showInfo, setShowInfo] = React.useState(false);
   const [chatText, setChatText] = React.useState("");
   const [messages, setMessages] = React.useState([]);
-  const refVideo = React.useRef();
   const refPersonBut = React.useRef();
   const refInfoBut = React.useRef();
   const refPerson = React.useRef();

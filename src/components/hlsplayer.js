@@ -160,23 +160,22 @@ export default function HLSPlayer(props) {
 
   /** 尝试播放媒体 */
   const tryPlaying = React.useCallback((hasaudio) => {
-    var playPromise = refVideo.current.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(function (error) {
-        if (error.name === "NotAllowedError") {
-          if (hasaudio) {
-            refVideo.current.muted = true;
-            tryPlaying();
-          } else {
-            /** 需要用户交互式播放 */
-            setLoading(false);
-            refControls.current.classList.toggle("show");
-          }
+    try {
+      refVideo.current.play();
+    } catch (error) {
+      if (error.name === "NotAllowedError") {
+        if (hasaudio && !refVideo.current.muted) {
+          refVideo.current.muted = true;
+          tryPlaying();
         } else {
+          /** 需要用户交互式播放 */
           setLoading(false);
           refControls.current.classList.toggle("show");
         }
-      });
+      } else {
+        setLoading(false);
+        refControls.current.classList.toggle("show");
+      }
     }
   }, []);
 
