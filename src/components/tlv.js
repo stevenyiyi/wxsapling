@@ -330,7 +330,7 @@ function tlv_parse_array(dv, cursor) {
   }
   while (1) {
     /// value
-    let t = dv.getInt8(cursor.offset);
+    let t = tlv_parse_type(dv, cursor);
     if (t === TLV_TYPE_END) {
       if (tlv_parse_length(dv, cursor) === 0) {
         /// array end
