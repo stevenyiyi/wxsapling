@@ -858,6 +858,7 @@ export default function HLSPlayer(props) {
             <input
               type="text"
               placeholder="说点什么？"
+              value={message}
               onChange={(event) => setMessage(event.target.value.trim())}
               onKeyPress={(event) => {
                 if (event.key === "Enter") {

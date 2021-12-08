@@ -1,6 +1,6 @@
 .devlist_container {
   display: flex;
-  flex: 1;
+  flex: none;
   align-items: center;
   justify-content: space-between;
 }

@@ -247,6 +247,12 @@ export default function LivePlayer(props) {
           placeholder="说点什么？"
           value={chatText}
           onChange={(e) => setChatText(e.target.value.trim())}
+          onKeyPress={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleJabber(event);
+            }
+          }}
         />
         <div className="icon" onClick={handleJabber}>
           <FaTelegramPlane />
