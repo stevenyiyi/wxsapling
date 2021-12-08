@@ -389,7 +389,9 @@ table {
 html,
 body {
   font-size: 100%;
-  font: 300 13px/1.6 "Helvetica Neue", Helvetica, Arial;
+  font: 1em "Fira Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
   background: #fff;
