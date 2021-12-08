@@ -48,9 +48,7 @@ function memorySizeOf(obj) {
             objClass === "Uint32Array" ||
             objClass === "Int32Array" ||
             objClass === "Float32Array" ||
-            objClass === "Float64Array" ||
-            objClass === "BigInt64Array" ||
-            objClass === "BigUint64Array"
+            objClass === "Float64Array"
           ) {
             bytes += obj.byteLength + 6;
           } else {
@@ -476,9 +474,7 @@ function tlv_encode_value(dv, cursor, val) {
       classObject === "Uint32Array" ||
       classObject === "Int32Array" ||
       classObject === "Float32Array" ||
-      classObject === "Float64Array" ||
-      classObject === "BigUint64Array" ||
-      classObject === "BigInt64Array"
+      classObject === "Float64Array"
     ) {
       tlv_encode_buffer(dv, cursor, val);
     } else {
