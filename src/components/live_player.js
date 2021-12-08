@@ -11,7 +11,7 @@ import Websocket from "./websocket";
 import { useSnackbar } from "./use_snackbar";
 import "./live_player.css";
 
-const ENDPOINT = "ws://192.168.3.200/ws_group_chat";
+const ENDPOINT = "ws://localhost/ws_group_chat";
 
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);

@@ -11,20 +11,20 @@
 /* The actual tooltip, default placement top */
 .tooltip .tooltiptext {
   visibility: hidden;
-  font-size: 1rem;
+  font-size: 0.8rem;
   max-width: 150px;
   background-color: #777777;
   color: #fff;
   text-align: left;
   border-radius: 6px;
-  padding: 5px 5px;
+  padding: 4px;
   position: absolute;
   z-index: 100;
 }
 
 .tooltip .tooltiptext p,
 .tooltip .tooltiptext span {
-  line-height: 110%;
+  line-height: 120%;
   margin: 4px 6px;
 }
 
