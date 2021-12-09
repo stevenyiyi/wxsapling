@@ -97,7 +97,7 @@ const Login = (props) => {
             setMessage({
               ...message,
               show: true,
-              text: "登录成功，将转向主页！"
+              text: "登录成功,将转向主页!"
             });
             redirectToCurrent();
           } else if (result === ERR_NO_ACCOUNT) {

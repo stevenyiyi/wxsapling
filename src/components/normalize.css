@@ -384,6 +384,7 @@ table {
   -ms-box-sizing: border-box;
   -o-box-sizing: border-box;
   box-sizing: border-box;
+  border: 0;
 }
 
 html,
@@ -392,6 +393,8 @@ body {
   font: 1em "Fira Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
   background: #fff;

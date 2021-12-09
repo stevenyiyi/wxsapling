@@ -20,7 +20,6 @@ import {
   FaTelegramPlane,
   FaOsi
 } from "react-icons/fa";
-import "./normalize.css";
 import "./hlsplayer.css";
 /* eslint-disable no-console */
 const screen = window.screen;
@@ -146,6 +145,7 @@ export default function HLSPlayer(props) {
   const [scrollPosition, setScrollPosition] = React.useState({ x: 0, y: 0 });
   const [cleanupViewport, setCleanupViewport] = React.useState(false);
   const [message, setMessage] = React.useState("");
+  const [liveTime, setLiveTime] = React.useState(0);
   const refVidContainer = React.useRef();
   const refHls = React.useRef(null);
   const refVideo = React.useRef(null);
@@ -431,8 +431,8 @@ export default function HLSPlayer(props) {
         setState(PLAYER_STATE_WAITING);
       } else if (event.type === "playing") {
         console.log("playing event!");
-        setState(PLAYER_STATE_PLAYING);
         setLoading(false);
+        setState(PLAYER_STATE_PLAYING);
         /// show controls delay 5 seconds
         refControls.current.classList.toggle("show");
         setTimeout(() => {
@@ -836,7 +836,7 @@ export default function HLSPlayer(props) {
         <button id="playpause" onClick={handlePlayOrPause}>
           {state === PLAYER_STATE_PLAYING ? <FaPause /> : <FaPlay />}
         </button>
-        {duration > 0 && (
+        {duration > 0 ? (
           <div className="seeker">
             <progress
               id="progressbar"
@@ -852,27 +852,28 @@ export default function HLSPlayer(props) {
               onChange={(e) => setSeekval(e.target.value)}
             />
           </div>
-        )}
-        {isFullScreen ? (
-          <div className="chat__container">
-            <input
-              type="text"
-              placeholder="说点什么？"
-              onChange={(event) => setMessage(event.target.value.trim())}
-              onKeyPress={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-            />
-            <button id="chat" onClick={(e) => handleSendMessage()}>
-              <FaTelegramPlane />
-            </button>
-          </div>
         ) : (
-          <div className="chat__container" />
+          <div className="live">直播 18:50</div>
         )}
+
+        <div className="chat__container">
+          <input
+            type="text"
+            placeholder="说点什么？"
+            value={message}
+            onChange={(event) => setMessage(event.target.value.trim())}
+            onKeyPress={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleSendMessage();
+              }
+            }}
+          />
+          <button id="chat" onClick={(e) => handleSendMessage()}>
+            <FaTelegramPlane />
+          </button>
+        </div>
+
         {hasAudio && (
           <div className="volume__container">
             <button id="mute" onClick={handleMuted}>

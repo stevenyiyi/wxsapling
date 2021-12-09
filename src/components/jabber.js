@@ -46,7 +46,7 @@ Jabber.defaultProps = {
   messages: [
     {
       from: "系统消息:jpg@admin",
-      text: "铴好的中华人民共和国",
+      content: "铴好的中华人民共和国",
       ts: Date.now()
     }
   ]

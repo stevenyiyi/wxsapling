@@ -1,16 +1,19 @@
-// These must be the first lines in src/index.js
+/**
 import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
+*/
 
 import React from "react";
 import ReactDOM from "react-dom";
 import Cookies from "js-cookie";
 import App from "./App";
 
-let user = {};
-user.username = Cookies.get("username");
-user.token = Cookies.get("token");
-user.role = Cookies.get("role");
+(() => {
+  let user = {};
+  user.username = Cookies.get("username");
+  user.token = Cookies.get("token");
+  user.role = Cookies.get("role");
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App user={user} />, rootElement);
+  const rootElement = document.getElementById("root");
+  ReactDOM.render(<App user={user} />, rootElement);
+})();
