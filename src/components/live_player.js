@@ -8,16 +8,14 @@ import Info from "./info";
 import Jabber from "./jabber";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
-import { useSnackbar } from "./use_snackbar";
 import "./live_player.css";
 
-const ENDPOINT = "ws://localhost/ws_group_chat";
+const ENDPOINT = "ws://192.168.3.200/ws_group_chat";
 
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
   const ws = React.useRef(null);
-  const [openSnackbar] = useSnackbar();
   const [streamUri, setStreamUri] = React.useState("");
   const [camlist, setCamlist] = React.useState(null);
   const [camsRefreshId, setCamsRefreshId] = React.useState(0);
@@ -164,13 +162,28 @@ export default function LivePlayer(props) {
 
   /** Websocket callbacks */
   const ws_onopen = (e) => {
-    console.log(`websocket onopen,event:${e}`);
+    let msg = {
+      from: "系统消息:jpg@admin",
+      content: "已经连接到聊天服务器，您可以聊天，聊天时请注意文明用语！",
+      ts: Date.now()
+    };
+    setMessages([...messages, msg]);
   };
   const ws_onclose = (e) => {
-    console.log(`websocket onclose,code:${e.code}, reason:${e.reason}`);
+    let msg = {
+      from: "系统消息:jpg@admin",
+      content: "与聊天服务器断开，聊天暂时不可用！",
+      ts: Date.now()
+    };
+    setMessages([...messages, msg]);
   };
   const ws_onerror = (e) => {
-    console.log(`websocket onclose,code:${e.code}, reason:${e.reason}`);
+    let msg = {
+      from: "系统消息:jpg@admin",
+      content: `与聊天服务器通信发生错误，错误代码:${e.code}！`,
+      ts: Date.now()
+    };
+    setMessages([...messages, msg]);
   };
 
   const ws_onmessage = (data) => {

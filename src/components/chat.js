@@ -8,7 +8,7 @@ import Websocket from "./websocket";
 import { UserContext } from "../user_context";
 import "./chat.css";
 
-const ENDPOINT = "ws://localhost/ws_group_chat";
+const ENDPOINT = "ws://localhost/ws_group_chat?type=group";
 
 function users_reducer(users, action) {
   switch (action.type) {

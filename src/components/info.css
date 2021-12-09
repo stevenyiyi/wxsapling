@@ -2,10 +2,10 @@
 .sideinfo {
   display: none;
   flex-direction: column;
-  height: calc(100% - 38px);
+  height: calc(100% - 40px);
   /* Add a bottom margin to avoid content overlay */
   margin-bottom: 38px;
-  width: 300px;
+  width: 250px;
   position: fixed;
   z-index: 20;
   top: 0;
@@ -17,5 +17,6 @@
 
 .sideinfo p {
   line-height: 110%;
-  margin: 6px 10px;
+  margin: 3px 10px;
+  font-size: 0.8rem;
 }
