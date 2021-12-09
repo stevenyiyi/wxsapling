@@ -145,7 +145,6 @@ export default function HLSPlayer(props) {
   const [scrollPosition, setScrollPosition] = React.useState({ x: 0, y: 0 });
   const [cleanupViewport, setCleanupViewport] = React.useState(false);
   const [message, setMessage] = React.useState("");
-  const [liveTime, setLiveTime] = React.useState(0);
   const refVidContainer = React.useRef();
   const refHls = React.useRef(null);
   const refVideo = React.useRef(null);
@@ -853,26 +852,27 @@ export default function HLSPlayer(props) {
             />
           </div>
         ) : (
-          <div className="live">直播 18:50</div>
+          <div className="live">直播</div>
         )}
-
-        <div className="chat__container">
-          <input
-            type="text"
-            placeholder="说点什么？"
-            value={message}
-            onChange={(event) => setMessage(event.target.value.trim())}
-            onKeyPress={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleSendMessage();
-              }
-            }}
-          />
-          <button id="chat" onClick={(e) => handleSendMessage()}>
-            <FaTelegramPlane />
-          </button>
-        </div>
+        {isFullScreen && (
+          <div className="chat__container">
+            <input
+              type="text"
+              placeholder="说点什么？"
+              value={message}
+              onChange={(event) => setMessage(event.target.value.trim())}
+              onKeyPress={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+            />
+            <button id="chat" onClick={(e) => handleSendMessage()}>
+              <FaTelegramPlane />
+            </button>
+          </div>
+        )}
 
         {hasAudio && (
           <div className="volume__container">
@@ -904,13 +904,15 @@ export default function HLSPlayer(props) {
         <button id="fullscreen" onClick={handleToggleFullscreen}>
           {isFullScreen ? <FaExpandAlt /> : <FaExpand />}
         </button>
-        <button
-          ref={refFsMenuBut}
-          id="menu-more"
-          onClick={toggleFullscreenMenu}
-        >
-          <FaBars />
-        </button>
+        {isFullScreen && (
+          <button
+            ref={refFsMenuBut}
+            id="menu-more"
+            onClick={toggleFullscreenMenu}
+          >
+            <FaBars />
+          </button>
+        )}
       </div>
       <div ref={refFsMenu} className="sidedlg">
         {cameras && <CameraList camlist={cameras} onPlayUri={handlePlayUri} />}
