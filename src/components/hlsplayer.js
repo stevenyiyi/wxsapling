@@ -152,7 +152,7 @@ export default function HLSPlayer(props) {
   const refFsMenuBut = React.useRef(null);
   const refFsMenu = React.useRef(null);
   useOutsideClick(refFsMenu, (event) => {
-    if (!refFsMenuBut.current.contains(event.target)) {
+    if (refFsMenuBut.current && !refFsMenuBut.current.contains(event.target)) {
       refFsMenu.current.classList.remove("show");
     }
   });
@@ -822,6 +822,7 @@ export default function HLSPlayer(props) {
         preload="auto"
         autoPlay
         playsInline
+        muted="muted"
         {...videoProps}
       />
       {loading && (
@@ -854,7 +855,7 @@ export default function HLSPlayer(props) {
         ) : (
           <div className="live">直播</div>
         )}
-        {isFullScreen && (
+        {isFullScreen ? (
           <div className="chat__container">
             <input
               type="text"
@@ -872,6 +873,8 @@ export default function HLSPlayer(props) {
               <FaTelegramPlane />
             </button>
           </div>
+        ) : (
+          <div className="chat__container" />
         )}
 
         {hasAudio && (

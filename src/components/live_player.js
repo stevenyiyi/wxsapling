@@ -10,7 +10,7 @@ import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
 import "./live_player.css";
 
-const ENDPOINT = "ws://192.168.3.200/ws_group_chat";
+const ENDPOINT = "wss://localhost/ws_group_chat";
 
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
