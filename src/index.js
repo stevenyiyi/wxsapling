@@ -15,5 +15,10 @@ import App from "./App";
   user.role = Cookies.get("role");
 
   const rootElement = document.getElementById("root");
-  ReactDOM.render(<App user={user} />, rootElement);
+  ReactDOM.render(
+    <React.StrictMode>
+      <App user={user} />
+    </React.StrictMode>,
+    rootElement
+  );
 })();
