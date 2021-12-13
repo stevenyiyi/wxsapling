@@ -9,28 +9,29 @@ const tracks_reducer = (tracks, action) => {
     case "set_free_tracks": {
       let l = action.message.content.length;
       if (l < 10) {
-        let ctracks = [...tracks];
-        for (let i = 3; i <= 0; i--) {
-          if (!ctracks[i].working) {
+        for (let i = 4; i >= 0; i--) {
+          if (!tracks[i].working) {
+            console.log(`found free track:${i}`);
             action.result = true;
-            ctracks[i].working = true;
-            ctracks[i].startTs = window.performance.now();
-            ctracks[i].message = action.message;
-            return ctracks;
+            tracks[i].working = true;
+            tracks[i].startTs = window.performance.now();
+            tracks[i].message = action.message;
+            return [...tracks];
           }
         }
       } else {
-        let ctracks = [...tracks];
-        for (let i = 0; i <= 3; i++) {
-          if (!ctracks[i].working) {
+        for (let i = 0; i <= 4; i++) {
+          if (!tracks[i].working) {
+            console.log(`found free track:${i}`);
             action.result = true;
-            ctracks[i].working = true;
-            ctracks[i].startTs = window.performance.now();
-            ctracks[i].message = action.message;
-            return [...ctracks];
+            tracks[i].working = true;
+            tracks[i].startTs = window.performance.now();
+            tracks[i].message = action.message;
+            return [...tracks];
           }
         }
       }
+      console.log("Not free track!");
       action.result = false;
       return tracks;
     }
@@ -42,9 +43,6 @@ const tracks_reducer = (tracks, action) => {
             window.performance.now() - track.startTs >
             track.interval * 1000
           ) {
-            console.log(
-              `now:${window.performance.now()}, start:${track.startTs}`
-            );
             /** Track 工作已经完成 */
             is_changed = true;
             track.working = false;
@@ -68,9 +66,10 @@ export default function Barrage(props) {
   const refMessages = React.useRef([]);
   const [tracksState, dispatchTracksState] = React.useReducer(tracks_reducer, [
     { index: 0, interval: 10, working: false, startTs: 0, message: null },
-    { index: 1, interval: 8, working: false, startTs: 0, message: null },
-    { index: 2, interval: 6, working: false, startTs: 0, message: null },
-    { index: 3, interval: 4, working: false, startTs: 0, message: null }
+    { index: 1, interval: 9, working: false, startTs: 0, message: null },
+    { index: 2, interval: 8, working: false, startTs: 0, message: null },
+    { index: 3, interval: 7, working: false, startTs: 0, message: null },
+    { index: 4, interval: 6, working: false, startTs: 0, message: null }
   ]);
 
   React.useEffect(() => {
@@ -78,7 +77,6 @@ export default function Barrage(props) {
       console.log(message);
       let params = { type: "set_free_tracks", message: message };
       dispatchTracksState(params);
-      console.log(params);
       if (!params.result) {
         /** 当没有空闲的track时，将消息存入队列以后处理 */
         refMessages.current.push(message);
@@ -86,7 +84,6 @@ export default function Barrage(props) {
     }
   }, [message]);
 
-  React.useEffect(() => {});
   React.useEffect(() => {
     let timerid = setInterval(() => {
       let actionState = { type: "check_state" };
@@ -104,12 +101,14 @@ export default function Barrage(props) {
           }
         } while (msg);
       }
-    }, 2000);
-    return () => clearInterval(timerid);
+    }, 1000);
+    return () => {
+      console.log("destory timer");
+      clearInterval(timerid);
+    };
   }, []);
 
   const genBarage = () => {
-    console.log(tracksState);
     return tracksState.map((track, index) => {
       if (track.working) {
         let ufrom = parseFrom(track.message.from);
@@ -125,7 +124,7 @@ export default function Barrage(props) {
     });
   };
 
-  return <div className="container">{genBarage()}</div>;
+  return <div>{genBarage()}</div>;
 }
 
 Barrage.propTypes = {

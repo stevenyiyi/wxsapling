@@ -41,21 +41,28 @@
   top: 40px;
   color: rgb(127, 197, 35);
   text-shadow: 2px 2px 3px rgb(173, 255, 80);
-  animation: scrollTo linear 8s 1;
+  animation: scrollTo linear 9s 1;
 }
 
 .track-2 {
   top: 70px;
   color: coral;
-  text-shadow: 2px 2px 3px coral;
-  animation: scrollTo linear 6s 1;
+  text-shadow: 2px 2px 3px rgb(255, 127, 120);
+  animation: scrollTo linear 8s 1;
 }
 
 .track-3 {
   top: 100px;
   color: darkcyan;
-  text-shadow: 2px 2px 3px coral;
-  animation: scrollTo linear 5s 1;
+  text-shadow: 2px 2px 3px rgb(12, 197, 35);
+  animation: scrollTo linear 7s 1;
+}
+
+.track-4 {
+  top: 130px;
+  color: darkmagenta;
+  text-shadow: 2px 2px 3px rgb(169, 17, 139);
+  animation: scrollTo linear 6s 1;
 }
 
 @keyframes scrollTo {

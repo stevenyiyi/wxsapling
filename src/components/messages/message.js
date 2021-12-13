@@ -51,7 +51,7 @@ const Message = (props) => {
   };
 
   return isSentByCurrentUser ? (
-    <div className="messageContainer">
+    <div className="messageContainer justifyStart">
       <Avatar
         image={ufrom.avatar ? `/imgs/${ufrom.username}.${ufrom.avatar}` : ""}
         name={ufrom.name}
@@ -59,7 +59,7 @@ const Message = (props) => {
         position="left"
       />
       {genMessageContent(type, content, filename)}
-      <span className="time-right">{`${from}  ${new Date(
+      <span className="time-right">{`${ufrom.name}  ${new Date(
         ts
       ).toLocaleString()}`}</span>
     </div>
@@ -72,7 +72,7 @@ const Message = (props) => {
         position="right"
       />
       {genMessageContent(type, content, filename)}
-      <span className="time-left">{`${from}  ${new Date(
+      <span className="time-left">{`${ufrom.name}  ${new Date(
         Number(ts)
       ).toLocaleString()}`}</span>
     </div>
@@ -83,7 +83,7 @@ Message.propTypes = {
   from: PropTypes.string.isRequired,
   to: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  content: PropTypes.string || PropTypes.object,
+  content: PropTypes.any,
   ts: PropTypes.number.isRequired
 };
 
