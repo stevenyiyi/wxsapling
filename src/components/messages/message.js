@@ -22,7 +22,11 @@ const Message = (props) => {
       let imgUrl = (window.URL || window.webkitURL).createObjectURL(fb);
       return (
         <div className="messageContainer--image">
-          <img src={imgUrl} alt="assets" />
+          <img
+            src={imgUrl}
+            onLoad={() => URL.revokeObjectURL(imgUrl)}
+            alt="assets"
+          />
         </div>
       );
     } else if (type.startsWith("video") || type.startsWith("audio")) {
@@ -31,7 +35,11 @@ const Message = (props) => {
       return (
         <div className="messageContainer--video">
           <video autoPlay muted controls>
-            <source src={avUrl} type={type} />
+            <source
+              src={avUrl}
+              onLoad={() => URL.revokeObjectURL(avUrl)}
+              type={type}
+            />
             您的浏览器不支持HTML5视频播放.
           </video>
         </div>
@@ -51,7 +59,7 @@ const Message = (props) => {
   };
 
   return isSentByCurrentUser ? (
-    <div className="messageContainer">
+    <div className="messageContainer justifyStart">
       <Avatar
         image={ufrom.avatar ? `/imgs/${ufrom.username}.${ufrom.avatar}` : ""}
         name={ufrom.name}
@@ -59,7 +67,7 @@ const Message = (props) => {
         position="left"
       />
       {genMessageContent(type, content, filename)}
-      <span className="time-right">{`${from}  ${new Date(
+      <span className="time-right">{`${ufrom.name}  ${new Date(
         ts
       ).toLocaleString()}`}</span>
     </div>
@@ -72,7 +80,7 @@ const Message = (props) => {
         position="right"
       />
       {genMessageContent(type, content, filename)}
-      <span className="time-left">{`${from}  ${new Date(
+      <span className="time-left">{`${ufrom.name}  ${new Date(
         Number(ts)
       ).toLocaleString()}`}</span>
     </div>
@@ -83,7 +91,7 @@ Message.propTypes = {
   from: PropTypes.string.isRequired,
   to: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  content: PropTypes.string || PropTypes.object,
+  content: PropTypes.any,
   ts: PropTypes.number.isRequired
 };
 

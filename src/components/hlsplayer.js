@@ -5,9 +5,10 @@ import browser from "../utils/browser";
 import is from "../utils/is";
 import CameraList from "./camera_list";
 import Jabber from "./jabber";
+import Barrage from "./barrage";
 import { useOutsideClick } from "../utils/hook";
 import { useSnackbar } from "./use_snackbar";
-
+import { BarrageIconOn, BarrageIconOff } from "./barrage_icon";
 import {
   FaPlay,
   FaPause,
@@ -142,9 +143,11 @@ export default function HLSPlayer(props) {
   const [state, setState] = React.useState(PLAYER_STATE_PAUSE);
   const [loading, setLoading] = React.useState(false);
   const [isFullScreen, setIsFullScreen] = React.useState(false);
+  const [isBarrage, setIsBarrage] = React.useState(true);
   const [scrollPosition, setScrollPosition] = React.useState({ x: 0, y: 0 });
   const [cleanupViewport, setCleanupViewport] = React.useState(false);
   const [message, setMessage] = React.useState("");
+  const [barrageMessage, setBarrageMessage] = React.useState(null);
   const refVidContainer = React.useRef();
   const refHls = React.useRef(null);
   const refVideo = React.useRef(null);
@@ -152,7 +155,7 @@ export default function HLSPlayer(props) {
   const refFsMenuBut = React.useRef(null);
   const refFsMenu = React.useRef(null);
   useOutsideClick(refFsMenu, (event) => {
-    if (!refFsMenuBut.current.contains(event.target)) {
+    if (refFsMenuBut.current && !refFsMenuBut.current.contains(event.target)) {
       refFsMenu.current.classList.remove("show");
     }
   });
@@ -347,6 +350,13 @@ export default function HLSPlayer(props) {
       refVideo.current.setAttribute("x5-video-orientation", "landscape");
     }
   }, []);
+
+  React.useEffect(() => {
+    if (messages.length > 0) {
+      let last = messages[messages.length - 1];
+      setBarrageMessage(last);
+    }
+  }, [messages]);
 
   React.useEffect(() => {
     if (checkMpd) {
@@ -786,6 +796,11 @@ export default function HLSPlayer(props) {
     }
   };
 
+  /** 弹幕开关处理 */
+  const toggleBarrage = (event) => {
+    setIsBarrage((flag) => !flag);
+  };
+
   /** 全屏菜单处理 */
   const toggleFullscreenMenu = (event) => {
     refFsMenu.current.classList.toggle("show");
@@ -822,6 +837,7 @@ export default function HLSPlayer(props) {
         preload="auto"
         autoPlay
         playsInline
+        muted="muted"
         {...videoProps}
       />
       {loading && (
@@ -854,7 +870,7 @@ export default function HLSPlayer(props) {
         ) : (
           <div className="live">直播</div>
         )}
-        {isFullScreen && (
+        {isFullScreen ? (
           <div className="chat__container">
             <input
               type="text"
@@ -872,6 +888,8 @@ export default function HLSPlayer(props) {
               <FaTelegramPlane />
             </button>
           </div>
+        ) : (
+          <div className="chat__container" />
         )}
 
         {hasAudio && (
@@ -901,6 +919,11 @@ export default function HLSPlayer(props) {
             <FaOsi />
           </button>
         )}
+        {isFullScreen && (
+          <button id="barrage-toggle" onClick={toggleBarrage}>
+            {isBarrage ? <BarrageIconOn /> : <BarrageIconOff />}
+          </button>
+        )}
         <button id="fullscreen" onClick={handleToggleFullscreen}>
           {isFullScreen ? <FaExpandAlt /> : <FaExpand />}
         </button>
@@ -918,6 +941,9 @@ export default function HLSPlayer(props) {
         {cameras && <CameraList camlist={cameras} onPlayUri={handlePlayUri} />}
         <Jabber messages={messages} />
       </div>
+      {isFullScreen && isBarrage && barrageMessage && (
+        <Barrage message={barrageMessage} />
+      )}
     </div>
   );
 }

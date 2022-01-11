@@ -8,7 +8,7 @@ import Websocket from "./websocket";
 import { UserContext } from "../user_context";
 import "./chat.css";
 
-const ENDPOINT = "ws://localhost/ws_group_chat?type=group";
+const ENDPOINT = "wss://localhost/ws_group_chat?type=group";
 
 function users_reducer(users, action) {
   switch (action.type) {
@@ -148,7 +148,7 @@ const Chat = (props) => {
       {username && (
         <Websocket
           ref={ws}
-          url={`${ENDPOINT}?username=${username}`}
+          url={`${ENDPOINT}&username=${username}`}
           onOpen={ws_onopen}
           onMessage={ws_onmessage}
           onClose={ws_onclose}

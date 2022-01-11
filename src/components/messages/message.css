@@ -16,7 +16,6 @@
 }
 .messageContainer--image {
   height: auto;
-  max-height: 300px;
   max-width: 100%;
   border-radius: 0;
 }
