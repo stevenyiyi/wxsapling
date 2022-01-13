@@ -217,14 +217,14 @@ export default function LivePlayer(props) {
       {username && (
         <Websocket
           ref={ws}
-          url={`${ENDPOINT}?username=${username}&type=jabber`}
+          url={`${ENDPOINT}?username=${username}`}
           onOpen={ws_onopen}
           onMessage={ws_onmessage}
           onClose={ws_onclose}
           onError={ws_onerror}
           reconnect={true}
           debug={true}
-          protocol="chat"
+          protocol="jabber"
         />
       )}
       <HLSPlayer
