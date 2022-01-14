@@ -144,7 +144,7 @@ const Chat = (props) => {
   };
 
   return (
-    <div className="outerContainer">
+    <div className="chat_outer_container">
       {username && (
         <Websocket
           ref={ws}
@@ -159,7 +159,7 @@ const Chat = (props) => {
         />
       )}
       {classes && my && (
-        <div className="container">
+        <div className="chat_container">
           <InfoBar
             classes={classes}
             state={ws.current.readyState}

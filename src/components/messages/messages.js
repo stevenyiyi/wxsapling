@@ -9,6 +9,7 @@ import "./messages.css";
 export default function Messages(props) {
   const { messages } = props;
   return (
+    <div className="messages-container">
     <ScrollToBottom className="messages">
       {messages &&
         messages.map((message, i) => (
@@ -24,5 +25,6 @@ export default function Messages(props) {
           </div>
         ))}
     </ScrollToBottom>
+    </div>
   );
 }
