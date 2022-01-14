@@ -124,7 +124,6 @@ button[disabled] {
   flex-direction: column;
   justify-content: space-between;
   background: #ffffff;
-  height: 100%;
   width: 100%;
 }
 

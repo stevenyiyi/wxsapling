@@ -116,7 +116,7 @@ export default function Teachers(props) {
   };
 
   const genTeacherPhoto = () => {
-    let uri = "http://localhost/imgs/img_avatar_unknow.png";
+    let uri = "https://localhost/imgs/img_avatar_unknow.png";
     if (teachers.length > 0 && teachers[activeIdx].photo) {
       uri = `imgs/${teachers[activeIdx].photo}`;
     }
