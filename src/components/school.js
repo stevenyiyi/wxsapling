@@ -35,13 +35,11 @@ export default function School(props) {
 
   return (
     <div className="container">
-      {school && <Carousel pics={genPhotos(school.photo)} />}
-      {school && (
-        <div className="container">
+      {school && <> <Carousel pics={genPhotos(school.photo)} />
           <p className="title">{school.name}</p>
           <div className="text_content">{school.introduce}</div>
-        </div>
-      )}
+          </>
+      }
     </div>
   );
 }

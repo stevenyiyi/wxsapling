@@ -3,7 +3,7 @@ import "./test.css";
 import "./barrage.css";
 export default function Test(props) {
   return (
-    <div className="container">
+    <div className="test_container">
       <div className="video__container">
         <video
           id="myvideo"

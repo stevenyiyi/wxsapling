@@ -213,7 +213,7 @@ export default function LivePlayer(props) {
     []
   );
   return (
-    <div className="container">
+    <div className="live_container">
       {username && (
         <Websocket
           ref={ws}

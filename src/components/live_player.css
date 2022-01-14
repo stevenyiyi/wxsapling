@@ -1,4 +1,4 @@
-.container {
+.live_container {
   display: flex;
   position: relative;
   flex-direction: row;
@@ -108,7 +108,7 @@
 
 /** Layout fit mobile device */
 @media screen and (max-width: 768px) {
-  .container {
+  .live_container {
     flex-direction: column;
   }
   .content__container {
