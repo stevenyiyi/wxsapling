@@ -7,7 +7,7 @@ import "./common.css";
 import "./floating_input.css";
 
 export default function ChangePassword(props) {
-  const { username, token, show, onClose } = props;
+  const { username, password, show, onClose } = props;
   const [oldPwd, setOldPwd] = React.useState("");
   const [newPwd, setNewPwd] = React.useState("");
   const [confirmPwd, setConfirmPwd] = React.useState("");
@@ -16,28 +16,7 @@ export default function ChangePassword(props) {
     text: ""
   });
   const refBut = React.useRef();
-  function calcToken(username, password, path) {
-    let h1 = CryptoJS.SHA1(username + ":" + password).toString();
-    let h2 = CryptoJS.SHA1(password + ":" + path).toString();
-    let h3 = CryptoJS.SHA1(username + ":" + password + ":" + path).toString();
-    let token = CryptoJS.SHA1(h1 + ":" + h2 + ":" + h3).toString();
-    return token;
-  }
 
-  /** From  cookies invalidate old password */
-  function validateOldPwd(oldpwd) {
-    let isok = false;
-    let path = "/sapling/login";
-    let ctoken = calcToken(username, oldpwd, path);
-    if (ctoken !== token) {
-      path = "/sapling/get_camera_list";
-      ctoken = calcToken(username, oldpwd, path);
-      isok = ctoken === token ? true : false;
-    } else {
-      isok = true;
-    }
-    return isok;
-  }
   const handleSubmit = (event) => {
     event.preventDefault();
     if (newPwd !== confirmPwd) {
@@ -49,7 +28,7 @@ export default function ChangePassword(props) {
       return;
     }
 
-    if (!validateOldPwd(oldPwd)) {
+    if (oldPwd !== password) {
       setMessage({
         ...message,
         show: true,
@@ -60,12 +39,20 @@ export default function ChangePassword(props) {
 
     let bkey = CryptoJS.MD5(username + ":" + oldPwd);
     let t = Date.now();
+    console.log(t);
+    let st = t.toString(16).padStart(32, "0");
+    console.log(st);
+    let bt = CryptoJS.enc.Hex.parse(st);
+    console.log(bt);
+    console.log(newPwd);
     let benc = CryptoJS.AES.encrypt(newPwd, bkey, {
-      iv: t,
+      iv: bt,
       mode: CryptoJS.mode.CTR,
       padding: CryptoJS.pad.NoPadding
     });
-    let senc = CryptoJS.enc.Hex.stringify(benc);
+    console.log(benc);
+    let senc = benc.ciphertext.toString();
+    console.log(senc);
     http
       .get(`/sapling/change_password?newpwd=${senc}&counter=${t}`)
       .then((response) => {
@@ -78,7 +65,9 @@ export default function ChangePassword(props) {
             show: true,
             text: "修改口令成功!"
           });
-          onClose();
+          setTimeout(() => {
+            onClose();
+          }, 3000);
         } else if (response.data.result === ERR_NO_ACCOUNT) {
           setMessage({
             ...message,

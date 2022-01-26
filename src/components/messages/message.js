@@ -24,7 +24,9 @@ const Message = (props) => {
         <div className="messageContainer--image">
           <img
             src={imgUrl}
-            onLoad={() => URL.revokeObjectURL(imgUrl)}
+            onLoad={() =>
+              (window.URL || window.webkitURL).revokeObjectURL(imgUrl)
+            }
             alt="assets"
           />
         </div>
@@ -37,7 +39,9 @@ const Message = (props) => {
           <video autoPlay muted controls>
             <source
               src={avUrl}
-              onLoad={() => URL.revokeObjectURL(avUrl)}
+              onLoad={() =>
+                (window.URL || window.webkitURL).revokeObjectURL(avUrl)
+              }
               type={type}
             />
             您的浏览器不支持HTML5视频播放.
@@ -49,7 +53,15 @@ const Message = (props) => {
       let fileUrl = (window.URL || window.webkitURL).createObjectURL(fb);
       return (
         <p>
-          <a href={fileUrl} download>
+          <a
+            href={fileUrl}
+            download
+            onClick={() => {
+              setTimeout(() => {
+                (window.URL || window.webkitURL).revokeObjectURL(fileUrl);
+              }, 150);
+            }}
+          >
             <FaDownload />
             <span>{filename}</span>
           </a>

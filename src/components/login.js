@@ -91,7 +91,8 @@ const Login = (props) => {
             userCtx.updateUser({
               username: state.username,
               role: Cookies.get("role"),
-              token: Cookies.get("token")
+              token: Cookies.get("token"),
+              is_login: true
             });
             /// Login Success
             setMessage({

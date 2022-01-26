@@ -431,7 +431,7 @@ export default function HLSPlayer(props) {
         setState(PLAYER_STATE_ABORT);
       } else if (event.type === "ended") {
         console.log("ended event!");
-        refVideo.current.currentTime = 0;
+        videoElement.currentTime = 0;
         setLoading(false);
         setState(PLAYER_STATE_ENDED);
       } else if (event.type === "waiting") {
@@ -443,9 +443,9 @@ export default function HLSPlayer(props) {
         setLoading(false);
         setState(PLAYER_STATE_PLAYING);
         /// show controls delay 5 seconds
-        refControls.current.classList.toggle("show");
+        controlsElement.classList.toggle("show");
         setTimeout(() => {
-          refControls.current.classList.toggle("show");
+          controlsElement.classList.toggle("show");
         }, 5000);
       } else if (event.type === "suspend") {
         console.log("suspend event!");
@@ -462,27 +462,28 @@ export default function HLSPlayer(props) {
     };
 
     const registerVideoEvents = () => {
-      refVideo.current.addEventListener("play", handleVideoEvent);
-      refVideo.current.addEventListener("pause", handleVideoEvent);
-      refVideo.current.addEventListener("abort", handleVideoEvent);
-      refVideo.current.addEventListener("playing", handleVideoEvent);
-      refVideo.current.addEventListener("emptied", handleVideoEvent);
-      refVideo.current.addEventListener("ended", handleVideoEvent);
-      refVideo.current.addEventListener("stalled", handleVideoEvent);
-      refVideo.current.addEventListener("suppend", handleVideoEvent);
+      videoElement.addEventListener("play", handleVideoEvent);
+      videoElement.addEventListener("pause", handleVideoEvent);
+      videoElement.addEventListener("abort", handleVideoEvent);
+      videoElement.addEventListener("playing", handleVideoEvent);
+      videoElement.addEventListener("emptied", handleVideoEvent);
+      videoElement.addEventListener("ended", handleVideoEvent);
+      videoElement.addEventListener("stalled", handleVideoEvent);
+      videoElement.addEventListener("suppend", handleVideoEvent);
     };
 
     const unregisterVideoEvents = () => {
-      refVideo.current.removeEventListener("play", handleVideoEvent);
-      refVideo.current.removeEventListener("pause", handleVideoEvent);
-      refVideo.current.removeEventListener("abort", handleVideoEvent);
-      refVideo.current.removeEventListener("playing", handleVideoEvent);
-      refVideo.current.removeEventListener("emptied", handleVideoEvent);
-      refVideo.current.removeEventListener("ended", handleVideoEvent);
-      refVideo.current.removeEventListener("stalled", handleVideoEvent);
-      refVideo.current.removeEventListener("suppend", handleVideoEvent);
+      videoElement.removeEventListener("play", handleVideoEvent);
+      videoElement.removeEventListener("pause", handleVideoEvent);
+      videoElement.removeEventListener("abort", handleVideoEvent);
+      videoElement.removeEventListener("playing", handleVideoEvent);
+      videoElement.removeEventListener("emptied", handleVideoEvent);
+      videoElement.removeEventListener("ended", handleVideoEvent);
+      videoElement.removeEventListener("stalled", handleVideoEvent);
+      videoElement.removeEventListener("suppend", handleVideoEvent);
     };
     const videoElement = refVideo.current;
+    const controlsElement = refControls.current;
     if (streamUri) {
       console.log(`play stream uri:${streamUri}`);
       setLoading(false);
@@ -515,8 +516,9 @@ export default function HLSPlayer(props) {
         refHls.current.destroy();
       }
       if (
-        Hls.isSupported() ||
-        videoElement.canPlayType("application/vnd.apple.mpegurl")
+        (Hls.isSupported() ||
+          videoElement.canPlayType("application/vnd.apple.mpegurl")) &&
+        videoElement !== null
       ) {
         unregisterVideoEvents();
       }

@@ -30,7 +30,8 @@ const Person = React.forwardRef((props, ref) => {
           if (response.data.info.photo) {
             refAvatar.current.src = `imgs/${response.data.info.username}.${response.data.info.photo}`;
           } else {
-            refAvatar.current.src = "imgs/img_avatar_unknow.png";
+            refAvatar.current.src =
+              "https://localhost/imgs/img_avatar_unknow.png";
           }
         } else {
           openSnackbar(
@@ -117,13 +118,13 @@ const Person = React.forwardRef((props, ref) => {
           <figure className="personal-figure">
             <img
               ref={refAvatar}
-              src="http://localhost/imgs/img_avatar_unknow.png"
+              src="https://localhost/imgs/img_avatar_unknow.png"
               className="personal-avatar"
               alt="avatar"
             />
             <figcaption className="personal-figcaption">
               <img
-                src="http://localhost/imgs/img_camera_white.png"
+                src="https://localhost/imgs/img_camera_white.png"
                 alt="avatar-camera"
               />
             </figcaption>
@@ -142,6 +143,8 @@ const Person = React.forwardRef((props, ref) => {
         </button>
       </div>
       <ChangePassword
+        username={user.username}
+        password={user.password}
         show={showChangePwd}
         onClose={() => setShowChangePwd(false)}
       />

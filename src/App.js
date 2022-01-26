@@ -29,7 +29,7 @@ export default function App(props) {
             <Route
               path="/"
               element={
-                userContext.user.username ? (
+                userContext.user.is_login ? (
                   <HomePage />
                 ) : (
                   <Navigate to="/login" state={{ from: "/" }} />
@@ -42,7 +42,7 @@ export default function App(props) {
             <Route
               path="/chat"
               element={
-                userContext.user.username ? (
+                userContext.user.is_login ? (
                   <Chat />
                 ) : (
                   <Navigate to="/login" state={{ from: "/chat" }} />
@@ -52,7 +52,7 @@ export default function App(props) {
             <Route
               path="/player"
               element={
-                userContext.user.username ? (
+                userContext.user.is_login ? (
                   <LivePlayer />
                 ) : (
                   <Navigate to="/login" state={{ from: "/player" }} />
