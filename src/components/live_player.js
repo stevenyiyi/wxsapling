@@ -8,9 +8,10 @@ import Info from "./info";
 import Jabber from "./jabber";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
+import config from "../config";
 import "./live_player.css";
 
-const ENDPOINT = "wss://localhost/ws_group_chat";
+const ENDPOINT = config.wssGroupChatUrl;
 
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
@@ -32,7 +33,7 @@ export default function LivePlayer(props) {
     const ERR_NO_ACCOUNT = 0x800000f;
     const ERR_INVALID_PWD = ERR_NO_ACCOUNT + 1;
     const ERR_OVERDUE = ERR_INVALID_PWD + 1;
-    fetch(`/sapling/get_camera_list?ts=${Date.now()}`, {
+    fetch(`${config.apiBaseUrl}/sapling/get_camera_list?ts=${Date.now()}`, {
       credentials: "include",
       headers: {
         Accept: "application/json",
@@ -44,29 +45,33 @@ export default function LivePlayer(props) {
     })
       .then((response) => {
         if (response.ok) {
-          const resp = response.json();
-          if (resp.result === 0) {
-            setCamlist(resp.cameras);
-          } else if (resp.result === ERR_NO_ACCOUNT) {
-            console.log("帐户不存在!");
-          } else if (resp.result === ERR_INVALID_PWD) {
-            console.log("口令错误!");
-          } else if (resp.result === ERR_OVERDUE) {
-            console.log("帐户已过期!");
-          } else {
-            console.log(`get_camera_list response error code:${resp.result}`);
-            setCamlist({
-              cameras: [
-                { oid: "51060300001310000006", name: "门卫", status: 1 },
-                { oid: "51060300001310000308", name: "大厅", status: 1 }
-              ]
-            });
-          }
+          return response.json();
         } else {
           throw new Error(`Server repsone status:${response.status}`);
         }
       })
-      .catch((e) => console.error("Error:", e));
+      .then((jresp) => {
+        console.log(jresp);
+        if (jresp.result === 0) {
+          setCamlist(jresp.camlist);
+        } else if (jresp.result === ERR_NO_ACCOUNT) {
+          console.log("帐户不存在!");
+        } else if (jresp.result === ERR_INVALID_PWD) {
+          console.log("口令错误!");
+        } else if (jresp.result === ERR_OVERDUE) {
+          console.log("帐户已过期!");
+        }
+      })
+      .catch((e) => {
+        console.error("Error:", e);
+        console.log(`get_camera_list response error code:${resp.result}`);
+        setCamlist({
+          cameras: [
+            { oid: "51060300001310000006", name: "门卫", status: 1 },
+            { oid: "51060300001310000308", name: "大厅", status: 1 }
+          ]
+        });
+      });
   }, [camsRefreshId]);
 
   /** 处理用户点击播放列表 */

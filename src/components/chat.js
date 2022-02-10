@@ -3,12 +3,13 @@ import Messages from "./messages/messages";
 import InfoBar from "./info_bar";
 import Input from "./input";
 import http from "../http_common";
+import config from "../config";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
 import { UserContext } from "../user_context";
 import "./chat.css";
 
-const ENDPOINT = "wss://localhost/ws_group_chat";
+const ENDPOINT = config.wssGroupChatUrl;
 
 function users_reducer(users, action) {
   switch (action.type) {
