@@ -1,7 +1,7 @@
 import axios from "axios";
-
+import config from "./config";
 export default axios.create({
-  baseURL: "https://localhost/",
+  baseURL: config.apiBaseUrl,
   withCredentials: true, // 允许携带cookie
   headers: {
     "Content-type": "application/json",

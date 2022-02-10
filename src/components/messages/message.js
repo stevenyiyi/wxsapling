@@ -1,10 +1,11 @@
 import React from "react";
-import "./message.css";
 import ReactEmoji from "react-emoji";
 import Avatar from "../avatar";
 import { FaDownload } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { parseFrom } from "../utils";
+import config from "../../config";
+import "./message.css";
 
 const Message = (props) => {
   const { to, from, type, content, ts, filename } = props;
@@ -73,7 +74,11 @@ const Message = (props) => {
   return isSentByCurrentUser ? (
     <div className="messageContainer justifyStart">
       <Avatar
-        image={ufrom.avatar ? `/imgs/${ufrom.username}.${ufrom.avatar}` : ""}
+        image={
+          ufrom.avatar
+            ? `${config.resBaseUrl}/imgs/${ufrom.username}.${ufrom.avatar}`
+            : ""
+        }
         name={ufrom.name}
         size={48}
         position="left"
@@ -86,7 +91,11 @@ const Message = (props) => {
   ) : (
     <div className="messageContainer darker">
       <Avatar
-        image={ufrom.avatar ? `/imgs/${ufrom.username}.${ufrom.avatar}` : ""}
+        image={
+          ufrom.avatar
+            ? `${config.resBaseUrl}/imgs/${ufrom.username}.${ufrom.avatar}`
+            : ""
+        }
         name={ufrom.name}
         size={48}
         position="right"

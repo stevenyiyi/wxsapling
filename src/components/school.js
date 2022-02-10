@@ -27,19 +27,20 @@ export default function School(props) {
     let photos = [];
     if (photo) {
       photos = photo.split(",");
+      photos = photos.map((photo) => `${schoolid}_image_${photo}`);
     }
-    photos.push("img_mountains_wide.jpeg");
-    photos.push("img_nature_wide.jpeg");
     return photos;
   };
 
   return (
     <div className="container">
-      {school && <> <Carousel pics={genPhotos(school.photo)} />
+      {school && (
+        <>
+          <Carousel pics={genPhotos(school.photo)} />
           <p className="title">{school.name}</p>
           <div className="text_content">{school.introduce}</div>
-          </>
-      }
+        </>
+      )}
     </div>
   );
 }

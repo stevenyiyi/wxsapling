@@ -4,6 +4,7 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import Avatar from "./avatar";
 import ReactEmoji from "react-emoji";
 import { parseFrom } from "./utils";
+import config from "../config";
 import "./jabber.css";
 export default function Jabber(props) {
   const { messages } = props;
@@ -17,7 +18,7 @@ export default function Jabber(props) {
               <Avatar
                 image={
                   ufrom.avatar
-                    ? `http://192.168.3.200/imgs/${ufrom.username}.${ufrom.avatar}`
+                    ? `${config.resBaseUrl}/imgs/${ufrom.username}.${ufrom.avatar}`
                     : ""
                 }
                 name={ufrom.name}

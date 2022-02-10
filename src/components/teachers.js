@@ -2,6 +2,7 @@ import React from "react";
 import { useSearchParams } from "react-router-dom";
 import { FaList, FaAngleLeft, FaAngleRight, FaTimes } from "react-icons/fa";
 import http from "../http_common";
+import config from "../config";
 import "./common.css";
 export default function Teachers(props) {
   const [searchParams] = useSearchParams();
@@ -116,9 +117,9 @@ export default function Teachers(props) {
   };
 
   const genTeacherPhoto = () => {
-    let uri = "https://localhost/imgs/img_avatar_unknow.png";
+    let uri = `${config.resBaseUrl}/imgs/img_avatar_unknow.png`;
     if (teachers.length > 0 && teachers[activeIdx].photo) {
-      uri = `imgs/${teachers[activeIdx].photo}`;
+      uri = `${config.resBaseUrl}/imgs/${teachers[activeIdx].username}.${teachers[activeIdx].photo}`;
     }
     return uri;
   };

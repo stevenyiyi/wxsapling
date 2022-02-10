@@ -1,4 +1,5 @@
 import React from "react";
+import config from "../config";
 import "./carousel.css";
 
 export default function Carousel(props) {
@@ -52,7 +53,10 @@ export default function Carousel(props) {
           pics.map((pic, i) => (
             <div ref={refSlides[i]} key={i} className="mySlides fade">
               <div className="numbertext">{`${i + 1} / ${pics.length}`}</div>
-              <img src={`http://localhost/imgs/${pic}`} alt="carousel_image" />
+              <img
+                src={`${config.resBaseUrl}/imgs/${pic}`}
+                alt="carousel_image"
+              />
               <div className="text">test</div>
             </div>
           ))}

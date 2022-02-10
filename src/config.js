@@ -1,7 +1,7 @@
 export default {
   apiBaseUrl:
     process.env.NODE_ENV === "production"
-      ? "https://a.anylooker.com/"
+      ? "https://wx.anylooker.com/"
       : "https://localhost/",
   resBaseUrl:
     process.env.NODE_ENV === "production"

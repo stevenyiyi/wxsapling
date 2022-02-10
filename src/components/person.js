@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import ChangePassword from "./change_pwd";
 import http from "../http_common";
+import config from "../config";
 import { useSnackbar } from "./use_snackbar";
 import { useOutsideClick } from "../utils/hook";
 import PropTypes from "prop-types";
@@ -28,10 +29,9 @@ const Person = React.forwardRef((props, ref) => {
         if (response.data.result === 0) {
           setUser(response.data.info);
           if (response.data.info.photo) {
-            refAvatar.current.src = `imgs/${response.data.info.username}.${response.data.info.photo}`;
+            refAvatar.current.src = `${config.resBaseUrl}/imgs/${response.data.info.username}.${response.data.info.photo}`;
           } else {
-            refAvatar.current.src =
-              "https://localhost/imgs/img_avatar_unknow.png";
+            refAvatar.current.src = `${config.resBaseUrl}/imgs/img_avatar_unknow.png`;
           }
         } else {
           openSnackbar(
@@ -118,13 +118,13 @@ const Person = React.forwardRef((props, ref) => {
           <figure className="personal-figure">
             <img
               ref={refAvatar}
-              src="https://localhost/imgs/img_avatar_unknow.png"
+              src={`${config.resBaseUrl}/imgs/img_avatar_unknow.png`}
               className="personal-avatar"
               alt="avatar"
             />
             <figcaption className="personal-figcaption">
               <img
-                src="https://localhost/imgs/img_camera_white.png"
+                src={`${config.resBaseUrl}/imgs/img_camera_white.png`}
                 alt="avatar-camera"
               />
             </figcaption>
