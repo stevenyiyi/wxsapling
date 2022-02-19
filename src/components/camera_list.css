@@ -8,12 +8,12 @@
 
 .scrollx {
   overflow-x: auto;
-  overflow-y: hidden;
+  /**overflow-y: hidden; */
 }
 
 .camera_container {
   display: flex;
-  position: relative;
+  /**position: relative; */
   flex-direction: column;
   align-items: center;
   padding: 5px;
@@ -27,6 +27,7 @@
 
 .largeicon {
   display: flex;
+  position: static;
   font-size: 1em;
   padding: 8px;
   width: 32px;
