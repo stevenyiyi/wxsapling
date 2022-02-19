@@ -13,16 +13,20 @@
 
 .camera_container {
   display: flex;
-  /**position: relative; */
+  position: relative;
   flex-direction: column;
   align-items: center;
   padding: 5px;
   margin: 5px;
 }
 
-.largeicon {
+.main_device {
   display: flex;
   position: relative;
+}
+
+.largeicon {
+  display: flex;
   font-size: 1em;
   padding: 8px;
   width: 32px;
@@ -55,8 +59,9 @@
   display: none;
   position: absolute;
   overflow: auto;
+  min-width: 80px;
   max-height: 250px;
-  background-color: #f1f1f1;
+  background-color: rgba(0, 0, 0, 0.5);
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   left: -50%;
   top: 100%;

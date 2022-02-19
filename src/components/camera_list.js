@@ -93,7 +93,7 @@ export default function CameraList(props) {
 
   /** 用户点击摄像头 */
   const onClickCamera = (cam) => {
-    console.log(`Click cam:${cam.oid}`);
+    console.log(cam);
     if (currentCamera) {
       currentCamera.selected = false;
       if (currentCamera.group) {
@@ -116,6 +116,7 @@ export default function CameraList(props) {
 
   /** 用户点击group */
   const onClickGroup = (group) => {
+    console.log(`Click group:${group.gid}`);
     group.show = !group.show;
     setGroups([...groups]);
   };
@@ -161,7 +162,7 @@ export default function CameraList(props) {
       ) : (
         <div className="camera_row_container">
           <span className="smallicon">
-            <FaVideo />
+            <FaVideoSlash />
           </span>
           <p>{cam.name}</p>
         </div>
@@ -171,13 +172,15 @@ export default function CameraList(props) {
   const genGroupList = () =>
     groups.map((group) => (
       <div key={group.gid} className="camera_container">
-        <span
-          className={
-            group.selected ? "largeicon enable selected" : "largeicon enable"
-          }
-          onClick={(event) => onClickGroup(group)}
-        >
-          <FaServer />
+        <div className="main_device">
+          <span
+            className={
+              group.selected ? "largeicon enable selected" : "largeicon enable"
+            }
+            onClick={(event) => onClickGroup(group)}
+          >
+            <FaServer />
+          </span>
           <div
             className={
               group.show
@@ -187,17 +190,13 @@ export default function CameraList(props) {
           >
             {genSubCamList(group.cameras)}
           </div>
-        </span>
+        </div>
         <p>{group.name}</p>
       </div>
     ));
 
   return (
-    <div
-      className={
-        groups ? "devlist_container scrollx" : "devlist_container scrollx"
-      }
-    >
+    <div className={groups ? "devlist_container" : "devlist_container scrollx"}>
       {cameras && genCameraList()}
       {groups && genGroupList()}
     </div>
@@ -220,7 +219,7 @@ CameraList.defaultProps = {
         gid: "3214124121324",
         name: "北碚紫荆花幼儿园",
         cameras: [
-          { oid: "142313441234123", name: "中一班", status: 1 },
+          { oid: "142313441234123", name: "中一班", status: 2 },
           { oid: "142313441141231", name: "中二班", status: 1 },
           { oid: "142313441141232", name: "中二班", status: 1 },
           { oid: "142313441141233", name: "中二班", status: 1 },
@@ -233,7 +232,7 @@ CameraList.defaultProps = {
         gid: "3214124121325",
         name: "北碚紫荆花幼儿园",
         cameras: [
-          { oid: "152313441234123", name: "中一班", status: 1 },
+          { oid: "152313441234123", name: "中一班", status: 2 },
           { oid: "152313441141231", name: "中二班", status: 1 },
           { oid: "152313441141232", name: "中二班", status: 1 },
           { oid: "152313441141233", name: "中二班", status: 1 },
