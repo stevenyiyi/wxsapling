@@ -160,7 +160,7 @@ export default function CameraList(props) {
           <p>{cam.name}</p>
         </div>
       ) : (
-        <div className="camera_row_container">
+        <div key={cam.oid} className="camera_row_container">
           <span className="smallicon">
             <FaVideoSlash />
           </span>
@@ -196,7 +196,11 @@ export default function CameraList(props) {
     ));
 
   return (
-    <div className={groups ? "devlist_container" : "devlist_container scrollx"}>
+    <div
+      className={
+        groups ? "devlist_container scrollx" : "devlist_container scrollx"
+      }
+    >
       {cameras && genCameraList()}
       {groups && genGroupList()}
     </div>

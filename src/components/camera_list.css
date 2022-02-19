@@ -58,6 +58,7 @@
 .cameras_sub_container {
   display: none;
   position: absolute;
+  flex-direction: column;
   overflow: auto;
   min-width: 80px;
   max-height: 250px;
@@ -95,7 +96,7 @@
 }
 
 .show {
-  display: block;
+  display: flex;
 }
 
 .hide {
