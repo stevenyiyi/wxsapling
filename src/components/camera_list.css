@@ -7,12 +7,13 @@
 }
 
 .scrollx {
-  overflow-x: scroll;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .camera_container {
   display: flex;
-  position: relative;
+  /**position: relative; */
   flex-direction: column;
   align-items: center;
   padding: 5px;
@@ -21,6 +22,7 @@
 
 .largeicon {
   display: flex;
+  position: relative;
   font-size: 1em;
   padding: 8px;
   width: 32px;
@@ -52,11 +54,13 @@
 .cameras_sub_container {
   display: none;
   position: absolute;
+  overflow: auto;
+  max-height: 250px;
   background-color: #f1f1f1;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  right: 15%;
-  top: 50%;
-  z-index: 1;
+  left: -50%;
+  top: 100%;
+  z-index: 2000;
 }
 
 .camera_row_container {

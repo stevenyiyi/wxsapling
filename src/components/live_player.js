@@ -64,7 +64,6 @@ export default function LivePlayer(props) {
       })
       .catch((e) => {
         console.error("Error:", e);
-        console.log(`get_camera_list response error code:${resp.result}`);
         setCamlist({
           cameras: [
             { oid: "51060300001310000006", name: "门卫", status: 1 },

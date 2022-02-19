@@ -8,19 +8,20 @@ import Recipes from "./components/recipes";
 import Chat from "./components/chat";
 import Test from "./components/test";
 import LivePlayer from "./components/live_player";
-import { UserContext } from "./user_context";
+import { UserContext, userCookie } from "./user_context";
 import { default as SnackbarProvider } from "./components/snackbar";
 import "./components/normalize.css";
-export default function App(props) {
+export default function App() {
   const updateUser = (user) => {
     setUserContext({ ...userContext, user: user });
   };
 
   const [userContext, setUserContext] = React.useState({
-    user: props.user,
+    user: userCookie,
     updateUser: updateUser
   });
 
+  console.log(userContext.user);
   return (
     <UserContext.Provider value={userContext}>
       <SnackbarProvider>

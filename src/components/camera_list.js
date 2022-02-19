@@ -178,20 +178,26 @@ export default function CameraList(props) {
           onClick={(event) => onClickGroup(group)}
         >
           <FaServer />
+          <div
+            className={
+              group.show
+                ? "cameras_sub_container show"
+                : "cameras_sub_container"
+            }
+          >
+            {genSubCamList(group.cameras)}
+          </div>
         </span>
-        <div
-          className={
-            group.show ? "cameras_sub_container show" : "cameras_sub_container"
-          }
-        >
-          {genSubCamList(group.cameras)}
-        </div>
         <p>{group.name}</p>
       </div>
     ));
 
   return (
-    <div className={groups ? "devlist_container" : "devlist_container scrollx"}>
+    <div
+      className={
+        groups ? "devlist_container scrollx" : "devlist_container scrollx"
+      }
+    >
       {cameras && genCameraList()}
       {groups && genGroupList()}
     </div>
@@ -205,7 +211,10 @@ CameraList.propTypes = {
 
 CameraList.defaultProps = {
   camlist: {
-    cameras: [],
+    cameras: [
+      { oid: "172313441234123", name: "中一班", status: 1 },
+      { oid: "172313441141231", name: "中二班", status: 1 }
+    ],
     groups: [
       {
         gid: "3214124121324",
@@ -218,6 +227,19 @@ CameraList.defaultProps = {
           { oid: "142313441141234", name: "中二班", status: 1 },
           { oid: "142313441141235", name: "中二班", status: 1 },
           { oid: "142313441141236", name: "中二班", status: 1 }
+        ]
+      },
+      {
+        gid: "3214124121325",
+        name: "北碚紫荆花幼儿园",
+        cameras: [
+          { oid: "152313441234123", name: "中一班", status: 1 },
+          { oid: "152313441141231", name: "中二班", status: 1 },
+          { oid: "152313441141232", name: "中二班", status: 1 },
+          { oid: "152313441141233", name: "中二班", status: 1 },
+          { oid: "152313441141234", name: "中二班", status: 1 },
+          { oid: "152313441141235", name: "中二班", status: 1 },
+          { oid: "152313441141236", name: "中二班", status: 1 }
         ]
       }
     ]
