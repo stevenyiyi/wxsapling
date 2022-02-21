@@ -855,7 +855,7 @@ export default function HLSPlayer(props) {
               className="progressbar"
               max={100}
               defaultValue={seekval}
-            ></progress>
+            />
             <input
               type="range"
               id="seekbar"
