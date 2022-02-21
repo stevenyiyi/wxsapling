@@ -131,7 +131,7 @@ export default function HLSPlayer(props) {
     onSendMessage,
     onPlayChange
   } = props;
-  const [openSnackbar] = useSnackbar();
+  const openSnackbar = React.useRef(useSnackbar()[0]);
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
   const [checkMpd, setCheckMpd] = React.useState("");
   const [streamUri, setStreamUri] = React.useState("");
@@ -227,15 +227,15 @@ export default function HLSPlayer(props) {
               ) {
                 let rcode = data.response.code;
                 if (rcode === 403) {
-                  openSnackbar(
+                  openSnackbar.current(
                     "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!"
                   );
                   /// triggerPlayerTimer(error.url);
                 } else if (rcode === 404) {
-                  openSnackbar("观看的流已经下线，将重新刷新观看列表!");
+                  openSnackbar.current("观看的流已经下线，将重新刷新观看列表!");
                   onRefreshCamlist();
                 } else {
-                  openSnackbar(`服务器返回错误代码:${rcode}`);
+                  openSnackbar.current(`服务器返回错误代码:${rcode}`);
                   onRefreshCamlist();
                 }
               } else if (
@@ -243,18 +243,18 @@ export default function HLSPlayer(props) {
                 details === Hls.ErrorDetails.KEY_LOAD_TIMEOUT ||
                 details === Hls.ErrorDetails.LEVEL_LOAD_TIMEOUT
               ) {
-                openSnackbar("加载文件超时，请检查网络是否正常...");
+                openSnackbar.current("加载文件超时，请检查网络是否正常...");
                 onRefreshCamlist();
               } else if (
                 details === Hls.ErrorDetails.MANIFEST_PARSING_ERROR ||
                 details === Hls.ErrorDetails.LEVEL_EMPTY_ERROR
               ) {
-                openSnackbar(`解析mainfest错误: ${data.reason}`);
+                openSnackbar.current(`解析mainfest错误: ${data.reason}`);
               } else {
-                openSnackbar("服务器出了点问题，请稍候再试!");
+                openSnackbar.current("服务器出了点问题，请稍候再试!");
               }
             } else {
-              openSnackbar(
+              openSnackbar.current(
                 "无法播放此视频,错误类型：" +
                   data.type +
                   ",错误代码:" +
@@ -322,7 +322,7 @@ export default function HLSPlayer(props) {
             msg = "未知错误!";
             break;
         }
-        openSnackbar(`error:${msg}`);
+        openSnackbar.current(`error:${msg}`);
       };
     },
     [autoplay, onRefreshCamlist, streamUri, tryPlaying]
@@ -377,11 +377,11 @@ export default function HLSPlayer(props) {
           setLoading(false);
           if (response.status === 404) {
             /// 直播流已经下线
-            openSnackbar("直播流已经下线!");
+            openSnackbar.current("直播流已经下线!");
             onRefreshCamlist();
           } else if (response.status === 403) {
             /// 多人同时观看
-            openSnackbar(
+            openSnackbar.current(
               "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!"
             );
           } else if (response.status === 200) {
@@ -389,16 +389,16 @@ export default function HLSPlayer(props) {
             setStreamUri(checkMpd);
           } else {
             /** 其它错误 */
-            openSnackbar(`服务器返回错误代码:${response.status}`);
+            openSnackbar.current(`服务器返回错误代码:${response.status}`);
           }
           return response.text();
         })
         .then((respText) => {
-          openSnackbar(`fetch mpd:${respText}`);
+          openSnackbar.current(`fetch mpd:${respText}`);
         })
         .catch((error) => {
           setLoading(false);
-          openSnackbar("fetch play uri error:", error.message);
+          openSnackbar.current("fetch play uri error:", error.message);
         });
     }
   }, [checkMpd, onRefreshCamlist]);
@@ -412,7 +412,7 @@ export default function HLSPlayer(props) {
         setStreamUri(url);
       } else {
         /// Should setCheckMpd(url);but test
-        setStreamUri(url);
+        setCheckMpd(url);
       }
     }
   }, [url]);
@@ -503,7 +503,7 @@ export default function HLSPlayer(props) {
         registerVideoEvents();
         nativePlay(false);
       } else {
-        openSnackbar(
+        openSnackbar.current(
           "浏览器太老了,请下载一款支持MediaSourceExtension功能的浏览器!"
         );
       }
@@ -692,16 +692,11 @@ export default function HLSPlayer(props) {
         onPlayChange(streamUri);
       }
     };
-    refVidContainer.current.addEventListener(
-      "fullscreen",
-      handleFullscreenChange
-    );
+    const refvideo = refVidContainer.current;
+    refvideo.current.addEventListener("fullscreen", handleFullscreenChange);
     return () => {
-      if (refVidContainer.current)
-        refVidContainer.current.removeEventListener(
-          "fullscreen",
-          handleFullscreenChange
-        );
+      if (refvideo)
+        refvideo.removeEventListener("fullscreen", handleFullscreenChange);
     };
   }, [onPlayChange, streamUri]);
 
