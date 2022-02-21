@@ -75,6 +75,14 @@ export default function LivePlayer(props) {
 
   /** 处理用户点击播放列表 */
   const handlePlayUri = (uri, is_main_stream) => {
+    if (uri !== streamUri) {
+      /// 用户切换PlayUri
+      let fpos = uri.lastIndexOf("/");
+      let soid = uri.substring(fpos + 1);
+      let oid = soid.split("_")[0];
+
+      /// Send jabber join video group
+    }
     setStreamUri(uri);
     /**
     if (!is_main_stream) {
@@ -242,6 +250,7 @@ export default function LivePlayer(props) {
         onRefreshCamlist={handleRefreshCamList}
         onSendMessage={handleJabberFromPlayer}
         onPlayChange={handlePalyChange}
+        switchPlayUri={handlePlayUri}
       />
       <div className="content__container">
         <div className="inner__content-container">

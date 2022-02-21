@@ -129,7 +129,8 @@ export default function HLSPlayer(props) {
     messages,
     onRefreshCamlist,
     onSendMessage,
-    onPlayChange
+    onPlayChange,
+    switchPlayUri
   } = props;
   const openSnackbar = React.useRef(useSnackbar()[0]);
   const [dimensions, setDimensions] = React.useState({ width: 0, height: 0 });
@@ -804,8 +805,9 @@ export default function HLSPlayer(props) {
   };
 
   /** 处理用户点击播放列表 */
-  const handlePlayUri = (playUri) => {
+  const handlePlayUri = (playUri, is_main_stream) => {
     console.log(`Screenfull play uri:${playUri}`);
+    switchPlayUri(playUri);
     if (Hls.isSupported()) {
       setStreamUri(playUri);
     } else {
@@ -956,7 +958,8 @@ HLSPlayer.propTypes = {
   messages: PropTypes.array,
   onRefreshCamlist: PropTypes.func,
   onSendMessage: PropTypes.func,
-  onPlayChange: PropTypes.func
+  onPlayChange: PropTypes.func,
+  switchPlayUri: PropTypes.func
 };
 
 HLSPlayer.defaultProps = {
@@ -981,5 +984,6 @@ HLSPlayer.defaultProps = {
   messages: [],
   onRefreshCamlist: () => {},
   onSendMessage: () => {},
-  onPlayChange: () => {}
+  onPlayChange: () => {},
+  switchPlayUri: () => {}
 };
