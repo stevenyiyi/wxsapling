@@ -694,7 +694,7 @@ export default function HLSPlayer(props) {
       }
     };
     const refvideo = refVidContainer.current;
-    refvideo.current.addEventListener("fullscreen", handleFullscreenChange);
+    refvideo.addEventListener("fullscreen", handleFullscreenChange);
     return () => {
       if (refvideo)
         refvideo.removeEventListener("fullscreen", handleFullscreenChange);
@@ -808,11 +808,12 @@ export default function HLSPlayer(props) {
   const handlePlayUri = (playUri, is_main_stream) => {
     console.log(`Screenfull play uri:${playUri}`);
     switchPlayUri(playUri);
+    /**
     if (Hls.isSupported()) {
       setStreamUri(playUri);
     } else {
       setCheckMpd(playUri);
-    }
+    } */
   };
 
   /** 发送聊天消息 */

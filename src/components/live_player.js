@@ -80,8 +80,23 @@ export default function LivePlayer(props) {
       let fpos = uri.lastIndexOf("/");
       let soid = uri.substring(fpos + 1);
       let oid = soid.split("_")[0];
-
+      let msg = {};
+      console.log(`Send ws switch stream:${oid}`);
+      msg.from =
+        refPerson.current.getName() +
+        ":" +
+        refPerson.current.getPhoto() +
+        "@" +
+        username;
+      msg.to = "server";
+      msg.type = "jabber";
+      msg.ts = Date.now();
+      msg.content = "playing_stream:" + oid;
       /// Send jabber join video group
+      let binMsg = tlv_serialize_object(msg);
+      ws.current.sendMessage(binMsg, (result) => {
+        console.log("Send message success!");
+      });
     }
     setStreamUri(uri);
     /**
