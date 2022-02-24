@@ -15,12 +15,14 @@ import App from "./App";
     username: undefined,
     token: undefined,
     role: undefined,
+    playerid: undefined,
     is_login: false
   };
   if (Cookies.get("username")) {
     user.username = Cookies.get("username");
     user.token = Cookies.get("token");
     user.role = Cookies.get("role");
+    user.playerid = Cookies.get("playerid");
     let qparams = { ts: Date.now() };
     qparams.username = user.username;
     qparams.token = user.token;

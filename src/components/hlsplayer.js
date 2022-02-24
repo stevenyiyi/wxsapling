@@ -235,6 +235,8 @@ export default function HLSPlayer(props) {
                 } else if (rcode === 404) {
                   openSnackbar.current("观看的流已经下线，将重新刷新观看列表!");
                   onRefreshCamlist();
+                } else if (rcode === 423) {
+                  openSnackbar.current("您的帐号已过期，请续费方可正常观看!");
                 } else {
                   openSnackbar.current(`服务器返回错误代码:${rcode}`);
                   onRefreshCamlist();
@@ -385,6 +387,9 @@ export default function HLSPlayer(props) {
             openSnackbar.current(
               "我们已经检测到您的帐号已在其它设备上正在观看，请等待其它设备停止观看后再试!"
             );
+          } else if (response.status === 423) {
+            /// 过期用户
+            openSnackbar.current("您的帐号已过期，请续费方可正常观看!");
           } else if (response.status === 200) {
             /** 检查成功 */
             setStreamUri(checkMpd);

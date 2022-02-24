@@ -16,6 +16,7 @@ const ENDPOINT = config.wssGroupChatUrl;
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
+  const playerid = userCtx.user.playerid;
   const ws = React.useRef(null);
   const [streamUri, setStreamUri] = React.useState("");
   const [camlist, setCamlist] = React.useState(null);
@@ -244,7 +245,7 @@ export default function LivePlayer(props) {
       {username && (
         <Websocket
           ref={ws}
-          url={`${ENDPOINT}?username=${username}`}
+          url={`${ENDPOINT}?username=${username}&playerid=${playerid}`}
           onOpen={ws_onopen}
           onMessage={ws_onmessage}
           onClose={ws_onclose}

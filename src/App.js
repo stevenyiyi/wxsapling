@@ -8,7 +8,7 @@ import Recipes from "./components/recipes";
 import Chat from "./components/chat";
 import Test from "./components/test";
 import LivePlayer from "./components/live_player";
-import { UserContext, userCookie } from "./user_context";
+import { UserContext } from "./user_context";
 import { default as SnackbarProvider } from "./components/snackbar";
 import "./components/normalize.css";
 export default function App(props) {
