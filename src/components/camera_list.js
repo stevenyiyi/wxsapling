@@ -32,7 +32,7 @@ export default function CameraList(props) {
       let obj = { playuri: "", is_main_stream: true };
       if (clist.cameras) {
         let dcams = clist.cameras.map((cam) => {
-          if (cam.status === 1 && !obj.playuri) {
+          if (cam.status === 0 && !obj.playuri) {
             cam["selected"] = true;
             obj.playuri = genPlayUri(cam.oid);
             obj.is_main_stream = cam.is_main_stream;
@@ -50,7 +50,7 @@ export default function CameraList(props) {
           group.show = false;
           group.cameras.forEach((cam, index, theArray) => {
             theArray[index].group = group;
-            if (cam.status === 1 && !obj.playuri) {
+            if (cam.status === 0 && !obj.playuri) {
               theArray[index].selected = true;
               group.selected = true;
               obj.playuri = genPlayUri(cam.oid);
@@ -124,7 +124,7 @@ export default function CameraList(props) {
   const genCameraList = () =>
     cameras.map((cam) => (
       <div key={cam.oid} className="camera_container">
-        {cam.status === 1 ? (
+        {cam.status === 0 ? (
           <span
             className={
               cam.selected ? "largeicon enable selected" : "largeicon enable"
@@ -144,7 +144,7 @@ export default function CameraList(props) {
 
   const genSubCamList = (clist) =>
     clist.map((cam) =>
-      cam.status === 1 ? (
+      cam.status === 0 ? (
         <div
           key={cam.oid}
           className={
