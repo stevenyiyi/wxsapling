@@ -92,7 +92,6 @@ const Login = (props) => {
               username: state.username,
               role: Cookies.get("role"),
               token: Cookies.get("token"),
-              playerid: Cookies.get("playerid"),
               is_login: true
             });
             /// Login Success

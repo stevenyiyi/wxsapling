@@ -16,7 +16,6 @@ const ENDPOINT = config.wssGroupChatUrl;
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
-  const playerid = userCtx.user.playerid;
   const ws = React.useRef(null);
   const [streamUri, setStreamUri] = React.useState("");
   const [camlist, setCamlist] = React.useState(null);
@@ -73,6 +72,32 @@ export default function LivePlayer(props) {
         });
       });
   }, [camsRefreshId]);
+
+  React.useEffect(() => {
+    if (streamUri && username) {
+      /// 用户切换PlayUri
+      let fpos = streamUri.lastIndexOf("/");
+      let soid = streamUri.substring(fpos + 1);
+      let oid = soid.split("_")[0];
+      let msg = {};
+      console.log(`Send ws switch stream:${oid}`);
+      msg.from =
+        refPerson.current.getName() +
+        ":" +
+        refPerson.current.getPhoto() +
+        "@" +
+        username;
+      msg.to = "server";
+      msg.type = "jabber";
+      msg.ts = Date.now();
+      msg.content = "playing_stream:" + oid;
+      /// Send jabber join video group
+      let binMsg = tlv_serialize_object(msg);
+      ws.current.sendMessage(binMsg, (result) => {
+        console.log("Send message success!");
+      });
+    }
+  }, [streamUri, username]);
 
   /** 处理用户点击播放列表 */
   const handlePlayUri = (uri, is_main_stream) => {
@@ -242,10 +267,10 @@ export default function LivePlayer(props) {
   );
   return (
     <div className="live_container">
-      {username && playerid && (
+      {username && (
         <Websocket
           ref={ws}
-          url={`${ENDPOINT}?username=${username}&playerid=${playerid}`}
+          url={`${ENDPOINT}?username=${username}`}
           onOpen={ws_onopen}
           onMessage={ws_onmessage}
           onClose={ws_onclose}
