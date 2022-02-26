@@ -255,19 +255,21 @@ export default function LivePlayer(props) {
           protocol="jabber"
         />
       )}
-      <HLSPlayer
-        url={streamUri}
-        autoplay={true}
-        hlsConfig={hlsconfig}
-        poster=""
-        videoProps={{}}
-        cameras={camlist}
-        messages={messages}
-        onRefreshCamlist={handleRefreshCamList}
-        onSendMessage={handleJabberFromPlayer}
-        onPlayChange={handlePalyChange}
-        switchPlayUri={handlePlayUri}
-      />
+      {streamUri && (
+        <HLSPlayer
+          url={streamUri}
+          autoplay={true}
+          hlsConfig={hlsconfig}
+          poster=""
+          videoProps={{}}
+          cameras={camlist}
+          messages={messages}
+          onRefreshCamlist={handleRefreshCamList}
+          onSendMessage={handleJabberFromPlayer}
+          onPlayChange={handlePalyChange}
+          switchPlayUri={handlePlayUri}
+        />
+      )}
       <div className="content__container">
         <div className="inner__content-container">
           {camlist && (
