@@ -193,7 +193,7 @@ export default function HLSPlayer(props) {
         refHls.current.loadSource(streamUri);
         refHls.current.on(Hls.Events.MANIFEST_PARSED, () => {
           setDuration(get_duration(refVideo.current));
-          let hasaudio = has_audio(refVideo.current);
+          let hasaudio = refHls.current.audioTracks.length > 0 ? true : false;
           setHasAudio(hasaudio);
 
           if (autoplay || mutual) {

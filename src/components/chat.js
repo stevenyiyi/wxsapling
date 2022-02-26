@@ -130,14 +130,16 @@ const Chat = (props) => {
 
   const sendMessage = (message, callback) => {
     if (message) {
-      if (message.to.length === users.length) {
-        message.to = "all";
-      } else {
-        message.to = message.to.join();
+      if (message.to.length > 0) {
+        if (message.to.length === users.length) {
+          message.to = "all";
+        } else {
+          message.to = message.to.join();
+        }
+        /// Send to websocket server
+        let binMsg = tlv_serialize_object(message);
+        ws.current.sendMessage(binMsg, callback);
       }
-      /// Send to websocket server
-      let binMsg = tlv_serialize_object(message);
-      ws.current.sendMessage(binMsg, callback);
       /// Reset message to display
       message.to = my.username;
       setMessages([...messages, message]);
