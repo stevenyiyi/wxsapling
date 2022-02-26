@@ -139,6 +139,8 @@ const Chat = (props) => {
         /// Send to websocket server
         let binMsg = tlv_serialize_object(message);
         ws.current.sendMessage(binMsg, callback);
+      } else {
+        callback(0);
       }
       /// Reset message to display
       message.to = my.username;
