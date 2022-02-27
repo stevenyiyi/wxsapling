@@ -29,8 +29,8 @@ function users_reducer(users, action) {
     case "on_state_change": {
       const cusers = [...users];
       cusers.forEach((user) => {
-        if (user.username === action.change.uid) {
-          user.online = action.change.online;
+        if (user.username === action.change.username) {
+          user.online = action.change.state;
         }
       });
       return cusers;
@@ -72,10 +72,12 @@ const Chat = (props) => {
         dispatch({ type: "online_users", uids: value });
       } else if (key === "on_state_change") {
         console.log(value);
-        dispatch({
-          type: "on_state_change",
-          change: value
-        });
+        if (value.length > 0) {
+          dispatch({
+            type: "on_state_change",
+            change: value[0]
+          });
+        }
       } else if (key === "unread_message_number") {
         setUnreadMessages(value);
       } else {

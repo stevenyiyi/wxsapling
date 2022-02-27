@@ -9,6 +9,7 @@ import Jabber from "./jabber";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
 import config from "../config";
+import { useSnackbar } from "./use_snackbar";
 import "./live_player.css";
 
 const ENDPOINT = config.wssGroupChatUrl;
@@ -27,7 +28,7 @@ export default function LivePlayer(props) {
   const refPersonBut = React.useRef();
   const refInfoBut = React.useRef();
   const refPerson = React.useRef();
-
+  const openSnackbar = React.useRef(useSnackbar()[0]);
   /** 从服务器获取摄像头列表 */
   React.useEffect(() => {
     const ERR_NO_ACCOUNT = 0x800000f;
@@ -55,11 +56,11 @@ export default function LivePlayer(props) {
         if (jresp.result === 0) {
           setCamlist(jresp.camlist);
         } else if (jresp.result === ERR_NO_ACCOUNT) {
-          console.log("帐户不存在!");
+          openSnackbar.current("帐户不存在!");
         } else if (jresp.result === ERR_INVALID_PWD) {
-          console.log("口令错误!");
+          openSnackbar.current("口令错误!");
         } else if (jresp.result === ERR_OVERDUE) {
-          console.log("帐户已过期!");
+          openSnackbar("帐户已过期!");
         }
       })
       .catch((e) => {
