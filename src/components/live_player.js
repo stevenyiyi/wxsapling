@@ -25,6 +25,7 @@ export default function LivePlayer(props) {
   const [showInfo, setShowInfo] = React.useState(false);
   const [chatText, setChatText] = React.useState("");
   const [messages, setMessages] = React.useState([]);
+  const [wsopened, setWsopened] = React.useState(false);
   const refPersonBut = React.useRef();
   const refInfoBut = React.useRef();
   const refPerson = React.useRef();
@@ -75,7 +76,7 @@ export default function LivePlayer(props) {
   }, [camsRefreshId]);
 
   React.useEffect(() => {
-    if (streamUri && username) {
+    if (streamUri && username && wsopened) {
       /// 用户切换PlayUri
       let fpos = streamUri.lastIndexOf("/");
       let soid = streamUri.substring(fpos + 1);
@@ -98,33 +99,10 @@ export default function LivePlayer(props) {
         console.log("Send message success!");
       });
     }
-  }, [streamUri, username]);
+  }, [streamUri, username, wsopened]);
 
   /** 处理用户点击播放列表 */
   const handlePlayUri = (uri, is_main_stream) => {
-    if (uri !== streamUri) {
-      /// 用户切换PlayUri
-      let fpos = uri.lastIndexOf("/");
-      let soid = uri.substring(fpos + 1);
-      let oid = soid.split("_")[0];
-      let msg = {};
-      console.log(`Send ws switch stream:${oid}`);
-      msg.from =
-        refPerson.current.getName() +
-        ":" +
-        refPerson.current.getPhoto() +
-        "@" +
-        username;
-      msg.to = "server";
-      msg.type = "jabber";
-      msg.ts = Date.now();
-      msg.content = "playing_stream:" + oid;
-      /// Send jabber join video group
-      let binMsg = tlv_serialize_object(msg);
-      ws.current.sendMessage(binMsg, (result) => {
-        console.log("Send message success!");
-      });
-    }
     setStreamUri(uri);
     /**
     if (!is_main_stream) {
@@ -222,6 +200,7 @@ export default function LivePlayer(props) {
       ts: Date.now()
     };
     setMessages([...messages, msg]);
+    setWsopened(true);
   };
   const ws_onclose = (e) => {
     let msg = {
@@ -230,6 +209,7 @@ export default function LivePlayer(props) {
       ts: Date.now()
     };
     setMessages([...messages, msg]);
+    setWsopened(false);
   };
   const ws_onerror = (e) => {
     let msg = {
@@ -238,6 +218,7 @@ export default function LivePlayer(props) {
       ts: Date.now()
     };
     setMessages([...messages, msg]);
+    setWsopened(false);
   };
 
   const ws_onmessage = (data) => {
