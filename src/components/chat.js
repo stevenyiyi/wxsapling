@@ -68,8 +68,10 @@ const Chat = (props) => {
         console.log(value);
         setMessages([...messages, value]);
       } else if (key === "online_users") {
+        console.log(value);
         dispatch({ type: "online_users", uids: value });
       } else if (key === "on_state_change") {
+        console.log(value);
         dispatch({
           type: "on_state_change",
           change: value
