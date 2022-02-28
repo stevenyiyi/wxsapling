@@ -17,9 +17,14 @@ const parseFrom = (from) => {
   };
 };
 
-/** 根据oid产生播放地址 */
-const genPlayUri = (oid) => {
-  let uri = "/live/" + oid + "_master.m3u8";
+/** 根据oid,domain产生播放地址 */
+const genPlayUri = (oid, domain) => {
+  let uri = "";
+  if (domain) {
+    uri = `https://${domain}/live/${oid}_master.m3u8`;
+  } else {
+    uri = `/live/${oid}_master.m3u8`;
+  }
   return uri;
 };
 export { parseFrom, genPlayUri };

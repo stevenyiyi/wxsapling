@@ -34,7 +34,7 @@ export default function CameraList(props) {
         let dcams = clist.cameras.map((cam) => {
           if (cam.status === 1 && !obj.playuri) {
             cam["selected"] = true;
-            obj.playuri = genPlayUri(cam.oid);
+            obj.playuri = genPlayUri(cam.oid, cam.domain);
             obj.is_main_stream = cam.is_main_stream;
             setCurrentCamera(cam);
           } else {
@@ -53,7 +53,7 @@ export default function CameraList(props) {
             if (cam.status === 1 && !obj.playuri) {
               theArray[index].selected = true;
               group.selected = true;
-              obj.playuri = genPlayUri(cam.oid);
+              obj.playuri = genPlayUri(cam.oid, cam.domain);
               obj.is_main_stream = cam.is_main_stream;
               setCurrentCamera(theArray[index]);
             } else {
@@ -111,7 +111,7 @@ export default function CameraList(props) {
     /// Update container
     if (cameras) setCameras([...cameras]);
     if (groups) setGroups([...groups]);
-    onPlayUri(genPlayUri(cam.oid), cam.is_main_stream);
+    onPlayUri(genPlayUri(cam.oid, cam.domain), cam.is_main_stream);
   };
 
   /** 用户点击group */
