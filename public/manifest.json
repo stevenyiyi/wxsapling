@@ -1,6 +1,6 @@
 {
   "background_color": "purple",
-  "description": "WebAnysee.",
+  "description": "wei xin sapling.",
   "display": "fullscreen",
   "icons": [
     {
@@ -9,7 +9,7 @@
       "type": "image/icon"
     }
   ],
-  "name": "WebAnysee",
-  "short_name": "WebAnysee",
+  "name": "WebSapling",
+  "short_name": "WebSapling",
   "start_url": "/index.html"
 }

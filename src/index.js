@@ -1,7 +1,5 @@
-/**
 import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
-*/
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -21,11 +19,8 @@ import App from "./App";
     user.username = Cookies.get("username");
     user.token = Cookies.get("token");
     user.role = Cookies.get("role");
-    let qparams = { ts: Date.now() };
-    qparams.username = user.username;
-    qparams.token = user.token;
     await http
-      .get(path, { params: qparams })
+      .get(path)
       .then((response) => {
         let result = response.data.result;
         if (result === 0) {
