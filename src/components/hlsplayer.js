@@ -368,10 +368,6 @@ export default function HLSPlayer(props) {
       setLoading(true);
       fetch(checkMpd, {
         credentials: "include",
-        headers: {
-          Accept: "application/x-mpegURL",
-          "Content-type": "application/x-mpegURL"
-        },
         cache: "no-cache",
         method: "GET",
         mode: "cors"
