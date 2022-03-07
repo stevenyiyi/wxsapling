@@ -23,7 +23,8 @@ const genPlayUri = (oid, domain) => {
   if (domain) {
     uri = `https://${domain}/live/${oid}_master.m3u8`;
   } else {
-    uri = `/live/${oid}_master.m3u8`;
+    ///uri = `/live/${oid}_master.m3u8`;
+    uri = `https://localhost/live/${oid}_master.m3u8`;
   }
   return uri;
 };

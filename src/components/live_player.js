@@ -61,7 +61,7 @@ export default function LivePlayer(props) {
         } else if (jresp.result === ERR_INVALID_PWD) {
           openSnackbar.current("口令错误!");
         } else if (jresp.result === ERR_OVERDUE) {
-          openSnackbar("帐户已过期!");
+          openSnackbar.current("帐户已过期!");
         }
       })
       .catch((e) => {
