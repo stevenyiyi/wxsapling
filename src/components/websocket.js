@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 class Websocket extends React.Component {
   constructor(props) {
     super(props);
+    console.log(`websocket constructor, protocol:${this.props.protocol}`);
     this.state = {
       ws: window.WebSocket
         ? new window.WebSocket(this.props.url, this.props.protocol)
@@ -56,15 +57,14 @@ class Websocket extends React.Component {
 
     this.shouldReconnect = this.props.reconnect;
     websocket.onclose = (e) => {
-      this.logging(
-        `Websocket disconnected,the reason: ${e.reason},the code: ${e.code}`
-      );
       if (typeof this.props.onClose === "function") this.props.onClose(e);
-      if (this.shouldReconnect && e.code !== 1000) this.reconnect();
+      if (this.shouldReconnect && e.code !== 1000 && e.code !== 1006)
+        this.reconnect();
     };
   }
 
   reconnect() {
+    this.logging("Websocket reconnect!");
     let time = this.generateInterval(this.state.attempts);
     this.timeoutID = setTimeout(() => {
       this.setState({ attempts: this.state.attempts + 1 });

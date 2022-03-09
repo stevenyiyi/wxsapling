@@ -77,9 +77,8 @@ const Input = (props) => {
   };
 
   return (
-    <form className="form">
+    <form className="input__form__container">
       <input
-        className="input"
         type="text"
         value={message}
         placeholder="输入消息"

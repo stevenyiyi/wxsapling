@@ -19,7 +19,8 @@ import {
   FaExternalLinkAlt,
   FaBars,
   FaTelegramPlane,
-  FaOsi
+  FaOsi,
+  FaRocketchat
 } from "react-icons/fa";
 import "./hlsplayer.css";
 /* eslint-disable no-console */
@@ -155,6 +156,7 @@ export default function HLSPlayer(props) {
   const refControls = React.useRef(null);
   const refFsMenuBut = React.useRef(null);
   const refFsMenu = React.useRef(null);
+  const refJabbberInput = React.useRef(null);
   useOutsideClick(refFsMenu, (event) => {
     if (refFsMenuBut.current && !refFsMenuBut.current.contains(event.target)) {
       refFsMenu.current.classList.remove("show");
@@ -210,12 +212,6 @@ export default function HLSPlayer(props) {
             refHls.current.recoverMediaError();
           } else {
             console.log("Error,type:" + data.type + " details:" + data.details);
-            refHls.current.stopLoad();
-            refHls.current.detachMedia();
-            refHls.destory();
-            setState(PLAYER_STATE_ERROR);
-            ///refHls.current.detachMedia();
-            ///refHls.current.destroy();
             /// Handling hls.js error
             if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
               let details = data.details;
@@ -236,7 +232,7 @@ export default function HLSPlayer(props) {
                   openSnackbar.current("观看的流已经下线，将重新刷新观看列表!");
                   onRefreshCamlist();
                 } else if (rcode === 423) {
-                  openSnackbar.current("您的帐号已过期，请续费方可正常观看!");
+                  openSnackbar.current("您的帐号已过期，请续费后方可正常观看!");
                 } else {
                   openSnackbar.current(`服务器返回错误代码:${rcode}`);
                   onRefreshCamlist();
@@ -266,6 +262,10 @@ export default function HLSPlayer(props) {
                   data.reason
               );
             }
+            refHls.current.stopLoad();
+            refHls.current.detachMedia();
+            refHls.destory();
+            setState(PLAYER_STATE_ERROR);
           }
         }
       });
@@ -753,6 +753,11 @@ export default function HLSPlayer(props) {
     }
   };
 
+  /** 单击聊天输入开关 */
+  const toggleJabberInput = (event) => {
+    refJabbberInput.current.classList.toggle("show");
+  };
+
   /** 音量处理 */
   const handleVolumeChange = (event) => {
     console.log(`volume:${event.target.value}`);
@@ -872,23 +877,9 @@ export default function HLSPlayer(props) {
           <div className="live">直播</div>
         )}
         {isFullScreen ? (
-          <div className="chat__container">
-            <input
-              type="text"
-              placeholder="说点什么？"
-              value={message}
-              onChange={(event) => setMessage(event.target.value.trim())}
-              onKeyPress={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-            />
-            <button id="chat" onClick={(e) => handleSendMessage()}>
-              <FaTelegramPlane />
-            </button>
-          </div>
+          <button id="editJabberInput" onClick={toggleJabberInput}>
+            <FaRocketchat />
+          </button>
         ) : (
           <div className="chat__container" />
         )}
@@ -938,13 +929,45 @@ export default function HLSPlayer(props) {
           </button>
         )}
       </div>
+      {isFullScreen && isBarrage && barrageMessage && (
+          <Barrage message={barrageMessage} />
+        )}
       <div ref={refFsMenu} className="sidedlg">
         {cameras && <CameraList camlist={cameras} onPlayUri={handlePlayUri} />}
         <Jabber messages={messages} />
       </div>
-      {isFullScreen && isBarrage && barrageMessage && (
-        <Barrage message={barrageMessage} />
-      )}
+      <div ref={refJabbberInput} className="jabber__input__overlay">
+        <span
+          className="closebtn"
+          onClick={toggleJabberInput}
+          title="关闭聊天输入"
+        >
+          ×
+        </span>
+        <div className="jabber__input__overlay-content">
+          <div>
+            <input
+              type="text"
+              placeholder="说点什么？"
+              value={message}
+              onChange={(event) => setMessage(event.target.value.trim())}
+              onKeyPress={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+            />
+            <button
+              id="chat"
+              type="submit"
+              onClick={(e) => handleSendMessage()}
+            >
+              <FaTelegramPlane />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

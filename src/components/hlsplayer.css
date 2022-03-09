@@ -71,11 +71,10 @@
   display: none;
   position: absolute;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   text-align: center;
   bottom: 0;
   left: 0;
-
   color: white;
   width: 100%;
   transition: 0.3s;
@@ -312,6 +311,70 @@ video::-webkit-media-controls-enclosure {
   overflow: hidden;
   background-color: rgba(0, 0, 0, 0.75);
   transition: 0.5s;
+}
+
+/** overlay jabber input */
+.jabber__input__overlay {
+  height: 100%;
+  width: 100%;
+  display: none;
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.jabber__input__overlay-content {
+  position: relative;
+  width: 90%;
+  padding: 15px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-align: center;
+  margin: 15% auto; /* 15% from the top and centered */
+}
+
+.jabber__input__overlay .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  font-size: 40px;
+  cursor: pointer;
+  color: white;
+}
+
+.jabber__input__overlay .closebtn:hover {
+  color: #ccc;
+}
+
+.jabber__input__overlay input[type="text"] {
+  padding: 15px 15px 15px 10px;
+  font-size: 17px;
+  border: none;
+  float: left;
+  width: 85%;
+  background: white;
+}
+
+.jabber__input__overlay input[type="text"]:hover {
+  background: #f1f1f1;
+}
+
+.jabber__input__overlay button {
+  float: left;
+  width: 15%;
+  padding: 15px;
+  margin-top: -5px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+.jabber__input__overlay button:hover {
+  background: #bbb;
 }
 
 /** loader */

@@ -50,15 +50,15 @@ const Chat = (props) => {
   const [unreadMessages, setUnreadMessages] = React.useState(0);
 
   const ws_onopen = (e) => {
-    console.log(`websocket onopen,event:${e}`);
+    console.log("websocket onopen,event:", e);
   };
 
   const ws_onclose = (e) => {
-    console.log(`websocket onclose,code:${e.code}, reason:${e.reason}`);
+    console.log(`websocket onclose code:${e.code}`);
   };
 
   const ws_onerror = (e) => {
-    console.log(`websocket onclose,code:${e.code}, reason:${e.reason}`);
+    console.log(`websocket onerror:${e.type}`);
   };
 
   const ws_onmessage = (data) => {
@@ -135,7 +135,7 @@ const Chat = (props) => {
   const sendMessage = (message, callback) => {
     if (message) {
       if (message.to.length > 0) {
-        if (message.to.length === users.length) {
+        if (my.role === 2 && message.to.length === users.length) {
           message.to = "all";
         } else {
           message.to = message.to.join();
@@ -151,7 +151,7 @@ const Chat = (props) => {
       setMessages([...messages, message]);
     }
   };
-
+  console.log("chat render!");
   return (
     <div className="chat_outer_container">
       {username && (
