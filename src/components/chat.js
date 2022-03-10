@@ -7,6 +7,7 @@ import config from "../config";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
 import { UserContext } from "../user_context";
+import { useSnackbar } from "./use_snackbar";
 import "./chat.css";
 
 const ENDPOINT = config.wssGroupChatUrl;
@@ -54,6 +55,7 @@ const Chat = (props) => {
   const [messages, setMessages] = React.useState([]);
   const [unreadMessages, setUnreadMessages] = React.useState(0);
   const [wsState, setWsState] = React.useState(WebSocket.CONNECTING);
+  const openSnackbar = React.useRef(useSnackbar()[0]);
   const ws_onopen = (e) => {
     console.log("websocket onopen,event:", e);
     setWsState(ws.current.readyState);
@@ -63,6 +65,15 @@ const Chat = (props) => {
     console.log(`websocket onclose code:${e.code}`);
     setWsState(ws.current.readyState);
     dispatch({ type: "reset" });
+    if (e.code === 4001) {
+      openSnackbar.current(
+        "我们检测到您的帐户已经在另一个设备上登录，请退出另外的设备再试!"
+      );
+    } else if (e.code === 4002) {
+      openSnackbar.current(`帐户:${username} 不存在!`);
+    } else if (e.code === 4003) {
+      openSnackbar.current("参数错误!");
+    }
   };
 
   const ws_onerror = (e) => {

@@ -50,11 +50,6 @@ class Websocket extends React.Component {
 
     websocket.onerror = (e) => {
       if (typeof this.props.onError === "function") this.props.onError(e);
-      if (e.code === "ECONNREFUSED") {
-        if (this.shouldReconnect) this.reconnect();
-      } else {
-        if (this.shouldReconnect) this.shouldReconnect = false;
-      }
     };
 
     websocket.onmessage = (evt) => {
@@ -64,7 +59,14 @@ class Websocket extends React.Component {
     this.shouldReconnect = this.props.reconnect;
     websocket.onclose = (e) => {
       if (typeof this.props.onClose === "function") this.props.onClose(e);
-      if (this.shouldReconnect && e.code !== 1000) this.reconnect();
+      if (
+        this.shouldReconnect &&
+        e.code !== 1000 &&
+        e.code !== 4001 &&
+        e.code !== 4002 &&
+        e.code !== 4003
+      )
+        this.reconnect();
     };
   }
 

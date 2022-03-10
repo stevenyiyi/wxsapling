@@ -203,9 +203,13 @@ export default function LivePlayer(props) {
     setWsopened(true);
   };
   const ws_onclose = (e) => {
+    let msgcontent = "与聊天服务器断开，聊天暂时不可用！";
+    if (e.code === 4001) {
+      msgcontent = "我们检测到您的帐户已经在另外的设备上登录，请退出再试！";
+    }
     let msg = {
       from: "系统消息:jpg@admin",
-      content: "与聊天服务器断开，聊天暂时不可用！",
+      content: msgcontent,
       ts: Date.now()
     };
     setMessages([...messages, msg]);
@@ -214,7 +218,7 @@ export default function LivePlayer(props) {
   const ws_onerror = (e) => {
     let msg = {
       from: "系统消息:jpg@admin",
-      content: `与聊天服务器通信发生错误，错误代码:${e.code}！`,
+      content: "与聊天服务器通信发生错误，请稍后再试！",
       ts: Date.now()
     };
     setMessages([...messages, msg]);
