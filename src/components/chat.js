@@ -66,7 +66,7 @@ const Chat = (props) => {
   };
 
   const ws_onerror = (e) => {
-    console.log(`websocket onerror:${e.type}`);
+    console.log("websocket onerror:", e.type);
     setWsState(ws.current.readyState);
   };
 
