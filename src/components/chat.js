@@ -35,6 +35,11 @@ function users_reducer(users, action) {
       });
       return cusers;
     }
+    case "reset": {
+      const cusers = [...users];
+      cusers.forEach((user) => (user.online = false));
+      return cusers;
+    }
     default:
       throw new Error("Unexpected action");
   }
@@ -48,17 +53,21 @@ const Chat = (props) => {
   const [users, dispatch] = React.useReducer(users_reducer, []);
   const [messages, setMessages] = React.useState([]);
   const [unreadMessages, setUnreadMessages] = React.useState(0);
-
+  const [wsState, setWsState] = React.useState(WebSocket.CONNECTING);
   const ws_onopen = (e) => {
     console.log("websocket onopen,event:", e);
+    setWsState(ws.current.readyState);
   };
 
   const ws_onclose = (e) => {
     console.log(`websocket onclose code:${e.code}`);
+    setWsState(ws.current.readyState);
+    dispatch({ type: "reset" });
   };
 
   const ws_onerror = (e) => {
     console.log(`websocket onerror:${e.type}`);
+    setWsState(ws.current.readyState);
   };
 
   const ws_onmessage = (data) => {
@@ -171,7 +180,7 @@ const Chat = (props) => {
         <div className="chat_container">
           <InfoBar
             classes={classes}
-            state={ws.current.readyState}
+            state={wsState}
             unReadMessages={unreadMessages}
             handleNotifications={handleGetRemainMessages}
           />
