@@ -14,8 +14,9 @@ const ENDPOINT = config.wssGroupChatUrl;
 
 function users_reducer(users, action) {
   switch (action.type) {
-    case "set":
+    case "set": {
       return action.users;
+    }
     case "online_users": {
       const cusers = [...users];
       action.uids.forEach((uid) => {
@@ -174,7 +175,7 @@ const Chat = (props) => {
   console.log("chat render!");
   return (
     <div className="chat_outer_container">
-      {username && (
+      {users.length > 0 && (
         <Websocket
           ref={ws}
           url={`${ENDPOINT}?username=${username}`}
