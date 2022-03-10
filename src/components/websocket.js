@@ -5,12 +5,16 @@ class Websocket extends React.Component {
   constructor(props) {
     super(props);
     console.log(`websocket constructor, protocol:${this.props.protocol}`);
-    this.state = {
-      ws: window.WebSocket
-        ? new window.WebSocket(this.props.url, this.props.protocol)
-        : new window.MozWebSocket(this.props.url, this.props.protocol),
-      attempts: 1
-    };
+    try {
+      this.state = {
+        ws: window.WebSocket
+          ? new window.WebSocket(this.props.url, this.props.protocol)
+          : new window.MozWebSocket(this.props.url, this.props.protocol),
+        attempts: 1
+      };
+    } catch (e) {
+      console.log("websocket constructor error:", e);
+    }
     this.sendMessage = this.sendMessage.bind(this);
     this.setupWebsocket = this.setupWebsocket.bind(this);
     Object.defineProperties(this, {
