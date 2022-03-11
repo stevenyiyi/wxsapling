@@ -72,10 +72,6 @@ function get_fullscreen_prefix() {
 
   return value;
 }
-/// Get the name for fullscreen api
-function get_fullscreen_name(prefix) {
-  return prefix === "moz" ? "FullScreen" : "Fullscreen";
-}
 
 /**
  * [fn.is_fullscreen] 检测是否全屏状态
@@ -162,6 +158,74 @@ export default function HLSPlayer(props) {
       refFsMenu.current.classList.remove("show");
     }
   });
+
+  /** 处理 HTMLVideoElement event */
+  const handleVideoEvent = (event) => {
+    if (event.type === "play") {
+      setState(PLAYER_STATE_PLAY);
+      console.log("play event!");
+    } else if (event.type === "pause") {
+      console.log("pause event!");
+      setState(PLAYER_STATE_PAUSE);
+    } else if (event.type === "abort") {
+      console.log("abort event!");
+      setLoading(false);
+      setState(PLAYER_STATE_ABORT);
+    } else if (event.type === "ended") {
+      console.log("ended event!");
+      refVideo.current.currentTime = 0;
+      setLoading(false);
+      setState(PLAYER_STATE_ENDED);
+    } else if (event.type === "waiting") {
+      console.log("waiting event!");
+      setLoading(true);
+      setState(PLAYER_STATE_WAITING);
+    } else if (event.type === "playing") {
+      console.log("playing event!");
+      setLoading(false);
+      setState(PLAYER_STATE_PLAYING);
+      /// show controls delay 5 seconds
+      refControls.current.classList.toggle("show");
+      setTimeout(() => {
+        refControls.current.classList.toggle("show");
+      }, 5000);
+    } else if (event.type === "suspend") {
+      console.log("suspend event!");
+      setState(PLAYER_STATE_SUSPEND);
+      setLoading(false);
+    } else if (event.type === "stalled") {
+      console.log("stalled event!");
+      setState(PLAYER_STATE_STALLED);
+    } else if (event.type === "empied") {
+      console.log("emptied event!");
+      setState(PLAYER_STATE_EMPTIED);
+      setLoading(false);
+    }
+  };
+
+  /** 订阅 HTMLVideoElement events */
+  const registerVideoEvents = React.useCallback((videoElement) => {
+    videoElement.addEventListener("play", handleVideoEvent);
+    videoElement.addEventListener("pause", handleVideoEvent);
+    videoElement.addEventListener("abort", handleVideoEvent);
+    videoElement.addEventListener("playing", handleVideoEvent);
+    videoElement.addEventListener("emptied", handleVideoEvent);
+    videoElement.addEventListener("ended", handleVideoEvent);
+    videoElement.addEventListener("stalled", handleVideoEvent);
+    videoElement.addEventListener("suppend", handleVideoEvent);
+  }, []);
+
+  /** 取消订阅 HTMLVideoElement events */
+  const unregisterVideoEvents = React.useCallback((videoElement) => {
+    videoElement.removeEventListener("play", handleVideoEvent);
+    videoElement.removeEventListener("pause", handleVideoEvent);
+    videoElement.removeEventListener("abort", handleVideoEvent);
+    videoElement.removeEventListener("playing", handleVideoEvent);
+    videoElement.removeEventListener("emptied", handleVideoEvent);
+    videoElement.removeEventListener("ended", handleVideoEvent);
+    videoElement.removeEventListener("stalled", handleVideoEvent);
+    videoElement.removeEventListener("suppend", handleVideoEvent);
+  }, []);
 
   /** 尝试播放媒体 */
   const tryPlaying = React.useCallback((hasaudio) => {
@@ -396,7 +460,7 @@ export default function HLSPlayer(props) {
           return response.text();
         })
         .then((respText) => {
-          openSnackbar.current(`fetch mpd:${respText}`);
+          console.log(`fetch mpd:${respText}`);
         })
         .catch((error) => {
           setLoading(false);
@@ -412,80 +476,24 @@ export default function HLSPlayer(props) {
     if (url) {
       if (Hls.isSupported()) {
         setStreamUri(url);
-      } else {
-        /// Should setCheckMpd(url);but test
+      } else if (
+        refVideo.current.canPlayType("application/vnd.apple.mpegurl")
+      ) {
+        /// Destory video element
+        refVideo.current.pause();
+        refVideo.current.src = ""; // empty source
+        refVideo.current.removeAttribute("src");
+        refVideo.current.load();
+        unregisterVideoEvents(refVideo.current);
         setCheckMpd(url);
+      } else {
+        openSnackbar.current("浏览器不支持播放直播视频，请升级!");
       }
     }
-  }, [url]);
+  }, [url, unregisterVideoEvents]);
 
   React.useEffect(() => {
-    const handleVideoEvent = (event) => {
-      if (event.type === "play") {
-        setState(PLAYER_STATE_PLAY);
-        console.log("play event!");
-      } else if (event.type === "pause") {
-        console.log("pause event!");
-        setState(PLAYER_STATE_PAUSE);
-      } else if (event.type === "abort") {
-        console.log("abort event!");
-        setLoading(false);
-        setState(PLAYER_STATE_ABORT);
-      } else if (event.type === "ended") {
-        console.log("ended event!");
-        videoElement.currentTime = 0;
-        setLoading(false);
-        setState(PLAYER_STATE_ENDED);
-      } else if (event.type === "waiting") {
-        console.log("waiting event!");
-        setLoading(true);
-        setState(PLAYER_STATE_WAITING);
-      } else if (event.type === "playing") {
-        console.log("playing event!");
-        setLoading(false);
-        setState(PLAYER_STATE_PLAYING);
-        /// show controls delay 5 seconds
-        controlsElement.classList.toggle("show");
-        setTimeout(() => {
-          controlsElement.classList.toggle("show");
-        }, 5000);
-      } else if (event.type === "suspend") {
-        console.log("suspend event!");
-        setState(PLAYER_STATE_SUSPEND);
-        setLoading(false);
-      } else if (event.type === "stalled") {
-        console.log("stalled event!");
-        setState(PLAYER_STATE_STALLED);
-      } else if (event.type === "empied") {
-        console.log("emptied event!");
-        setState(PLAYER_STATE_EMPTIED);
-        setLoading(false);
-      }
-    };
-
-    const registerVideoEvents = () => {
-      videoElement.addEventListener("play", handleVideoEvent);
-      videoElement.addEventListener("pause", handleVideoEvent);
-      videoElement.addEventListener("abort", handleVideoEvent);
-      videoElement.addEventListener("playing", handleVideoEvent);
-      videoElement.addEventListener("emptied", handleVideoEvent);
-      videoElement.addEventListener("ended", handleVideoEvent);
-      videoElement.addEventListener("stalled", handleVideoEvent);
-      videoElement.addEventListener("suppend", handleVideoEvent);
-    };
-
-    const unregisterVideoEvents = () => {
-      videoElement.removeEventListener("play", handleVideoEvent);
-      videoElement.removeEventListener("pause", handleVideoEvent);
-      videoElement.removeEventListener("abort", handleVideoEvent);
-      videoElement.removeEventListener("playing", handleVideoEvent);
-      videoElement.removeEventListener("emptied", handleVideoEvent);
-      videoElement.removeEventListener("ended", handleVideoEvent);
-      videoElement.removeEventListener("stalled", handleVideoEvent);
-      videoElement.removeEventListener("suppend", handleVideoEvent);
-    };
     const videoElement = refVideo.current;
-    const controlsElement = refControls.current;
     if (streamUri) {
       console.log(`play stream uri:${streamUri}`);
       setLoading(false);
@@ -495,14 +503,14 @@ export default function HLSPlayer(props) {
           refHls.current.stopLoad();
           refHls.current.detachMedia();
         }
-        registerVideoEvents();
+        registerVideoEvents(videoElement);
         msePlay(false);
       } else if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
         videoElement.pause();
         videoElement.src = ""; // empty source
         videoElement.removeAttribute("src");
         videoElement.load();
-        registerVideoEvents();
+        registerVideoEvents(videoElement);
         nativePlay(false);
       } else {
         openSnackbar.current(
@@ -522,10 +530,16 @@ export default function HLSPlayer(props) {
           videoElement.canPlayType("application/vnd.apple.mpegurl")) &&
         videoElement !== null
       ) {
-        unregisterVideoEvents();
+        unregisterVideoEvents(videoElement);
       }
     };
-  }, [streamUri, msePlay, nativePlay]);
+  }, [
+    streamUri,
+    msePlay,
+    nativePlay,
+    registerVideoEvents,
+    unregisterVideoEvents
+  ]);
 
   /** Not fullscreen api supported */
   const toggleDivFullscreen = React.useCallback(
@@ -930,8 +944,8 @@ export default function HLSPlayer(props) {
         )}
       </div>
       {isFullScreen && isBarrage && barrageMessage && (
-          <Barrage message={barrageMessage} />
-        )}
+        <Barrage message={barrageMessage} />
+      )}
       <div ref={refFsMenu} className="sidedlg">
         {cameras && <CameraList camlist={cameras} onPlayUri={handlePlayUri} />}
         <Jabber messages={messages} />
