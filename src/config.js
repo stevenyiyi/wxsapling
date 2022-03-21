@@ -9,6 +9,6 @@ export default {
       : "https://localhost/",
   wssGroupChatUrl:
     process.env.NODE_ENV === "production"
-      ? "wss://anylooker.com/ws_group_chat"
-      : "wss://localhost/ws_group_chat"
+      ? "wss://anylooker.com/ws_live"
+      : "wss://localhost/ws_live"
 };
