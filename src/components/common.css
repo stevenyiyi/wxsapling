@@ -118,15 +118,6 @@ button[disabled] {
   color: #666666;
 }
 
-/** flex container */
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: #ffffff;
-  width: 100%;
-}
-
 /** top bar */
 .topbar {
   display: flex;
@@ -153,15 +144,6 @@ button[disabled] {
   display: inline-block;
   border: 1px solid #ccc;
   box-sizing: border-box;
-}
-
-/** card */
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  margin: auto;
-  text-align: center;
-  font-family: arial;
 }
 
 .title {

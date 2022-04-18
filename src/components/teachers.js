@@ -4,6 +4,7 @@ import { FaList, FaAngleLeft, FaAngleRight, FaTimes } from "react-icons/fa";
 import http from "../http_common";
 import config from "../config";
 import "./common.css";
+import "./teachers.css";
 export default function Teachers(props) {
   const [searchParams] = useSearchParams();
   const schoolid = searchParams.get("schoolid");
@@ -125,7 +126,7 @@ export default function Teachers(props) {
   };
 
   return (
-    <div className="container">
+    <div className="teachers_container">
       <div className="topbar">
         <button className="circle_btn" onClick={handleListClick}>
           <FaList />

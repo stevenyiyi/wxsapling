@@ -1,8 +1,8 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
 import http from "../http_common";
+import "./school.css";
 import Carousel from "./carousel";
-import "./common.css";
 
 export default function School(props) {
   const [searchParams] = useSearchParams();
@@ -24,7 +24,7 @@ export default function School(props) {
   }, [schoolid]);
   console.log(`schoolid:${schoolid}`);
   const genPhotos = (photo) => {
-    let photos = [];
+    let photos = null;
     if (photo) {
       photos = photo.split(",");
       photos = photos.map((photo) => `${schoolid}_image_${photo}`);
@@ -32,15 +32,13 @@ export default function School(props) {
     return photos;
   };
 
-  return (
-    <div className="container">
-      {school && (
-        <>
-          <Carousel pics={genPhotos(school.photo)} />
-          <p className="title">{school.name}</p>
-          <div className="text_content">{school.introduce}</div>
-        </>
-      )}
+  return school ? (
+    <div className="school_container">
+      <Carousel pics={genPhotos(school.photo)} />
+      <p className="title">{school.name}</p>
+      <div className="text_content">{school.introduce}</div>
     </div>
+  ) : (
+    <div></div>
   );
 }

@@ -29,43 +29,45 @@ export default function Carousel(props) {
   }, [refSlides, refDots, slideIndex]);
 
   React.useEffect(() => {
-    // add refs
-    setRefSlides((elRefs) =>
-      Array(pics.length)
-        .fill()
-        .map((_, i) => React.createRef())
-    );
-    setRefDots((elRefs) =>
-      Array(pics.length)
-        .fill()
-        .map((_, i) => React.createRef())
-    );
+    if (pics) {
+      // add refs
+      setRefSlides((elRefs) =>
+        Array(pics.length)
+          .fill()
+          .map((_, i) => React.createRef())
+      );
+      setRefDots((elRefs) =>
+        Array(pics.length)
+          .fill()
+          .map((_, i) => React.createRef())
+      );
+    }
   }, [pics]);
 
   React.useEffect(() => {
-    const timerid = setTimeout(showSlides, 3000); // Change image every 3 seconds
-    return () => clearTimeout(timerid);
+    if (pics) {
+      const timerid = setTimeout(showSlides, 3000); // Change image every 3 seconds
+      return () => clearTimeout(timerid);
+    }
   });
   return (
     <div>
       <div className="slideshow-container">
-        {pics &&
-          pics.map((pic, i) => (
-            <div ref={refSlides[i]} key={i} className="mySlides fade">
-              <div className="numbertext">{`${i + 1} / ${pics.length}`}</div>
-              <img
-                src={`${config.resBaseUrl}/imgs/${pic}`}
-                alt="carousel_image"
-              />
-              <div className="text">test</div>
-            </div>
-          ))}
+        {pics.map((pic, i) => (
+          <div ref={refSlides[i]} key={i} className="mySlides fade">
+            <div className="numbertext">{`${i + 1} / ${pics.length}`}</div>
+            <img
+              src={`${config.resBaseUrl}/imgs/${pic}`}
+              alt="carousel_image"
+            />
+            <div className="text"></div>
+          </div>
+        ))}
       </div>
       <div className="dot-group">
-        {pics &&
-          pics.map((pic, i) => (
-            <span ref={refDots[i]} key={i} className="dot"></span>
-          ))}
+        {pics.map((pic, i) => (
+          <span ref={refDots[i]} key={i} className="dot"></span>
+        ))}
       </div>
     </div>
   );
