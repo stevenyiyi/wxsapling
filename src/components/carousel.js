@@ -50,7 +50,7 @@ export default function Carousel(props) {
       return () => clearTimeout(timerid);
     }
   });
-  return (
+  return ( pics &&
     <div>
       <div className="slideshow-container">
         {pics.map((pic, i) => (
