@@ -154,7 +154,7 @@ export default function Teachers(props) {
         <p className="title">
           {teachers.length > 0 ? teachers[activeIdx].nick_name : "测试"}
         </p>
-        <div className="text_content">
+        <div className="note">
           {teachers.length > 0 ? teachers[activeIdx].note : ""}
         </div>
       </div>

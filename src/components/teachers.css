@@ -17,12 +17,12 @@
 
 .title {
   color: grey;
-  font-size: 18px;
+  font-size: 20px;
 }
 
-.text_content {
+.note {
   width: 100%;
+  white-space: pre-line;
   overflow-wrap: break-word;
-  text-overflow: ellipsis;
   overflow: hidden;
 }

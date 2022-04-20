@@ -36,7 +36,7 @@ export default function School(props) {
     <div className="school_container">
       <Carousel pics={genPhotos(school.photo)} />
       <p className="title">{school.name}</p>
-      <div className="text_content">{school.introduce}</div>
+      <div className="introduce">{school.introduce}</div>
     </div>
   ) : (
     <div></div>
