@@ -10,10 +10,12 @@
 .title {
   color: grey;
   font-size: 20px;
+  padding: 5px 12px 5px 12px;
 }
 
 .introduce {
   width: 100%;
+  padding: 12px 12px 12px 12px;
   white-space: pre-line;
   overflow-wrap: break-word;
   overflow: hidden;
