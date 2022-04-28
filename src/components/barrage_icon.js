@@ -1,3 +1,4 @@
+import React from 'react'
 const BarrageIconOn = () => (
   <div style={{ marginLeft: "2px" }}>
     <svg
