@@ -12,7 +12,7 @@ import config from "../config";
 import { useSnackbar } from "./use_snackbar";
 import "./live_player.css";
 
-const ENDPOINT = config.wssGroupChatUrl;
+const ENDPOINT = config.wssLiveUrl;
 
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
