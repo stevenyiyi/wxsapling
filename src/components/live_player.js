@@ -168,11 +168,14 @@ export default function LivePlayer(props) {
       msg.content = text;
       msg.ts = Date.now();
       let binMsg = tlv_serialize_object(msg);
-      ws.current.sendMessage(binMsg, (result) => {
-        console.log("Send message success!");
-      });
-      msg.to = username;
-      setMessages([...messages, msg]);
+      ws.current
+        .sendMessage(binMsg)
+        .then(() => {
+          console.log("Send message success!");
+          msg.to = username;
+          setMessages([...messages, msg]);
+        })
+        .catch((e) => console.log(e));
     },
     [messages, username]
   );

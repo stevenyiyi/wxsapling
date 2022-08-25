@@ -37,13 +37,17 @@ const Input = (props) => {
 
   const realSendMessage = (msg) => {
     setSending(true);
-    sendMessage(msg, (result) => {
-      setSending(false);
-      if (result === 0) {
-        console.log("Send message success!");
-        setMessage("");
-      }
-    });
+    sendMessage(msg)
+      .then((result) => {
+        setSending(false);
+        if (result === 0) {
+          console.log("Send message success!");
+          setMessage("");
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   const handleFileChange = (event) => {

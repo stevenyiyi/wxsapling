@@ -7,9 +7,7 @@ class Websocket extends React.Component {
     console.log(`websocket constructor, protocol:${this.props.protocol}`);
     try {
       this.state = {
-        ws: window.WebSocket
-          ? new window.WebSocket(this.props.url, this.props.protocol)
-          : new window.MozWebSocket(this.props.url, this.props.protocol),
+        ws: null,
         attempts: 1
       };
     } catch (e) {
@@ -39,17 +37,18 @@ class Websocket extends React.Component {
     return Math.min(30, Math.pow(2, k) - 1) * 1000;
   }
 
-  setupWebsocket() {
-    let websocket = this.state.ws;
+  setupWebsocket(websocket) {
     /// Change binary type from "blob" to "arraybuffer"
     websocket.binaryType = "arraybuffer";
     websocket.onopen = (e) => {
       this.logging("Websocket connected");
       if (typeof this.props.onOpen === "function") this.props.onOpen(e);
+      Promise.resolve();
     };
 
     websocket.onerror = (e) => {
       if (typeof this.props.onError === "function") this.props.onError(e);
+      Promise.reject(e);
     };
 
     websocket.onmessage = (evt) => {
@@ -58,6 +57,7 @@ class Websocket extends React.Component {
 
     this.shouldReconnect = this.props.reconnect;
     websocket.onclose = (e) => {
+      console.log(e);
       if (typeof this.props.onClose === "function") this.props.onClose(e);
       if (
         this.shouldReconnect &&
@@ -65,9 +65,37 @@ class Websocket extends React.Component {
         e.code !== 4001 &&
         e.code !== 4002 &&
         e.code !== 4003
-      )
+      ) {
         this.reconnect();
+      }
     };
+    this.setState({ ws: websocket });
+  }
+
+  connect() {
+    return this.disconnect().then(() => {
+      let ws = window.WebSocket
+        ? new window.WebSocket(this.props.url, this.props.protocol)
+        : new window.MozWebSocket(this.props.url, this.props.protocol);
+      this.setupWebsocket(ws);
+    });
+  }
+
+  disconnect() {
+    clearTimeout(this.timeoutID);
+    return new Promise((resolve) => {
+      let ws = this.state.ws;
+      if (ws) {
+        ws.onclose = (e) => {
+          console.log(`closed, code:${e.code}.`);
+          resolve();
+        };
+        ws.close();
+      } else {
+        console.log("closed");
+        resolve();
+      }
+    });
   }
 
   reconnect() {
@@ -75,42 +103,39 @@ class Websocket extends React.Component {
     let time = this.generateInterval(this.state.attempts);
     this.timeoutID = setTimeout(() => {
       this.setState({ attempts: this.state.attempts + 1 });
-      this.setState({
-        ws: window.WebSocket
-          ? new window.WebSocket(this.props.url, this.props.protocol)
-          : new window.MozWebSocket(this.props.url, this.props.protocol)
-      });
-      this.setupWebsocket();
+      this.connect();
     }, time);
   }
 
   componentDidMount() {
-    this.setupWebsocket();
+    this.ready = this.connect();
   }
 
   componentWillUnmount() {
     this.shouldReconnect = false;
-    clearTimeout(this.timeoutID);
-    let websocket = this.state.ws;
-    websocket.close();
+    this.disconnect().then(() => {
+      console.log("websocket componentWillUnmount!");
+    });
   }
 
-  sendMessage(message, callback) {
-    let websocket = this.state.ws;
-    if (websocket.readyState !== WebSocket.OPEN) {
-      console.log("websocket send in invalid state!");
-      callback(-1);
-    }
-    websocket.send(message);
-    const timerid = setInterval(() => {
+  sendMessage(message) {
+    return new Promise((resolve, reject) => {
+      let websocket = this.state.ws;
       if (websocket.readyState !== WebSocket.OPEN) {
-        clearInterval(timerid);
-        callback(-1);
-      } else if (websocket.bufferedAmount === 0) {
-        clearInterval(timerid);
-        callback(0);
+        console.log("websocket send in invalid state!");
+        reject(new Error("websocket send in invalid state"));
       }
-    }, 20);
+      websocket.send(message);
+      const timerid = setInterval(() => {
+        if (websocket.readyState !== WebSocket.OPEN) {
+          clearInterval(timerid);
+          reject(new Error("SendMessage failed!websocket invalid state!"));
+        } else if (websocket.bufferedAmount === 0) {
+          clearInterval(timerid);
+          resolve();
+        }
+      }, 20);
+    });
   }
 
   render() {

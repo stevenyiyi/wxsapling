@@ -6,15 +6,10 @@
       window.mozIndexedDB ||
       window.OIndexedDB ||
       window.msIndexedDB,
-    IDBTransaction =
-      window.IDBTransaction ||
-      window.webkitIDBTransaction ||
-      window.OIDBTransaction ||
-      window.msIDBTransaction,
     dbVersion = 1.0;
 
   // Create/open database
-  var request = indexedDB.open("chatRecordersDB", dbVersion),
+  var DBRequest = indexedDB.open("chatRecordersDB", dbVersion),
     db,
     createObjectStore = function (dataBase) {
       // Create an objectStore
@@ -63,61 +58,50 @@
         };
       });
     },
-    getChatInDb = function () {
-      console.log("getting chat message in IndexedDB");
+    getChatInDb = function (cursor, count) {
+      console.log(`getting chat message in IndexedDB, cursor:${cursor}`);
       return new Promise((resolve, reject) => {
         // Open a transaction to the database
         var transaction = db.transaction(["chatRecorders"], "readonly");
         var objectStore = transaction.objectStore("chatRecorders");
-        const countRequest = objectStore.count();
-        countRequest.onsuccess = () => {
-          var count = countRequest.result;
-          console.log(countRequest.result);
-
-          var reqget = objectStore.index("ts").openCursor(null, "prev");
-          var result = [];
-          reqget.onsuccess = function (event) {
-            var cursor = event.target.result;
-            //console.log(cursor);
-            if (cursor) {
-              result.push(cursor.value);
-              cursor.continue();
+        var reqGet = objectStore.index("ts").openCursor(null, "prev");
+        var result = [];
+        reqGet.onsuccess = function (event) {
+          var cursorGet = event.target.result;
+          cursorGet.advance(cursor);
+          //console.log(cursor);
+          if (cursorGet) {
+            result.push(cursor.value);
+            if (result.length === count) {
+              resolve(result);
             } else {
-              console.log(result);
+              cursorGet.continue();
             }
-            callback(result);
-          };
-          reqget.onerror = function (e) {
-            console.log(e);
-            callback(result);
-          };
+          } else {
+            console.log(result);
+            resolve(result);
+          }
+        };
+        reqGet.onerror = function (e) {
+          console.log(e);
+          reject(e);
         };
       });
     };
-  request.onerror = function (event) {
+  DBRequest.onerror = function (event) {
     console.log("Error creating/accessing IndexedDB database");
   };
-  request.onsuccess = function (event) {
+  DBRequest.onsuccess = function (event) {
     console.log("Success creating/accessing IndexedDB database");
-    db = request.result;
+    db = DBRequest.result;
 
     db.onerror = function (event) {
       console.log("Error creating/accessing IndexedDB database");
     };
-
-    // Interim solution for Google Chrome to create an objectStore. Will be deprecated
-    if (db.setVersion) {
-      if (db.version !== dbVersion) {
-        var setVersion = db.setVersion(dbVersion);
-        setVersion.onsuccess = function () {
-          createObjectStore(db);
-        };
-      }
-    }
   };
 
   // For future use. Currently only in latest Firefox versions
-  request.onupgradeneeded = function (event) {
+  DBRequest.onupgradeneeded = function (event) {
     createObjectStore(event.target.result);
   };
 })();

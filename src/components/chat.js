@@ -8,6 +8,7 @@ import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
 import { UserContext } from "../user_context";
 import { useSnackbar } from "./use_snackbar";
+import "./chat_recorders.js";
 import "./chat.css";
 
 const ENDPOINT = config.wssGroupChatUrl;
@@ -63,6 +64,7 @@ const Chat = (props) => {
   };
 
   const ws_onclose = (e) => {
+    console.log(e);
     console.log(`websocket onclose code:${e.code}`);
     setWsState(ws.current.readyState);
     dispatch({ type: "reset" });
@@ -153,7 +155,7 @@ const Chat = (props) => {
     });
   };
 
-  const sendMessage = (message, callback) => {
+  const sendMessage = async (message) => {
     if (message) {
       if (message.to.length > 0) {
         if (my.role === 2 && message.to.length === users.length) {
@@ -162,14 +164,26 @@ const Chat = (props) => {
           message.to = message.to.join();
         }
         /// Send to websocket server
+        try {
+          await ws.current.ready;
+        } catch (e) {
+          Promise.reject(e);
+        }
         let binMsg = tlv_serialize_object(message);
-        ws.current.sendMessage(binMsg, callback);
-      } else {
-        callback(0);
+        ws.current
+          .sendMessage(binMsg)
+          .then(() => {
+            /// Reset message to display
+            message.to = my.username;
+            setMessages([...messages, message]);
+            Promise.resolve();
+          })
+          .catch((e) => {
+            Promise.reject(e);
+          });
       }
-      /// Reset message to display
-      message.to = my.username;
-      setMessages([...messages, message]);
+    } else {
+      Promise.reject(new Error("Send message can't empty!"));
     }
   };
   console.log("chat render!");
