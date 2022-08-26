@@ -43,8 +43,8 @@ export default class chatRecorders {
 
   getCount() {
     return new Promise((resolve, reject) => {
-      var transaction = this.db.transaction(["chatRecorders"], "readonly");
-      var objectStore = transaction.objectStore("chatRecorders");
+      let transaction = this.db.transaction(["chatRecorders"], "readonly");
+      let objectStore = transaction.objectStore("chatRecorders");
       const countRequest = objectStore.count();
       countRequest.onsuccess = () => {
         var count = countRequest.result;
@@ -60,10 +60,10 @@ export default class chatRecorders {
     console.log("Putting chat message in IndexedDB");
     return new Promise((resolve, reject) => {
       // Open a transaction to the database
-      var transaction = this.db.transaction(["chatRecorders"], "readwrite");
+      let transaction = this.db.transaction(["chatRecorders"], "readwrite");
 
       // Put the blob into the dabase
-      var reqput = transaction.objectStore("chatRecorders").put(chat_message);
+      let reqput = transaction.objectStore("chatRecorders").put(chat_message);
       reqput.onsuccess = () => {
         console.log("Put chat message success!");
         resolve();
@@ -79,12 +79,12 @@ export default class chatRecorders {
     console.log(`getting chat message in IndexedDB, cursor:${cursor}`);
     return new Promise((resolve, reject) => {
       // Open a transaction to the database
-      var transaction = this.db.transaction(["chatRecorders"], "readonly");
-      var objectStore = transaction.objectStore("chatRecorders");
-      var reqGet = objectStore.index("ts").openCursor(null, "prev");
-      var result = [];
+      let transaction = this.db.transaction(["chatRecorders"], "readonly");
+      let objectStore = transaction.objectStore("chatRecorders");
+      let reqGet = objectStore.index("ts").openCursor(null, "prev");
+      let result = [];
       reqGet.onsuccess = (event) => {
-        var cursorGet = event.target.result;
+        let cursorGet = event.target.result;
         cursorGet.advance(cursor);
         //console.log(cursor);
         if (cursorGet) {

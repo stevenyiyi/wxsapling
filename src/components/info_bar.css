@@ -50,6 +50,16 @@ h3 {
   margin-left: 5px;
 }
 
+.chat__history {
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 24px;
+  transition: 0.3s;
+  cursor: pointer;
+  padding: 5px 7px;
+  border-radius: 50%;
+}
 .chat__notification {
   position: relative;
   color: white;
@@ -63,6 +73,10 @@ h3 {
 }
 
 .chat__notification:hover {
+  background-color: #555;
+}
+
+.chat__history:hover {
   background-color: #555;
 }
 

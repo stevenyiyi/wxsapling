@@ -48,7 +48,7 @@ function users_reducer(users, action) {
   }
 }
 const Chat = (props) => {
-  const chatRecoders = new ChatRecoders();
+  const refRecoders = React.useRef(new ChatRecoders());
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
   const ws = React.useRef(null);
@@ -57,6 +57,7 @@ const Chat = (props) => {
   const [users, dispatch] = React.useReducer(users_reducer, []);
   const [messages, setMessages] = React.useState([]);
   const [unreadMessages, setUnreadMessages] = React.useState(0);
+  const [historyCount, setHistoryCount] = React.useState(0);
   const [wsState, setWsState] = React.useState(WebSocket.CONNECTING);
   const openSnackbar = React.useRef(useSnackbar()[0]);
   const ws_onopen = (e) => {
@@ -127,6 +128,11 @@ const Chat = (props) => {
             setClasses(response.data.classes);
             /// Self infomation
             setMy(response.data.self);
+            /// Get chat history recorders count
+            refRecoders.current.getCount().then((no) => {
+              console.log(`History chat recorders no:${no}`);
+              setHistoryCount(no);
+            });
           } else {
             console.log(`Server response error:${response.data.result}`);
           }
@@ -135,6 +141,9 @@ const Chat = (props) => {
     }
   }, [username]);
 
+  /** 获取历史聊天记录 */
+  const handleGetHistoryRecorders = (event) => {};
+  /**  */
   const handleGetRemainMessages = (event) => {
     if (unreadMessages === 0) return;
     /// 获取未读的消息
@@ -175,7 +184,7 @@ const Chat = (props) => {
           .sendMessage(binMsg)
           .then(() => {
             /// Save
-            chatRecoders.putChatInDb(message);
+            refRecoders.current.putChatInDb(message);
             /// Reset message to display
             message.to = my.username;
             setMessages([...messages, message]);
@@ -212,6 +221,7 @@ const Chat = (props) => {
             state={wsState}
             unReadMessages={unreadMessages}
             handleNotifications={handleGetRemainMessages}
+            handleGetHistory={handleGetHistoryRecorders}
           />
           <Messages messages={messages} name={my.nick_name} />
           <Input users={users} my={my} sendMessage={sendMessage} />

@@ -1,8 +1,15 @@
 import React from "react";
 import { FaBell } from "react-icons/fa";
+import { FaHistory } from "react-icons/fa";
 import "./info_bar.css";
 
-const InfoBar = ({ classes, state, unReadMessages, handleNotifications }) => {
+const InfoBar = ({
+  classes,
+  state,
+  unReadMessages,
+  handleNotifications,
+  handleGetHistory
+}) => {
   const genClassesName = (classes) => {
     const names = classes.map((cls) => cls.name);
     return names.join();
@@ -38,6 +45,9 @@ const InfoBar = ({ classes, state, unReadMessages, handleNotifications }) => {
         <p>{convStateStr(state)}</p>
       </div>
       <div className="rightInnerContainer">
+        <div className="chat__history" onClick={handleGetHistory}>
+          <FaHistory />
+        </div>
         <div className="chat__notification" onClick={handleNotifications}>
           <FaBell />
           {unReadMessages > 0 ? (
