@@ -38,12 +38,9 @@ const Input = (props) => {
   const realSendMessage = (msg) => {
     setSending(true);
     sendMessage(msg)
-      .then((result) => {
+      .then(() => {
         setSending(false);
-        if (result === 0) {
-          console.log("Send message success!");
-          setMessage("");
-        }
+        setMessage("");
       })
       .catch((e) => {
         console.log(e);

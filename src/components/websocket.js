@@ -47,8 +47,9 @@ class Websocket extends React.Component {
     };
 
     websocket.onerror = (e) => {
+      console.log(e);
       if (typeof this.props.onError === "function") this.props.onError(e);
-      Promise.reject(e);
+      //Promise.reject(e);
     };
 
     websocket.onmessage = (evt) => {
@@ -85,7 +86,7 @@ class Websocket extends React.Component {
     clearTimeout(this.timeoutID);
     return new Promise((resolve) => {
       let ws = this.state.ws;
-      if (ws) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
         ws.onclose = (e) => {
           console.log(`closed, code:${e.code}.`);
           resolve();
@@ -103,7 +104,9 @@ class Websocket extends React.Component {
     let time = this.generateInterval(this.state.attempts);
     this.timeoutID = setTimeout(() => {
       this.setState({ attempts: this.state.attempts + 1 });
-      this.connect();
+      this.connect()
+        .then(() => console.log("connected!"))
+        .catch((e) => console.log(e));
     }, time);
   }
 

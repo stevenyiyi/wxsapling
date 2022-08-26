@@ -8,7 +8,7 @@ import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
 import { UserContext } from "../user_context";
 import { useSnackbar } from "./use_snackbar";
-import "./chat_recorders.js";
+import ChatRecoders from "./chat_recorders";
 import "./chat.css";
 
 const ENDPOINT = config.wssGroupChatUrl;
@@ -48,6 +48,7 @@ function users_reducer(users, action) {
   }
 }
 const Chat = (props) => {
+  const chatRecoders = new ChatRecoders();
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
   const ws = React.useRef(null);
@@ -173,6 +174,8 @@ const Chat = (props) => {
         ws.current
           .sendMessage(binMsg)
           .then(() => {
+            /// Save
+            chatRecoders.putChatInDb(message);
             /// Reset message to display
             message.to = my.username;
             setMessages([...messages, message]);
