@@ -1,44 +1,53 @@
 export default class chatRecorders {
-  constructor() {
+  constructor(ver) {
     this.indexedDB =
       window.indexedDB ||
       window.webkitIndexedDB ||
       window.mozIndexedDB ||
       window.OIndexedDB ||
       window.msIndexedDB;
-    this.dbVersion = 1;
-    // Create/open database
-    this.dbRequest = this.indexedDB.open("chatRecordersDB", this.dbVersion);
-    this.dbRequest.onerror = (event) => {
-      console.log("Error creating/accessing IndexedDB database");
-    };
-    this.db = null;
-    this.dbRequest.onsuccess = (event) => {
-      console.log("Success creating/accessing IndexedDB database");
-      this.db = this.dbRequest.result;
-      this.db.onerror = (event) => {
-        console.log("Error creating/accessing IndexedDB database");
-      };
-    };
-
-    // For future use. Currently only in latest Firefox versions
-    this.dbRequest.onupgradeneeded = (event) => {
-      this.createObjectStore(event.target.result);
-    };
+    this.dbVersion = ver;
+    this.ready = this._open();
   }
 
-  createObjectStore(dataBase) {
+  _createObjectStore() {
     // Create an objectStore
     console.log("Creating objectStore");
-    let object_store = dataBase.createObjectStore("chatRecorders", {
-      keyPath: "ts"
-    });
+    let object_store = this.db.createObjectStore("chatRecorders");
+    object_store.createIndex("ts", "ts", { unique: true });
     object_store.createIndex("to", "to", { unique: false });
     object_store.createIndex("from", "from", { unique: false });
-    dataBase.onerror = (e) => {
-      console.log("Error Create Database.");
-      console.log(e);
-    };
+  }
+
+  _open() {
+    return new Promise((resolve, reject) => {
+      // Create/open database
+      this.dbRequest = this.indexedDB.open("chatRecordersDB", this.dbVersion);
+      this.dbRequest.onerror = (event) => {
+        reject(new Error("Error creating/accessing IndexedDB database"));
+      };
+
+      this.dbRequest.onsuccess = (event) => {
+        console.log("Success creating/accessing IndexedDB database");
+        this.db = this.dbRequest.result;
+        resolve();
+      };
+      // For future use. Currently only in latest Firefox versions
+      this.dbRequest.onupgradeneeded = (event) => {
+        this.db = event.target.result;
+        if (event.oldVersion < 1) {
+          this._createObjectStore();
+        }
+        if (event.oldVersion < 2) {
+          this.db.deleteObjectStore("chatRecorders");
+          this._createObjectStore();
+        }
+        this.db.onerror = (e) => {
+          reject(new Error("Error Create Database."));
+        };
+        resolve();
+      };
+    });
   }
 
   getCount() {
@@ -56,6 +65,7 @@ export default class chatRecorders {
       };
     });
   }
+
   putChatInDb(chat_message) {
     console.log("Putting chat message in IndexedDB");
     return new Promise((resolve, reject) => {
@@ -75,6 +85,37 @@ export default class chatRecorders {
       };
     });
   }
+
+  clear() {
+    return new Promise((resolve, reject) => {
+      // open a read/write db transaction, ready for clearing the data
+      const transaction = this.db.transaction(["chatRecorders"], "readwrite");
+      // report on the success of the transaction completing, when everything is done
+      transaction.oncomplete = (event) => {
+        console.log("Clear Transaction completed.");
+        resolve();
+      };
+
+      transaction.onerror = (event) => {
+        console.log(
+          `Transaction not opened due to error: ${transaction.error}`
+        );
+        reject(transaction.error);
+      };
+
+      // create an object store on the transaction
+      const objectStore = transaction.objectStore("chatRecorders");
+
+      // Make a request to clear all the data out of the object store
+      const objectStoreRequest = objectStore.clear();
+
+      objectStoreRequest.onsuccess = (event) => {
+        // report the success of our request
+        console.log("Clear Request successful.");
+      };
+    });
+  }
+
   getChatInDb(cursor, count) {
     console.log(`getting chat message in IndexedDB, cursor:${cursor}`);
     return new Promise((resolve, reject) => {

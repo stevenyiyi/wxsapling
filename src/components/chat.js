@@ -12,7 +12,8 @@ import ChatRecoders from "./chat_recorders";
 import "./chat.css";
 
 const ENDPOINT = config.wssGroupChatUrl;
-
+const DB_VER = 2;
+const PER_PAGE_NO = 5;
 function users_reducer(users, action) {
   switch (action.type) {
     case "set": {
@@ -48,7 +49,7 @@ function users_reducer(users, action) {
   }
 }
 const Chat = (props) => {
-  const refRecoders = React.useRef(new ChatRecoders());
+  const refRecoders = React.useRef(new ChatRecoders(DB_VER));
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
   const ws = React.useRef(null);
@@ -58,6 +59,7 @@ const Chat = (props) => {
   const [messages, setMessages] = React.useState([]);
   const [unreadMessages, setUnreadMessages] = React.useState(0);
   const [historyCount, setHistoryCount] = React.useState(0);
+  const [cursor, setCursor] = React.useState(0);
   const [wsState, setWsState] = React.useState(WebSocket.CONNECTING);
   const openSnackbar = React.useRef(useSnackbar()[0]);
   const ws_onopen = (e) => {
@@ -113,6 +115,16 @@ const Chat = (props) => {
 
   React.useEffect(() => {
     if (username) {
+      /// Get chat history recorders count
+      refRecoders.current.ready.then(() => {
+        refRecoders.current
+          .getCount()
+          .then((no) => {
+            console.log(`History chat recorders no:${no}`);
+            setHistoryCount(no);
+          })
+          .catch((e) => console.log(e));
+      });
       /// Get class room information(classes/members/self)
       http
         .get("/sapling/get_class_chat_info")
@@ -128,11 +140,6 @@ const Chat = (props) => {
             setClasses(response.data.classes);
             /// Self infomation
             setMy(response.data.self);
-            /// Get chat history recorders count
-            refRecoders.current.getCount().then((no) => {
-              console.log(`History chat recorders no:${no}`);
-              setHistoryCount(no);
-            });
           } else {
             console.log(`Server response error:${response.data.result}`);
           }
@@ -142,7 +149,20 @@ const Chat = (props) => {
   }, [username]);
 
   /** 获取历史聊天记录 */
-  const handleGetHistoryRecorders = (event) => {};
+  const handleGetHistoryRecorders = (event) => {
+    refRecoders.current.ready
+      .then(() => {
+        refRecoders.current
+          .getChatInDb(cursor, PER_PAGE_NO)
+          .then((recorders) => {
+            setCursor((prev) => prev + recorders.length);
+            let msgs = recorders.concat(messages);
+            setMessages(msgs);
+          })
+          .catch((e) => console.log(e));
+      })
+      .catch((e) => console.log(e));
+  };
   /**  */
   const handleGetRemainMessages = (event) => {
     if (unreadMessages === 0) return;
