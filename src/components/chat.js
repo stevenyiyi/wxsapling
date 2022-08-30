@@ -12,7 +12,7 @@ import ChatRecoders from "./chat_recorders";
 import "./chat.css";
 
 const ENDPOINT = config.wssGroupChatUrl;
-const DB_VER = 2;
+const DB_VER = 5;
 const PER_PAGE_NO = 5;
 function users_reducer(users, action) {
   switch (action.type) {
@@ -113,7 +113,18 @@ const Chat = (props) => {
     }
   };
 
+  const handleUnload = React.useCallback(() => {
+    console.log("Chat useEffect destruct!");
+    refRecoders.current.putChatInDb(messages).then(() => console.log("saved!"));
+  }, [messages]);
+
   React.useEffect(() => {
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, [handleUnload]);
+
+  React.useEffect(() => {
+    console.log("Chat effect!");
     if (username) {
       /// Get chat history recorders count
       refRecoders.current.ready.then(() => {
@@ -203,10 +214,6 @@ const Chat = (props) => {
         ws.current
           .sendMessage(binMsg)
           .then(() => {
-            /// Save
-            refRecoders.current.putChatInDb(message);
-            /// Reset message to display
-            message.to = my.username;
             setMessages([...messages, message]);
             Promise.resolve();
           })
@@ -218,7 +225,6 @@ const Chat = (props) => {
       Promise.reject(new Error("Send message can't empty!"));
     }
   };
-  console.log("chat render!");
   return (
     <div className="chat_outer_container">
       {users.length > 0 && (

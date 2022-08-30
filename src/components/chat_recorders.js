@@ -13,8 +13,10 @@ export default class chatRecorders {
   _createObjectStore() {
     // Create an objectStore
     console.log("Creating objectStore");
-    let object_store = this.db.createObjectStore("chatRecorders");
-    object_store.createIndex("ts", "ts", { unique: true });
+    let object_store = this.db.createObjectStore("chatRecorders", {
+      keyPath: "ts",
+      unique: true
+    });
     object_store.createIndex("to", "to", { unique: false });
     object_store.createIndex("from", "from", { unique: false });
   }
@@ -38,7 +40,7 @@ export default class chatRecorders {
         if (event.oldVersion < 1) {
           this._createObjectStore();
         }
-        if (event.oldVersion < 2) {
+        if (event.oldVersion < 5) {
           this.db.deleteObjectStore("chatRecorders");
           this._createObjectStore();
         }
@@ -66,23 +68,30 @@ export default class chatRecorders {
     });
   }
 
-  putChatInDb(chat_message) {
-    console.log("Putting chat message in IndexedDB");
+  putChatInDb(messages) {
+    console.log("Putting chat messages in IndexedDB");
     return new Promise((resolve, reject) => {
       // Open a transaction to the database
       let transaction = this.db.transaction(["chatRecorders"], "readwrite");
-
-      // Put the blob into the dabase
-      let reqput = transaction.objectStore("chatRecorders").put(chat_message);
-      reqput.onsuccess = () => {
-        console.log("Put chat message success!");
+      transaction.oncomplete = (event) => {
+        console.log("Put chat messages into db success!");
         resolve();
       };
-      reqput.onerror = (e) => {
-        console.log("Put chat message error:");
-        console.log(e);
-        reject(e);
+      transaction.onerror = (event) => {
+        console.log("Put chat messages error:");
+        console.log(event);
+        reject(event);
       };
+      messages.forEach((message) => {
+        // Put the message into the dabase
+        if (!message.history) {
+          let reqput = transaction.objectStore("chatRecorders").put(message);
+          reqput.onsuccess = () => {
+            console.log("Store chat message resquest success!");
+          };
+        }
+      });
+      transaction.commit();
     });
   }
 
@@ -122,20 +131,28 @@ export default class chatRecorders {
       // Open a transaction to the database
       let transaction = this.db.transaction(["chatRecorders"], "readonly");
       let objectStore = transaction.objectStore("chatRecorders");
-      let reqGet = objectStore.index("ts").openCursor(null, "prev");
+      let reqGet = objectStore.openCursor(null, "prevunique");
       let result = [];
       reqGet.onsuccess = (event) => {
         let cursorGet = event.target.result;
-        cursorGet.advance(cursor);
         //console.log(cursor);
         if (cursorGet) {
-          result.push(cursor.value);
-          if (result.length === count) {
-            resolve(result);
+          if (cursor > 0) {
+            cursorGet.advance(cursor);
+            cursor = 0;
           } else {
-            cursorGet.continue();
+            let hmsg = cursorGet.value;
+            hmsg.history = true;
+            result.splice(0, 0, hmsg);
+            console.log(hmsg);
+            if (result.length === count) {
+              resolve(result);
+            } else {
+              cursorGet.continue();
+            }
           }
         } else {
+          console.log("get chat message ended!");
           console.log(result);
           resolve(result);
         }

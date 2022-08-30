@@ -5,6 +5,18 @@
   padding: 10px;
   margin: 10px 0;
 }
+
+.justifyStart {
+  border-color: #eee;
+  background-color: #fff;
+}
+
+.history {
+  border-color: #eee;
+  background-color: #fff;
+  background-color: #abe;
+}
+
 .darker {
   border-color: #ccc;
   background-color: #ddd;

@@ -5,64 +5,55 @@ import { FaDownload } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { parseFrom } from "../utils";
 import config from "../../config";
+import { UserContext } from "../../user_context";
 import "./message.css";
 
 const Message = (props) => {
   const { to, from, type, content, ts, filename } = props;
-  let isSentByCurrentUser = false;
-  let ufrom = parseFrom(from);
-  if (ufrom.username === to) {
-    isSentByCurrentUser = true;
-  }
+  const username = React.useContext(UserContext).user.username;
+  const ufrom = parseFrom(from);
+  const refSrcBlobUrl = React.useRef();
+  React.useEffect(() => {
+    console.log("Message useEffect!");
+    var blobUrl;
+    if (!type.startsWith("text")) {
+      let fb = new Blob([content], { type: type, name: filename });
+      blobUrl = (window.URL || window.webkitURL).createObjectURL(fb);
+      console.log(refSrcBlobUrl.current.tagName);
+      if (refSrcBlobUrl.current.tagName === "A") {
+        refSrcBlobUrl.current.setAttribute("href", blobUrl);
+      } else {
+        refSrcBlobUrl.current.setAttribute("src", blobUrl);
+      }
+    }
+    return () => {
+      console.log("Message useEffect destruct!");
+      URL.revokeObjectURL(blobUrl);
+    };
+  }, [type, content, filename]);
 
   const genMessageContent = (type, content, filename) => {
     if (type.startsWith("text")) {
       return <p>{ReactEmoji.emojify(content)}</p>;
     } else if (type.startsWith("image")) {
-      let fb = new Blob([content], { type: type, name: filename });
-      let imgUrl = (window.URL || window.webkitURL).createObjectURL(fb);
       return (
         <div className="messageContainer--image">
-          <img
-            src={imgUrl}
-            onLoad={() =>
-              (window.URL || window.webkitURL).revokeObjectURL(imgUrl)
-            }
-            alt="assets"
-          />
+          <img ref={refSrcBlobUrl} src="" alt="assets" />
         </div>
       );
     } else if (type.startsWith("video") || type.startsWith("audio")) {
-      let fb = new Blob([content], { type: type, name: filename });
-      let avUrl = (window.URL || window.webkitURL).createObjectURL(fb);
       return (
         <div className="messageContainer--video">
           <video autoPlay muted controls>
-            <source
-              src={avUrl}
-              onLoad={() =>
-                (window.URL || window.webkitURL).revokeObjectURL(avUrl)
-              }
-              type={type}
-            />
+            <source ref={refSrcBlobUrl} src="" type={type} />
             您的浏览器不支持HTML5视频播放.
           </video>
         </div>
       );
     } else {
-      let fb = new Blob([content], { type: type, name: filename });
-      let fileUrl = (window.URL || window.webkitURL).createObjectURL(fb);
       return (
         <p>
-          <a
-            href={fileUrl}
-            download
-            onClick={() => {
-              setTimeout(() => {
-                (window.URL || window.webkitURL).revokeObjectURL(fileUrl);
-              }, 150);
-            }}
-          >
+          <a ref={refSrcBlobUrl} href=" " download>
             <FaDownload />
             <span>{filename}</span>
           </a>
@@ -71,7 +62,7 @@ const Message = (props) => {
     }
   };
 
-  return isSentByCurrentUser ? (
+  return ufrom.username === username ? (
     <div className="messageContainer justifyStart">
       <Avatar
         image={
