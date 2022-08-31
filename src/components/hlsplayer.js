@@ -696,7 +696,7 @@ export default function HLSPlayer(props) {
       if (e.detail.state === "enter") {
         console.log("entered fullscreen mode.");
         setIsFullScreen(true);
-        if (browser.isAndroid || browser.isIos) {
+        if (browser.isAndroid) {
           /** 全屏模式下强制切换到横屏 */
           if (!angle()) {
             screen.lockOrientationUniversal("landscape");

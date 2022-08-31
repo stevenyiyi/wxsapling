@@ -11,7 +11,7 @@ import "./personal.css";
 
 const Person = React.forwardRef((props, ref) => {
   const navigate = useNavigate();
-  const [openSnackbar] = useSnackbar();
+  const openSnackbar = React.useRef(useSnackbar()[0]);
   const { open, onOutsideClick } = props;
   const [user, setUser] = React.useState({
     username: "2523452345",
@@ -34,7 +34,7 @@ const Person = React.forwardRef((props, ref) => {
             refAvatar.current.src = `${config.resBaseUrl}/imgs/img_avatar_unknow.png`;
           }
         } else {
-          openSnackbar(
+          openSnackbar.current(
             `get_user_info,Server respone error:${response.data.result}`
           );
         }

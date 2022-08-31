@@ -58,7 +58,6 @@ const Chat = (props) => {
   const [users, dispatch] = React.useReducer(users_reducer, []);
   const [messages, setMessages] = React.useState([]);
   const [unreadMessages, setUnreadMessages] = React.useState(0);
-  const [historyCount, setHistoryCount] = React.useState(0);
   const [cursor, setCursor] = React.useState(0);
   const [wsState, setWsState] = React.useState(WebSocket.CONNECTING);
   const openSnackbar = React.useRef(useSnackbar()[0]);
@@ -113,6 +112,7 @@ const Chat = (props) => {
     }
   };
 
+  /** 页面unload 处理*/
   const handleUnload = React.useCallback(() => {
     console.log("Chat useEffect destruct!");
     refRecoders.current.putChatInDb(messages).then(() => console.log("saved!"));
@@ -126,16 +126,6 @@ const Chat = (props) => {
   React.useEffect(() => {
     console.log("Chat effect!");
     if (username) {
-      /// Get chat history recorders count
-      refRecoders.current.ready.then(() => {
-        refRecoders.current
-          .getCount()
-          .then((no) => {
-            console.log(`History chat recorders no:${no}`);
-            setHistoryCount(no);
-          })
-          .catch((e) => console.log(e));
-      });
       /// Get class room information(classes/members/self)
       http
         .get("/sapling/get_class_chat_info")
@@ -174,7 +164,8 @@ const Chat = (props) => {
       })
       .catch((e) => console.log(e));
   };
-  /**  */
+
+  /** 获取留言消息 */
   const handleGetRemainMessages = (event) => {
     if (unreadMessages === 0) return;
     /// 获取未读的消息
@@ -194,6 +185,17 @@ const Chat = (props) => {
         setUnreadMessages((prev) => (prev < 10 ? 0 : prev - 10));
       }
     });
+  };
+
+  const getNickName = (uid) => {
+    let name = "";
+    for (const user of users) {
+      if (user.username === uid) {
+        name = user.nick_name;
+        break;
+      }
+    }
+    return name;
   };
 
   const sendMessage = async (message) => {

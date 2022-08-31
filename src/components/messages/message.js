@@ -91,6 +91,7 @@ const Message = (props) => {
         size={48}
         position="right"
       />
+
       {genMessageContent(type, content, filename)}
       <span className="time-left">{`${ufrom.name}  ${new Date(
         Number(ts)

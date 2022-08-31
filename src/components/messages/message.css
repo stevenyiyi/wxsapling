@@ -65,6 +65,10 @@
   z-index: auto;
 }
 
+.title {
+  color: #bbb;
+}
+
 .time-right {
   float: right;
   color: #aaa;
