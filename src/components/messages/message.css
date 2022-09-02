@@ -66,15 +66,18 @@
 }
 
 .title {
-  color: #bbb;
+  color: #999;
+  font-size: 0.8rem;
 }
 
 .time-right {
   float: right;
   color: #aaa;
+  font-size: 0.8rem;
 }
 
 .time-left {
   float: left;
   color: #999;
+  font-size: 0.8rem;
 }

@@ -10,6 +10,7 @@ import Test from "./components/test";
 import LivePlayer from "./components/live_player";
 import { UserContext } from "./user_context";
 import { default as SnackbarProvider } from "./components/snackbar";
+import { ClassUsersProvider } from "./components/use_class_users";
 import "./components/normalize.css";
 export default function App(props) {
   const updateUser = (user) => {
@@ -25,45 +26,47 @@ export default function App(props) {
   return (
     <UserContext.Provider value={userContext}>
       <SnackbarProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                userContext.user.is_login ? (
-                  <HomePage />
-                ) : (
-                  <Navigate to="/login" state={{ from: "/" }} />
-                )
-              }
-            />
-            <Route path="/login" element={<Login />} />
-            <Route path="/school" element={<School />} />
-            <Route path="/teachers" element={<Teachers />} />
-            <Route
-              path="/chat"
-              element={
-                userContext.user.is_login ? (
-                  <Chat />
-                ) : (
-                  <Navigate to="/login" state={{ from: "/chat" }} />
-                )
-              }
-            />
-            <Route
-              path="/player"
-              element={
-                userContext.user.is_login ? (
-                  <LivePlayer />
-                ) : (
-                  <Navigate to="/login" state={{ from: "/player" }} />
-                )
-              }
-            />
-            <Route path="/recipes" element={<Recipes />} />
-            <Route path="/test" element={<Test />} />
-          </Routes>
-        </BrowserRouter>
+        <ClassUsersProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  userContext.user.is_login ? (
+                    <HomePage />
+                  ) : (
+                    <Navigate to="/login" state={{ from: "/" }} />
+                  )
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/school" element={<School />} />
+              <Route path="/teachers" element={<Teachers />} />
+              <Route
+                path="/chat"
+                element={
+                  userContext.user.is_login ? (
+                    <Chat />
+                  ) : (
+                    <Navigate to="/login" state={{ from: "/chat" }} />
+                  )
+                }
+              />
+              <Route
+                path="/player"
+                element={
+                  userContext.user.is_login ? (
+                    <LivePlayer />
+                  ) : (
+                    <Navigate to="/login" state={{ from: "/player" }} />
+                  )
+                }
+              />
+              <Route path="/recipes" element={<Recipes />} />
+              <Route path="/test" element={<Test />} />
+            </Routes>
+          </BrowserRouter>
+        </ClassUsersProvider>
       </SnackbarProvider>
     </UserContext.Provider>
   );

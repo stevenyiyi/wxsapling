@@ -6,10 +6,12 @@ import PropTypes from "prop-types";
 import { parseFrom } from "../utils";
 import config from "../../config";
 import { UserContext } from "../../user_context";
+import useClassUsers from "./../use_class_users";
 import "./message.css";
 
 const Message = (props) => {
-  const { to, from, type, content, ts, filename } = props;
+  const { getNickName } = useClassUsers();
+  const { to, from, type, content, ts, filename, history } = props;
   const username = React.useContext(UserContext).user.username;
   const ufrom = parseFrom(from);
   const refSrcBlobUrl = React.useRef();
@@ -62,8 +64,28 @@ const Message = (props) => {
     }
   };
 
+  const getToNames = () => {
+    let names = "";
+    if (to === "all") {
+      names = "所有人";
+    } else {
+      let touser = to.split(",");
+      for (const toid of touser) {
+        if (names) {
+          names += ",";
+        }
+        names += getNickName(toid);
+      }
+    }
+    return names;
+  };
+
   return ufrom.username === username ? (
-    <div className="messageContainer justifyStart">
+    <div
+      className={
+        history ? "messageContainer history" : "messageContainer justifyStart"
+      }
+    >
       <Avatar
         image={
           ufrom.avatar
@@ -74,13 +96,18 @@ const Message = (props) => {
         size={48}
         position="left"
       />
+      <p className="title">{`发送至：${getToNames()}`}</p>
       {genMessageContent(type, content, filename)}
       <span className="time-right">{`${ufrom.name}  ${new Date(
         ts
       ).toLocaleString()}`}</span>
     </div>
   ) : (
-    <div className="messageContainer darker">
+    <div
+      className={
+        history ? "messageContainer history" : "messageContainer darker"
+      }
+    >
       <Avatar
         image={
           ufrom.avatar

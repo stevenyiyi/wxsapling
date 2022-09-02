@@ -6,56 +6,31 @@ import http from "../http_common";
 import config from "../config";
 import { tlv_serialize_object, tlv_unserialize_object } from "./tlv";
 import Websocket from "./websocket";
+import { useWindowOnUnload } from "../utils/hook";
 import { UserContext } from "../user_context";
 import { useSnackbar } from "./use_snackbar";
+import useClassUsers from "./use_class_users";
 import ChatRecoders from "./chat_recorders";
 import "./chat.css";
 
 const ENDPOINT = config.wssGroupChatUrl;
 const DB_VER = 5;
 const PER_PAGE_NO = 5;
-function users_reducer(users, action) {
-  switch (action.type) {
-    case "set": {
-      return action.users;
-    }
-    case "online_users": {
-      const cusers = [...users];
-      action.uids.forEach((uid) => {
-        cusers.forEach((user) => {
-          if (user.username === uid) {
-            user.online = true;
-          }
-        });
-      });
-      return cusers;
-    }
-    case "on_state_change": {
-      const cusers = [...users];
-      cusers.forEach((user) => {
-        if (user.username === action.change.username) {
-          user.online = action.change.state;
-        }
-      });
-      return cusers;
-    }
-    case "reset": {
-      const cusers = [...users];
-      cusers.forEach((user) => (user.online = false));
-      return cusers;
-    }
-    default:
-      throw new Error("Unexpected action");
-  }
-}
+
 const Chat = (props) => {
   const refRecoders = React.useRef(new ChatRecoders(DB_VER));
   const userCtx = React.useContext(UserContext);
   const username = userCtx.user.username;
   const ws = React.useRef(null);
+  const {
+    users,
+    setUsers,
+    setOnlineUsers,
+    onStateChange,
+    resetUsers
+  } = useClassUsers();
   const [classes, setClasses] = React.useState(null);
   const [my, setMy] = React.useState(null);
-  const [users, dispatch] = React.useReducer(users_reducer, []);
   const [messages, setMessages] = React.useState([]);
   const [unreadMessages, setUnreadMessages] = React.useState(0);
   const [cursor, setCursor] = React.useState(0);
@@ -70,7 +45,7 @@ const Chat = (props) => {
     console.log(e);
     console.log(`websocket onclose code:${e.code}`);
     setWsState(ws.current.readyState);
-    dispatch({ type: "reset" });
+    resetUsers();
     if (e.code === 4001) {
       openSnackbar.current(
         "我们检测到您的帐户已经在另一个设备上登录，请退出另外的设备再试!"
@@ -95,14 +70,11 @@ const Chat = (props) => {
         setMessages([...messages, value]);
       } else if (key === "online_users") {
         console.log(value);
-        dispatch({ type: "online_users", uids: value });
+        setOnlineUsers(value);
       } else if (key === "on_state_change") {
         console.log(value);
         if (value.length > 0) {
-          dispatch({
-            type: "on_state_change",
-            change: value[0]
-          });
+          onStateChange(value[0]);
         }
       } else if (key === "unread_message_number") {
         setUnreadMessages(value);
@@ -118,10 +90,8 @@ const Chat = (props) => {
     refRecoders.current.putChatInDb(messages).then(() => console.log("saved!"));
   }, [messages]);
 
-  React.useEffect(() => {
-    window.addEventListener("beforeunload", handleUnload);
-    return () => window.removeEventListener("beforeunload", handleUnload);
-  }, [handleUnload]);
+  /** Use window onbeforeunload event */
+  useWindowOnUnload(handleUnload);
 
   React.useEffect(() => {
     console.log("Chat effect!");
@@ -136,7 +106,7 @@ const Chat = (props) => {
               user.online = false;
               return user;
             });
-            dispatch({ type: "set", users: members });
+            setUsers(members);
             /// Classes
             setClasses(response.data.classes);
             /// Self infomation
@@ -147,7 +117,7 @@ const Chat = (props) => {
         })
         .catch((e) => console.log(e.toJSON().message));
     }
-  }, [username]);
+  }, [username, setUsers]);
 
   /** 获取历史聊天记录 */
   const handleGetHistoryRecorders = (event) => {
@@ -185,17 +155,6 @@ const Chat = (props) => {
         setUnreadMessages((prev) => (prev < 10 ? 0 : prev - 10));
       }
     });
-  };
-
-  const getNickName = (uid) => {
-    let name = "";
-    for (const user of users) {
-      if (user.username === uid) {
-        name = user.nick_name;
-        break;
-      }
-    }
-    return name;
   };
 
   const sendMessage = async (message) => {

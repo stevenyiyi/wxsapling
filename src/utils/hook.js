@@ -30,4 +30,18 @@ function useOutsideClick(ref, onOutsideClick) {
   }, [ref, onOutsideClick]);
 }
 
-export { usePrevious, useOutsideClick };
+/**
+ * Hook window onunload event
+ */
+function useWindowOnUnload(onWindowUnload) {
+  React.useEffect(() => {
+    function handleWindowOnUnloadBefore(event) {
+      onWindowUnload(event);
+    }
+    window.addEventListener("beforeunload", handleWindowOnUnloadBefore);
+    return () =>
+      window.removeEventListener("beforeunload", handleWindowOnUnloadBefore);
+  }, [onWindowUnload]);
+}
+
+export { usePrevious, useOutsideClick, useWindowOnUnload };
