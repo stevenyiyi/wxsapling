@@ -18,7 +18,12 @@
     "react-scripts": "latest",
     "react-scroll-to-bottom": "latest",
     "react-transition-group": "latest",
-    "sass": "latest"
+    "sass": "latest",
+    "workbox-core": "latest",
+    "workbox-expiration": "latest",
+    "workbox-precaching": "latest",
+    "workbox-routing": "latest",
+    "workbox-strategies": "latest"
   },
   "devDependencies": {
     "@babel/runtime": "latest",
@@ -31,12 +36,7 @@
     "eject": "react-scripts eject"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all",
-      "ie 11"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all", "ie 11"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

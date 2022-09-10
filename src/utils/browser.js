@@ -88,6 +88,17 @@ const browser = {
     /Safari/i.test(USER_AGENT) && !isChrome() && !isAndroid() && !isEdge(),
   isWindows: /Windows/i.test(USER_AGENT),
   isX5: isTbsX5() || isQQX5(),
+
+  /** Judge webchat explore */
+  isWebChat: (function () {
+    let ua = navigator.userAgent.toLowerCase();
+    let isWeixin = ua.indexOf("micromessenger") !== -1;
+    if (isWeixin) {
+      return true;
+    } else {
+      return false;
+    }
+  })(),
   /** Judge supported media source extensions */
   supportsMediaSource: (function () {
     let mediaSource = window.self.MediaSource || window.self.WebKitMediaSource;

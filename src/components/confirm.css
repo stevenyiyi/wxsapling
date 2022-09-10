@@ -1,0 +1,12 @@
+.buts_content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buts_content button {
+  padding: 6px;
+  margin: 20px 20px 10px 10px;
+  width: 100px;
+  font-size: 1em;
+}

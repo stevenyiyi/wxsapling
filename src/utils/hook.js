@@ -44,4 +44,27 @@ function useWindowOnUnload(onWindowUnload) {
   }, [onWindowUnload]);
 }
 
-export { usePrevious, useOutsideClick, useWindowOnUnload };
+/**
+ * Hook window beforeinstallprompt event
+ */
+function useWindowBeforeInstallPromt(onBeforeInstallPromt) {
+  React.useEffect(() => {
+    function handleBeforeInstallPromt(event) {
+      event.preventDefault();
+      onBeforeInstallPromt(event);
+    }
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPromt);
+    return () =>
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPromt
+      );
+  }, [onBeforeInstallPromt]);
+}
+
+export {
+  usePrevious,
+  useOutsideClick,
+  useWindowOnUnload,
+  useWindowBeforeInstallPromt
+};

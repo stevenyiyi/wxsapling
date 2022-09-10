@@ -1,5 +1,6 @@
 import React from "react";
 import * as ReactDOMClient from "react-dom/client";
+import { register as registerServiceWorker } from "./serviceWorkerRegistration";
 import Cookies from "js-cookie";
 import http from "./http_common";
 import App from "./App";
@@ -34,4 +35,5 @@ import App from "./App";
   const container = document.getElementById("root");
   const root = ReactDOMClient.createRoot(container);
   root.render(<App userCookie={user} />);
+  registerServiceWorker();
 })();
