@@ -16,5 +16,5 @@
   ],
   "name": "WebSapling",
   "short_name": "WebSapling",
-  "start_url": "/index.html"
+  "start_url": "."
 }
