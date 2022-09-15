@@ -1,6 +1,7 @@
 import React from "react";
 import { FaInfo, FaUser, FaTelegramPlane } from "react-icons/fa";
 import { UserContext } from "../user_context";
+import { useLocation } from "react-router-dom";
 import HLSPlayer from "./hlsplayer";
 import CameraList from "./camera_list";
 import Person from "./person";
@@ -16,6 +17,7 @@ const ENDPOINT = config.wssLiveUrl;
 
 export default function LivePlayer(props) {
   const userCtx = React.useContext(UserContext);
+  const location = useLocation();
   const username = userCtx.user.username;
   const ws = React.useRef(null);
   const [streamUri, setStreamUri] = React.useState("");
@@ -30,6 +32,11 @@ export default function LivePlayer(props) {
   const refInfoBut = React.useRef();
   const refPerson = React.useRef();
   const openSnackbar = React.useRef(useSnackbar()[0]);
+
+  if (!userCtx.useNavbar && location.state && location.state.from === "/") {
+    userCtx.update(userCtx.user, true);
+  }
+
   /** 从服务器获取摄像头列表 */
   React.useEffect(() => {
     const ERR_NO_ACCOUNT = 0x800000f;

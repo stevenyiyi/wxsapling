@@ -11,7 +11,8 @@ import App from "./App";
     username: undefined,
     token: undefined,
     role: undefined,
-    is_login: false
+    is_login: false,
+    schoolid: undefined,
   };
   if (Cookies.get("username")) {
     user.username = Cookies.get("username");

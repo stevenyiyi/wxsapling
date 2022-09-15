@@ -1,5 +1,6 @@
 import React from "react";
 export const UserContext = React.createContext({
   user: null,
-  update_user: (user) => {}
+  useNavbar: false,
+  update: (user, f) => {}
 });

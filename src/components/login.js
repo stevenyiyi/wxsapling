@@ -88,25 +88,33 @@ const Login = (props) => {
         .then((response) => {
           let result = response.data.result;
           if (result === 0) {
-            userCtx.updateUser({
-              username: state.username,
-              role: Cookies.get("role"),
-              token: Cookies.get("token"),
-              is_login: true
-            });
+            let useNavbar = false;
+            if (location.state && location.state.from === "/") {
+              useNavbar = true;
+            }
+            userCtx.update(
+              {
+                username: state.username,
+                role: Cookies.get("role"),
+                token: Cookies.get("token"),
+                is_login: true
+              },
+              useNavbar
+            );
             /// Login Success
             setMessage({
               ...message,
               show: true,
               text: "登录成功,将转向主页!"
             });
+            console.log(location);
             redirectToCurrent();
           } else if (result === ERR_NO_ACCOUNT) {
             /// 帐户不存在
             setMessage({
               ...message,
               show: true,
-              text: "帐户不存在，请先注册后再登录！"
+              text: "帐户不存在，请管理员联系，分配帐号后再登录！"
             });
           } else if (result === ERR_OVERDUE) {
             /// 帐户过期
@@ -121,6 +129,13 @@ const Login = (props) => {
               ...message,
               show: true,
               text: "口令错误！"
+            });
+          } else {
+            /// 口令错误
+            setMessage({
+              ...message,
+              show: true,
+              text: "其它错误！"
             });
           }
         })

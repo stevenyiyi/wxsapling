@@ -3,11 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import { FaList, FaAngleLeft, FaAngleRight, FaTimes } from "react-icons/fa";
 import http from "../http_common";
 import config from "../config";
+import { UserContext } from "../user_context";
 import "./common.css";
 import "./teachers.css";
 export default function Teachers(props) {
+  const userCtx = React.useContext(UserContext);
   const [searchParams] = useSearchParams();
-  const schoolid = searchParams.get("schoolid");
+  const [schoolid, setSchoolid] = React.useState(searchParams.get("schoolid"));
   const [teachers, setTeachers] = React.useState([]);
   const [classes, setClasses] = React.useState([]);
   const [activeIdx, setActiveIdx] = React.useState(0);
@@ -38,8 +40,32 @@ export default function Teachers(props) {
           }
         })
         .catch((e) => console.log(e));
+    } else {
+      if (userCtx.user.schoolid) {
+        setSchoolid(userCtx.user.schoolid);
+      } else if (
+        userCtx.user.is_login &&
+        (userCtx.user.role === "1" ||
+          userCtx.user.role === "2" ||
+          userCtx.user.role === "3")
+      ) {
+        http
+          .get("/sapling/get_my_shcoolid")
+          .then((response) => {
+            if (response.data.result === 0) {
+              /// Update context user
+              let user = { ...userCtx.user };
+              user.schoolid = response.data.schoolid;
+              userCtx.update(user, userCtx.useNavbar);
+              setSchoolid(response.data.schoolid);
+            } else {
+              console.log(`Server respsone error code:${response.data.result}`);
+            }
+          })
+          .catch((error) => console.log(error.toJSON().message));
+      }
     }
-  }, [schoolid]);
+  }, [schoolid, userCtx]);
 
   const getClassNames = (classids) => {
     let names = [];

@@ -15,19 +15,14 @@ import { ClassUsersProvider } from "./components/use_class_users";
 import { useWindowBeforeInstallPromt } from "./utils/hook";
 import "./components/normalize.css";
 export default function App(props) {
-  const updateUser = (user) => {
-    setUserContext({ ...userContext, user: user });
-  };
-
-  const updateUseNavbar = (f) => {
-    setUserContext({ ...userContext, useNavbar: f });
+  const update = (user, f) => {
+    setUserContext({ ...userContext, user: user, useNavbar: f });
   };
 
   const [userContext, setUserContext] = React.useState({
     user: props.userCookie,
-    updateUser: updateUser,
-    updateUseNavbar: updateUseNavbar,
-    useNavbar: false
+    useNavbar: false,
+    update: update
   });
 
   const [PWAInfo, setPWAInfo] = React.useState({
@@ -71,7 +66,7 @@ export default function App(props) {
           <BrowserRouter>
             {userContext.user.is_login ? (
               <>
-                <HeaderBar />
+                {userContext.useNavbar ? <HeaderBar /> : <div />}
                 <div className="content">
                   <Routes>
                     <Route path="/login" element={<Login />} />
