@@ -18,7 +18,12 @@
     "react-scripts": "latest",
     "react-scroll-to-bottom": "latest",
     "react-transition-group": "latest",
-    "sass": "latest"
+    "sass": "latest",
+    "workbox-core": "6.5.4",
+    "workbox-expiration": "6.5.4",
+    "workbox-precaching": "6.5.4",
+    "workbox-routing": "6.5.4",
+    "workbox-strategies": "6.5.4"
   },
   "devDependencies": {
     "@babel/runtime": "latest",
