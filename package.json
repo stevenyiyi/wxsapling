@@ -18,12 +18,7 @@
     "react-scripts": "latest",
     "react-scroll-to-bottom": "latest",
     "react-transition-group": "latest",
-    "sass": "latest",
-    "workbox-core": "latest",
-    "workbox-expiration": "latest",
-    "workbox-precaching": "latest",
-    "workbox-routing": "latest",
-    "workbox-strategies": "latest"
+    "sass": "latest"
   },
   "devDependencies": {
     "@babel/runtime": "latest",
@@ -35,8 +30,19 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all", "ie 11"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "ie 11"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
