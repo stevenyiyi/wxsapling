@@ -67,11 +67,12 @@ self.addEventListener("message", (event) => {
   }
 });
 
+/** 
 self.addEventListener("visibilitychange", function () {
   if (document.visibilityState === "visible") {
     console.log("APP resumed");
     window.location.reload();
   }
-});
+}); */
 
 // Any other custom service worker logic can go here.
