@@ -53,7 +53,7 @@ export default function App(props) {
     setPWAInfo({
       ...PWAInfo,
       show: true,
-      message: "是否将直播添加到屏幕或桌面？",
+      message: "是否将幼儿直播添加到屏幕或桌面？",
       deferredPrompt: e
     });
   };
@@ -74,17 +74,20 @@ export default function App(props) {
                     <Route path="/teachers" element={<Teachers />} />
                     <Route path="/recipes" element={<Recipes />} />
                     <Route path="/test" element={<Test />} />
-                    <Route path="/" element={<LivePlayer />} />
+                    <Route
+                      path="/"
+                      element={<Navigate to="/player" state={{ from: "/" }} />}
+                    />
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/player" element={<LivePlayer />} />
                   </Routes>
+                  <Confirm
+                    show={PWAInfo.show}
+                    message={PWAInfo.message}
+                    onOK={onPWAInstallOK}
+                    onCancel={onPWAInstallCancel}
+                  />
                 </div>
-                <Confirm
-                  show={PWAInfo.show}
-                  message={PWAInfo.message}
-                  onOK={onPWAInstallOK}
-                  onCancel={onPWAInstallCancel}
-                />
               </>
             ) : (
               <Routes>
