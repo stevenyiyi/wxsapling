@@ -114,7 +114,7 @@ const Login = (props) => {
             setMessage({
               ...message,
               show: true,
-              text: "帐户不存在，请管理员联系，分配帐号后再登录！"
+              text: "帐户不存在，请与管理员联系，分配帐号后再登录！"
             });
           } else if (result === ERR_OVERDUE) {
             /// 帐户过期

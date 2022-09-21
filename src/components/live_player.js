@@ -33,9 +33,11 @@ export default function LivePlayer(props) {
   const refPerson = React.useRef();
   const openSnackbar = React.useRef(useSnackbar()[0]);
 
-  if (!userCtx.useNavbar && location.state && location.state.from === "/") {
-    userCtx.update(userCtx.user, true);
-  }
+  React.useEffect(() => {
+    if (!userCtx.useNavbar && location.state && location.state.from === "/") {
+      userCtx.update(userCtx.user, true);
+    }
+  }, [userCtx, location]);
 
   /** 从服务器获取摄像头列表 */
   React.useEffect(() => {
