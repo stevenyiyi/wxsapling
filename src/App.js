@@ -81,12 +81,6 @@ export default function App(props) {
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/player" element={<LivePlayer />} />
                   </Routes>
-                  <Confirm
-                    show={PWAInfo.show}
-                    message={PWAInfo.message}
-                    onOK={onPWAInstallOK}
-                    onCancel={onPWAInstallCancel}
-                  />
                 </div>
               </>
             ) : (
@@ -109,6 +103,12 @@ export default function App(props) {
                 <Route path="/recipes" element={<Recipes />} />
               </Routes>
             )}
+            <Confirm
+              show={PWAInfo.show}
+              message={PWAInfo.message}
+              onOK={onPWAInstallOK}
+              onCancel={onPWAInstallCancel}
+            />
           </BrowserRouter>
         </ClassUsersProvider>
       </SnackbarProvider>
