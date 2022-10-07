@@ -1,11 +1,11 @@
 .sidebar {
-  margin: 0;
-  padding: 0;
+  display: flex;
   background-color: #f1f1f1;
   position: relative;
   width: 100%;
+  top: 0px;
   height: auto;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .sidebar a {
@@ -27,7 +27,7 @@
 }
 
 div.content {
-  margin-left: 0px;
+  margin-top: 0px;
 }
 
 @media screen and (max-width: 400px) {
