@@ -19,11 +19,19 @@
     "react-scroll-to-bottom": "latest",
     "react-transition-group": "latest",
     "sass": "latest",
-    "workbox-core": "6.5.4",
-    "workbox-expiration": "6.5.4",
-    "workbox-precaching": "6.5.4",
-    "workbox-routing": "6.5.4",
-    "workbox-strategies": "6.5.4"
+    "web-vitals": "latest",
+    "workbox-background-sync": "latest",
+    "workbox-broadcast-update": "latest",
+    "workbox-cacheable-response": "latest",
+    "workbox-core": "latest",
+    "workbox-expiration": "latest",
+    "workbox-google-analytics": "latest",
+    "workbox-navigation-preload": "latest",
+    "workbox-precaching": "latest",
+    "workbox-range-requests": "latest",
+    "workbox-routing": "latest",
+    "workbox-strategies": "latest",
+    "workbox-streams": "latest"
   },
   "devDependencies": {
     "@babel/runtime": "latest",
@@ -36,18 +44,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app", "react-app/jest"]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all",
-      "ie 11"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all", "ie 11"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

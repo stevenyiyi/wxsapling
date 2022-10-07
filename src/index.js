@@ -1,6 +1,7 @@
 import React from "react";
 import * as ReactDOMClient from "react-dom/client";
-import { register as registerServiceWorker } from "./serviceWorkerRegistration";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import reportWebVitals from "./reportWebVitals";
 import Cookies from "js-cookie";
 import http from "./http_common";
 import App from "./App";
@@ -12,7 +13,7 @@ import App from "./App";
     token: undefined,
     role: undefined,
     is_login: false,
-    schoolid: undefined,
+    schoolid: undefined
   };
   if (Cookies.get("username")) {
     user.username = Cookies.get("username");
@@ -36,5 +37,13 @@ import App from "./App";
   const container = document.getElementById("root");
   const root = ReactDOMClient.createRoot(container);
   root.render(<App userCookie={user} />);
-  registerServiceWorker();
+  // If you want your app to work offline and load faster, you can change
+  // unregister() to register() below. Note this comes with some pitfalls.
+  // Learn more about service workers: https://cra.link/PWA
+  serviceWorkerRegistration.unregister();
+
+  // If you want to start measuring performance in your app, pass a function
+  // to log results (for example: reportWebVitals(console.log))
+  // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+  reportWebVitals();
 })();
